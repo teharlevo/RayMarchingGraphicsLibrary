@@ -10,7 +10,9 @@ out vec4 Color;
 
 float map(vec3 pos){
 
-    return length(pos) - 0.5;
+    vec3 lossShit = fract(pos);
+
+    return length(lossShit) - 0.5;
 }
 
 vec3 palette(float t) {
@@ -18,26 +20,6 @@ vec3 palette(float t) {
 }
 
 vec3 rot(vec3 axis,vec3 angles){
-
-    //rayDir.x = rayDirBase.x * cos(camareAngles.z) - rayDirBase.y *  sin(camareAngles.z);
-    //rayDir.y = rayDirBase.x * sin(camareAngles.z) + rayDirBase.y *  cos(camareAngles.z);
-    ////rayDir.z = 1.0;
-    ////rayDir = normalize(rayDir);
-    //
-//
-    ////y' = y*cos q - z*sin q
-    ////z' = y*sin q + z*cos q
-//
-    //rayDir.y = rayDir.y * cos(camareAngles.x) - rayDir.z*  sin(camareAngles.x);
-    //rayDir.z = rayDir.y * sin(camareAngles.x) + rayDir.z*  cos(camareAngles.x);
-    ////rayDir = normalize(rayDir);
-//
-    ////z' = z*cos q - x*sin q
-    ////x' = z*sin q + x*cos q
-//
-    //rayDir.z = rayDir.z * cos(camareAngles.y) - rayDir.x*  sin(camareAngles.y);
-    //rayDir.x = rayDir.z * sin(camareAngles.y) + rayDir.x*  cos(camareAngles.y);
-    //rayDir = normalize(rayDir);
 
     vec3 newAxis = axis;
     newAxis.x = axis.x * cos(angles.z) - axis.y *  sin(angles.z);
@@ -76,5 +58,10 @@ void main()
         if (dis < .001 || totalDis > 1000.) break;
     }
 
-    Color = vec4(palette(totalDis * 0.02), 1.0);
+    if(totalDis < 1000. ){
+        Color = vec4(palette(totalDis * 0.1), 1.0);
+    }
+    else{
+        Color = vec4(0.3,0.3,0.3, 1.0);
+    }
 }

@@ -74,11 +74,26 @@ fn main(){
         if is_pressed(&win.event_pump,Scancode::D) {
             cam.x -= 0.05;
         }
+
         if is_pressed(&win.event_pump,Scancode::Q) {
             cam.angle_x += 0.05;
         }
         if is_pressed(&win.event_pump,Scancode::E) {
             cam.angle_x -= 0.05;
+        }
+
+        if is_pressed(&win.event_pump,Scancode::Z) {
+            cam.angle_z += 0.05;
+        }
+        if is_pressed(&win.event_pump,Scancode::X) {
+            cam.angle_z -= 0.05;
+        }
+        
+        if is_pressed(&win.event_pump,Scancode::F) {
+            cam.angle_y += 0.05;
+        }
+        if is_pressed(&win.event_pump,Scancode::G) {
+            cam.angle_y -= 0.05;
         }
         for event in win.event_pump.poll_iter() {
             match event {

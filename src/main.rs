@@ -1,5 +1,5 @@
 
-use sdl2::{Sdl, video::{GLContext, Window, SwapInterval}, EventPump};
+use sdl2::{sys::SDL_SetWindowSize, video::{GLContext, SwapInterval, Window}, EventPump, Sdl};
 
 use sdl2::event::Event;
 use sdl2::keyboard::Scancode;
@@ -94,6 +94,9 @@ fn main(){
         }
         if is_pressed(&win.event_pump,Scancode::G) {
             cam.angle_y -= 0.05;
+            //unsafe { 
+            //    SDL_SetWindowSize(win.window.raw(),500,700);
+            //}
         }
         for event in win.event_pump.poll_iter() {
             match event {

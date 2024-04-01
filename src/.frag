@@ -8,11 +8,24 @@ in vec2 fUV;
 
 out vec4 Color;
 
+vec3 rot3(vec3 posint,vec3 axis,float angle){
+    return mix(dot(axis,posint) * axis
+    ,posint,cos(angle) + cross(axis,posint) * sin(angle));
+}
+
+float sdBox( vec3 p, vec3 b )
+{
+  vec3 q = abs(p) - b;
+  return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+}
+
 float map(vec3 pos){
 
-    vec3 lossShit = fract(pos);
+    vec3 p = pos;
+    p = rot3(p,vec3(0.33),15);
+    p = fract(p) - 0.5;
 
-    return length(lossShit) - 0.5;
+    return sdBox(  p, vec3 (0.1));
 }
 
 vec3 palette(float t) {
@@ -59,9 +72,9 @@ void main()
     }
 
     if(totalDis < 1000. ){
-        Color = vec4(palette(totalDis * 0.1), 1.0);
+        Color = vec4(palette(10.0 - totalDis * 2.0), 1.0);
     }
     else{
-        Color = vec4(0.3,0.3,0.3, 1.0);
+        Color = vec4(vec3(0.0), 1.0);
     }
 }

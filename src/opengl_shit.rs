@@ -144,14 +144,14 @@ fn create_whitespace_cstring_with_len(len: usize) -> CString {
     unsafe { CString::from_vec_unchecked(buffer) }
 }
 
-pub fn create_program() -> Result<Program, &'static str> {
+pub fn create_program(vert_string:&CString,frag_string:&CString) -> Result<Program, &'static str> {
     let vert_shader = Shader::from_source(
-        &CString::new(include_str!(".vert")).unwrap(),
+        vert_string,
         gl::VERTEX_SHADER,
     )
     .unwrap();
     let frag_shader = Shader::from_source(
-        &CString::new(include_str!(".frag")).unwrap(),
+        frag_string,
         gl::FRAGMENT_SHADER,
     )
     .unwrap();

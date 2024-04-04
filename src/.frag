@@ -147,7 +147,7 @@ float map(vec3 pos){
         if(tran[i].type == 0){
             dis = sdBox(p,vec3(1.0));
         }else if(tran[i].type == 1){
-            dis = sdTorus(p,vec2(1.0,0.5));
+            dis = sdTorus(p,vec2(1.0,0.3));
         }
         else if(tran[i].type == 2){
             dis = sdSphere(p,1.0);

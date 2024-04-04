@@ -73,9 +73,10 @@ fn main(){
     let box1 = se.add_object("BoxFrame");
     box1.angle_z = 3.14/4.0;box1.angle_y = 3.14/4.0;
     let box1 = se.add_object("deimenShit");
+    let k = 4.0;
     for i in 0..30{
         let box1 = se.add_object("trus") ;
-        box1.z = box1.z + i as f32 * 2.0 - 30.0;
+        box1.z = box1.z + i as f32 * k - 30.0 * k;
         box1.angle_x = 3.14/2.0;box1.scale = 1.3;
     }
     let mut time = Instant::now();

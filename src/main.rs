@@ -24,7 +24,7 @@ pub struct Winsdl {
 }
 
 impl Winsdl {
-    pub fn new(width: usize, height: usize) -> Result<Self, &'static str> {
+    pub fn new(width: usize, height: usize,title:&str) -> Result<Self, &'static str> {
         let sdl = sdl2::init().unwrap();
         let video_subsystem = sdl.video().unwrap();
 
@@ -33,7 +33,7 @@ impl Winsdl {
         gl_attr.set_context_version(3, 3);
 
         let window = video_subsystem
-            .window("My window", width as u32, height as u32)
+            .window(title, width as u32, height as u32)
             .opengl()
             .build()
             .unwrap();
@@ -65,19 +65,19 @@ fn main(){
     let cam = Camare::new(0.0, 0.0, -3.0);
     let mut se = Scene::new(cam);
     se.add_folder_to_objects("src/objects/");
-    let win = create_window(500,500,&se);
+    let win = create_window(500,500,"lol");
     let mut win = win;
 
     let mut s = se.shader_ajjster(); 
 
     let box1 = se.add_object("BoxFrame");
     box1.angle_z = 3.14/4.0;box1.angle_y = 3.14/4.0;
-    let box1 = se.add_object("coolspere");
-    //for i in 0..30{
-    //    let box1 = se.add_object("trus") ;
-    //    box1.z = box1.z + i as f32 * 2.0 - 30.0;
-    //    box1.angle_x = 3.14/2.0;box1.scale = 1.3;
-    //}
+    let box1 = se.add_object("deimenShit");
+    for i in 0..30{
+        let box1 = se.add_object("trus") ;
+        box1.z = box1.z + i as f32 * 2.0 - 30.0;
+        box1.angle_x = 3.14/2.0;box1.scale = 1.3;
+    }
     let mut time = Instant::now();
     let mut fps = 0;
 
@@ -296,9 +296,9 @@ impl Scene{
     }
 }
 
-fn create_window(width: usize, height: usize,s:&Scene) -> Winsdl{
+fn create_window(width: usize, height: usize,title:&str) -> Winsdl{
     
-    let winsdl: Winsdl = Winsdl::new(width, height).unwrap();
+    let winsdl: Winsdl = Winsdl::new(width, height,title).unwrap();
     unsafe {gl::Viewport(0, 0, width as i32, height as i32); }
 
     let aspect = width as f32/height as f32;

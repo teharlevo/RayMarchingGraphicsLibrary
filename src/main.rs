@@ -62,24 +62,22 @@ impl Winsdl {
 
 
 fn main(){
-    let win = create_window(500,500);
-    let s = win.1;
-    let mut win = win.0;
-    let cam = Camare::new(0.0, 0.0, -3.0,&s);
-    let mut se = Scene::new(cam, &s);
+    let cam = Camare::new(0.0, 0.0, -3.0);
+    let mut se = Scene::new(cam);
+    se.add_folder_to_objects("src/objects/");
+    let win = create_window(500,500,&se);
+    let mut win = win;
 
-    se.add_object(&s,"kik");
-    let box1 =se.objects.get_mut(0).unwrap();
+    let mut s = se.shader_ajjster(); 
+
+    let box1 = se.add_object("box");
     box1.x = 10.0;box1.z = 3.0;box1.angle_z = 3.14/4.0;box1.angle_y = 3.14/4.0;
-    se.add_object(&s,"kik");
-    let box1 =se.objects.get_mut(1).unwrap();
-    box1.angle_x = 3.14/2.0;box1.scale = 1.3;box1.object_type = 1;
-    for i in 0..100{
-        se.add_object(&s,"kik");
-        let box1 =se.objects.get_mut(i + 2).unwrap();
-        box1.z =box1.z + i as f32 * 2.0 - 100.0;
-        box1.angle_x = 3.14/2.0;box1.scale = 1.3;box1.object_type = 1;
-    }
+    let box1 = se.add_object("AllBoxes");
+    //for i in 0..30{
+    //    let box1 = se.add_object("trus") ;
+    //    box1.z = box1.z + i as f32 * 2.0 - 30.0;
+    //    box1.angle_x = 3.14/2.0;box1.scale = 1.3;
+    //}
     let mut time = Instant::now();
     let mut fps = 0;
 
@@ -123,6 +121,11 @@ fn main(){
             //    SDL_SetWindowSize(win.window.raw(),500,700);
             //}
         }
+        if is_pressed(&win.event_pump,Scancode::Space) {
+            se.clear_objects();
+            se.add_folder_to_objects("src/objects/");
+            s = se.shader_ajjster();
+        }
         for event in win.event_pump.poll_iter() {
             match event {
                 Event::Quit { .. } => break 'main,
@@ -151,7 +154,7 @@ struct Camare{
 }
 
 impl Camare {
-    fn new(x:f32,y:f32,z:f32,shader:&Program)-> Camare{
+    fn new(x:f32,y:f32,z:f32)-> Camare{
         
         let cam = Camare{
             x:x,
@@ -161,7 +164,6 @@ impl Camare {
             angle_y:0.0,
             angle_z:0.0,
         };
-        cam.sand_info(shader);
         cam
     }
 
@@ -188,7 +190,7 @@ struct Object{
 }
 
 impl Object {
-    fn new(shader:&Program,num:usize,object_type:i32)-> Object{
+    fn new(object_type:i32)-> Object{
         let ob = Object{
             x:0.0,
             y:0.0,
@@ -199,7 +201,6 @@ impl Object {
             scale:1.0,
             object_type:object_type,
         };
-        ob.sand_info(shader,num);
         return ob;
     }
 
@@ -223,30 +224,34 @@ impl Object {
 struct Scene{
     cam:Camare,
     objects:Vec<Object>,
-    //types:Vec<&'a str>,
+    objects_models:Vec<(String,String)>
 }
 
 impl Scene{
-    fn new(cam:Camare,shader:&Program)-> Scene{
-        let types = vec!["box","trus","s"];
+    fn new(cam:Camare)-> Scene{
+        let types:Vec<(String, String)> = vec![("".to_string(),"box".to_string())
+        ,("".to_string(),"trus".to_string())
+        ,("".to_string(),"Sphere".to_string())];
 
         let s = Scene{
             cam:cam,
             objects:vec![],
-            //types:types,
+            objects_models:types,
         };
-        s.sand_info(shader);
         s
     }
 
-    fn add_object(&mut self,shader:&Program,ob_type:&str){
-        //let mut t = 0;
-        //for i in self.types{
-        //    
-        //}
-        let object = Object::new(shader, self.objects.len(), 0);
+    fn add_object(&mut self,ob_type:&str) -> &mut Object{
+        let mut i = 0;
+        for (code, name) in &self.objects_models {
+            if name == ob_type {
+                break;
+            }
+            i += 1;
+        }
+        let object = Object::new(  i);
         self.objects.push(object);
-        //&mut object
+        self.objects.last_mut().unwrap()
     }
 
     fn sand_info(&self,shader:&Program){
@@ -259,20 +264,43 @@ impl Scene{
             self.objects[i].sand_info(shader, i);
         }
     }
+
+    fn add_folder_to_objects(&mut self,folder_path: &str){
+        let objects =  get_dis_funcans_folder(folder_path);
+        if Some(&objects).is_some(){
+            let objects= objects.unwrap();
+            for object in objects{
+                self.objects_models.push(object);
+            }
+
+        }
+    }
+    fn clear_objects(&mut self){
+        self.objects_models = vec![("".to_string(),"box".to_string())
+        ,("".to_string(),"trus".to_string())
+        ,("".to_string(),"Sphere".to_string())];
+    }
+
+    fn shader_ajjster(&self) -> Program{
+        let program = create_program(&CString::new(include_str!(".vert")).unwrap()
+        ,&make_frag(&self.objects_models)).unwrap();
+        
+        
+        program.set();
+        program
+    }
 }
 
-fn create_window(width: usize, height: usize) -> (Winsdl,Program){
+fn create_window(width: usize, height: usize,s:&Scene) -> Winsdl{
     
     let winsdl: Winsdl = Winsdl::new(width, height).unwrap();
     unsafe {gl::Viewport(0, 0, width as i32, height as i32); }
 
-    let program = create_program(&CString::new(include_str!(".vert")).unwrap(),&make_frag()).unwrap();
-    program.set();
     let aspect = width as f32/height as f32;
     let vertices: Vec<f32> = vec![
-        1.0, -1.0,1.0,0.0, // Bottom right 0
+        1.0, -1.0,aspect,0.0, // Bottom right 0
        -1.0,  1.0,0.0,1.0, // Top left     1
-        1.0,  1.0,1.0, 1.0, // Top right    2
+        1.0,  1.0,aspect, 1.0, // Top right    2
        -1.0, -1.0,0.0,0.0, // Bottom left  3
    ];
 
@@ -287,7 +315,7 @@ fn create_window(width: usize, height: usize) -> (Winsdl,Program){
 
     let ibo = Ibo::gen();
     ibo.set(&indices);
-    (winsdl,program)
+    winsdl
 }
 
 fn draw(win:&Winsdl){

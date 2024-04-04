@@ -1,0 +1,6 @@
+AllBoxes
+
+{
+    vec3 q = p - 3.0*round(p/3.0);
+    return sdBox( q ,vec3(0.8,0.8,0.4));
+}

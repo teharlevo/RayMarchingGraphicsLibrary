@@ -71,6 +71,16 @@ vec3 opTwist(vec3 p,float k)
     return q;
 }
 
+
+vec3 opCheapBend( vec3 p ,float k)
+{
+    float c = cos(k*p.x);
+    float s = sin(k*p.x);
+    mat2  m = mat2(c,-s,s,c);
+    vec3  q = vec3(m*p.xy,p.z);
+    return q;
+}
+
 float sdSphere(vec3 p, float s )
 {
   return length(p)-s;

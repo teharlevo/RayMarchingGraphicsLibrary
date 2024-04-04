@@ -61,6 +61,16 @@ vec3 rotateVec3(vec3 p,vec3 angles){
     return identity() * rotateZ(angles.z) * rotateY(angles.y) * rotateX(angles.x) * p;
 }
 
+vec3 opTwist(vec3 p,float k)
+{
+    
+    float c = cos(k*p.y);
+    float s = sin(k*p.y);
+    mat2  m = mat2(c,-s,s,c);
+    vec3  q = vec3(m*p.xz,p.y);
+    return q;
+}
+
 float sdSphere(vec3 p, float s )
 {
   return length(p)-s;

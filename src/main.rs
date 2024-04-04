@@ -70,9 +70,9 @@ fn main(){
 
     let mut s = se.shader_ajjster(); 
 
-    let box1 = se.add_object("box");
-    box1.x = 10.0;box1.z = 3.0;box1.angle_z = 3.14/4.0;box1.angle_y = 3.14/4.0;
-    let box1 = se.add_object("AllBoxes");
+    let box1 = se.add_object("BoxFrame");
+    box1.angle_z = 3.14/4.0;box1.angle_y = 3.14/4.0;
+    let box1 = se.add_object("coolspere");
     //for i in 0..30{
     //    let box1 = se.add_object("trus") ;
     //    box1.z = box1.z + i as f32 * 2.0 - 30.0;
@@ -121,6 +121,7 @@ fn main(){
             //    SDL_SetWindowSize(win.window.raw(),500,700);
             //}
         }
+        //box1.angle_z += 1.0;
         if is_pressed(&win.event_pump,Scancode::Space) {
             se.clear_objects();
             se.add_folder_to_objects("src/objects/");
@@ -231,7 +232,9 @@ impl Scene{
     fn new(cam:Camare)-> Scene{
         let types:Vec<(String, String)> = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
-        ,("".to_string(),"Sphere".to_string())];
+        ,("".to_string(),"Sphere".to_string())
+        ,("".to_string(),"Cone".to_string())
+        ,("".to_string(),"Cylinder".to_string())];
 
         let s = Scene{
             cam:cam,
@@ -278,7 +281,9 @@ impl Scene{
     fn clear_objects(&mut self){
         self.objects_models = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
-        ,("".to_string(),"Sphere".to_string())];
+        ,("".to_string(),"Sphere".to_string())
+        ,("".to_string(),"Cone".to_string())
+        ,("".to_string(),"Cylinder".to_string())];
     }
 
     fn shader_ajjster(&self) -> Program{

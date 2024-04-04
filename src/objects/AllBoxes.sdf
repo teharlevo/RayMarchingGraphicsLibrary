@@ -1,8 +1,0 @@
-AllBoxes
-
-{
-    vec3 q = opCheapBend(p,10.0);
-    //vec3 rep = vec3(10.0,1.0,10.0);
-    //q = q -  rep*round(q/ rep);
-    return sdBox( q ,vec3(0.8,10.8,10.8));
-}

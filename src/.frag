@@ -61,6 +61,23 @@ vec3 rotateVec3(vec3 p,vec3 angles){
     return identity() * rotateZ(angles.z) * rotateY(angles.y) * rotateX(angles.x) * p;
 }
 
+float opUnion( float d1, float d2 )
+{
+    return min(d1,d2);
+}
+float opSubtraction( float d1, float d2 )
+{
+    return max(-d1,d2);
+}
+float opIntersection( float d1, float d2 )
+{
+    return max(d1,d2);
+}
+float opXor(float d1, float d2 )
+{
+    return max(min(d1,d2),-max(d1,d2));
+}
+
 vec3 opTwist(vec3 p,float k)
 {
     
@@ -98,11 +115,23 @@ float sdBox( vec3 p, vec3 b )
   return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
 }
 
-float sdEllipsoid( vec3 p, vec3 r )
+float sdCone( vec3 p, vec2 c, float h )
 {
-  float k0 = length(p/r);
-  float k1 = length(p/(r*r));
-  return k0*(k0-1.0)/k1;
+  vec2 q = h*vec2(c.x/c.y,-1.0);
+    
+  vec2 w = vec2( length(p.xz), p.y );
+  vec2 a = w - q*clamp( dot(w,q)/dot(q,q), 0.0, 1.0 );
+  vec2 b = w - q*vec2( clamp( w.x/q.x, 0.0, 1.0 ), 1.0 );
+  float k = sign( q.y );
+  float d = min(dot( a, a ),dot(b, b));
+  float s = max( k*(w.x*q.y-w.y*q.x),k*(w.y-q.y)  );
+  return sqrt(d)*sign(s);
+}
+
+float sdCylinder( vec3 p, float h, float r )
+{
+  vec2 d = abs(vec2(length(p.xz),p.y)) - vec2(r,h);
+  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
 }
 
 //#dis funcans here#
@@ -122,6 +151,12 @@ float map(vec3 pos){
         }
         else if(tran[i].type == 2){
             dis = sdSphere(p,1.0);
+        }
+        else if(tran[i].type == 3){
+            dis = sdCone(p,vec2(0.2,0.5),1.0);
+        }
+        else if(tran[i].type == 4){
+            dis = sdCylinder(p,1.0,1.0);
         }
         //#else if else if#
         len = min (dis * tran[i].scale,len);

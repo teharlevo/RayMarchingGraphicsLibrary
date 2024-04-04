@@ -1,8 +1,8 @@
 BoxFrame
 
 {
-  p = abs(p  )- vec3(20.0);
-  vec3 q = abs(p+0.5)- 1.5;
+  p = abs(p  )- vec3(50.0);
+  vec3 q = abs(p+0.5)- 10.5;
   return min(min(
   length(max(vec3(p.x,q.y,q.z),0.0))+min(max(p.x,max(q.y,q.z)),0.0),
   length(max(vec3(q.x,p.y,q.z),0.0))+min(max(q.x,max(p.y,q.z)),0.0)),

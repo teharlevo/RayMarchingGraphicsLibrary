@@ -20,7 +20,7 @@ fn main(){
 
     let cam = Camare::new(0.0, 0.0, -3.0);
     let mut se = Scene::new(cam);
-    se.shader_ajjster(); 
+    se.set_shader(); 
     let k = 4.0;
     for i in 0..30{
         let box1 = se.add_object("trus") ;

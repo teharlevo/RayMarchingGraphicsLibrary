@@ -125,7 +125,7 @@ impl Object {
         let u_scale = Uniform::new(shader.id(), 
         &["tran[",&num.to_string().as_str(),"].scale"].join("")).expect("tran.scale Uniform");
         let u_type = Uniform::new(shader.id(), 
-        &["tran[",&num.to_string().as_str(),"].type"].join("")).expect("tran.scale Uniform");
+        &["tran[",&num.to_string().as_str(),"].type"].join("")).expect("tran.type Uniform");
         unsafe {
             gl::Uniform3f(u_pos.id, self.x,self.y,self.z);
             gl::Uniform3f(u_angle.id, self.angle_x,self.angle_y,self.angle_z);
@@ -184,7 +184,7 @@ impl Scene{
         }
     }
 
-    pub fn add_folder_to_objects(&mut self,folder_path: &str){
+    pub fn add_folder_to_model(&mut self,folder_path: &str){
         let objects =  get_dis_funcans_folder(folder_path);
         if Some(&objects).is_some(){
             let objects= objects.unwrap();
@@ -194,6 +194,12 @@ impl Scene{
 
         }
     }
+    
+    pub fn add_model(&mut self,model_texts: &str){
+        let object =  add_object(model_texts);
+        self.objects_models.push(object);
+    }
+
     pub fn clear_objects_models(&mut self){
         self.objects_models = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
@@ -211,12 +217,14 @@ impl Scene{
         self.clear_objects_models();
     }
 
-    pub fn shader_ajjster(&mut self){
-        let program = Scene::shader_maker(&self.objects_models);
-        
-        
-        program.set();
-        self.shader = program
+    pub fn shader_text(&mut self) -> String{
+        format!("{}
+        {}",&CString::new(include_str!(".vert")).unwrap().to_string_lossy().into_owned()
+        ,&make_frag(&self.objects_models).to_string_lossy().into_owned())
+    }
+
+    pub fn set_shader(&mut self){
+        self.shader = Scene::shader_maker(&self.objects_models)
     }
 
     fn shader_maker(ob_types:&Vec<(String,String)>) -> Program{

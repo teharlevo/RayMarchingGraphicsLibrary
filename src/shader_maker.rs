@@ -67,7 +67,7 @@ fn get_files_in_folder(folder_path: &str) -> Option<Vec<String>> {
     Some(files)
 }
 
-fn add_object_from_file (file_name:&str) -> Option<(String,String)>{
+pub fn add_object_from_file(file_name:&str) -> Option<(String,String)>{
 
     let ra: Vec<&str> = file_name.split(".").collect();
     let file_type = ra.last().unwrap();
@@ -79,14 +79,14 @@ fn add_object_from_file (file_name:&str) -> Option<(String,String)>{
     Some(add_object(&file_text))
 }
 
-fn add_object(text:&str) -> (String,String){
+pub fn add_object(text:&str) -> (String,String){
     let lines: Vec<&str> = text.split('\n').collect();
+    let mut object_name = lines.get(0).unwrap().to_string();
+    object_name = object_name[0..object_name.len() - 1].to_owned();
     let mut g = format!("
-    float sd{}(vec3 p)",&lines.get(0).unwrap());
+    float sd{}(vec3 p)",&object_name);
     for line in &lines[2..]{
         g = format!("{}{}\n",g,line);
     }
-    let mut object_name = lines.get(0).unwrap().to_string();
-    object_name = object_name[0..object_name.len() - 1].to_owned();
     (g,object_name)
 }

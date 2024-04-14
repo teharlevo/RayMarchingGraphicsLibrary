@@ -160,7 +160,7 @@ float map(vec3 pos){
     for (int i = 0; i < size; i++) {
         vec3 p = pos;
         p -= tran[i].pos;
-                p = rotateVec3(p,tran[i].rot);
+        p = rotateVec3(p,tran[i].rot);
         p = p/tran[i].scale;
         float dis = len;
         if(tran[i].type == 0){

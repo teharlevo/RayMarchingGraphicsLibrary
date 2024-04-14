@@ -61,8 +61,6 @@ impl Drop for Shader {
 /// An OpenGL Program, a sequence of shaders calls.
 pub struct Program {
     id: GLuint,
-    vert_shader_id:GLuint,
-    frag_shader_id:GLuint,
     
 }
 
@@ -107,15 +105,7 @@ impl Program {
             }
         }
 
-        Ok(Program { id:id ,vert_shader_id: shaders[0].id(), frag_shader_id:shaders[1].id()})
-    }
-
-    pub fn vert_shader_id(&self) -> GLuint {
-        self.vert_shader_id
-    }
-
-    pub fn frag_shader_id(&self) -> GLuint {
-        self.frag_shader_id
+        Ok(Program { id:id })
     }
 
     pub fn id(&self) -> GLuint {

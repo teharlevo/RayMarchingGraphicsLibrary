@@ -1,9 +1,5 @@
-use std::{
-    ffi::{CStr, CString}, path::PathBuf, ptr::{null, null_mut}
-};
+use std::ffi::CString;
 use std::fs;
-use std::io;
-use std::path::Path;
 
 pub fn make_frag(models:&Vec<(String,String)>)->CString{
     let c_frag = CString::new(include_str!(".frag")).unwrap();

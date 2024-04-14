@@ -98,6 +98,18 @@ vec3 opCheapBend( vec3 p ,float k)
     return q;
 }
 
+vec3 opRepetition(vec3 p,vec3 s )
+{
+    vec3 q = p - s*round(p/s);
+    return q;
+}
+
+vec3 opLimitedRepetition(vec3 p,vec3 s,float l )
+{
+    vec3 q = p - s*clamp(round(p/s),-l,l);
+    return q;
+}
+
 float sdSphere(vec3 p, float s )
 {
   return length(p)-s;
@@ -113,6 +125,13 @@ float sdBox( vec3 p, vec3 b )
 {
   vec3 q = abs(p) - b;
   return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+}
+
+float sdEllipsoid( vec3 p, vec3 r )
+{
+  float k0 = length(p/r);
+  float k1 = length(p/(r*r));
+  return k0*(k0-1.0)/k1;
 }
 
 float sdCone( vec3 p, vec2 c, float h )

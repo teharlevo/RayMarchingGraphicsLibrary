@@ -30,7 +30,7 @@ fn main(){
     let mut time = Instant::now();
     let mut fps = 0;
 
-    let w = Modlling::start(&mut se);
+    let mut w = Modlling::start(&mut se);
 
     'main: loop {
         for event in win.event_pump.poll_iter() {

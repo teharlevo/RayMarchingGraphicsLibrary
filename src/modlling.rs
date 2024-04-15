@@ -25,7 +25,7 @@ impl Modlling{
             model_code:String::from("return 1000;"),
             model_objects:ObjForModel 
             { type_: Box::new(ObjForModelType::Union(
-                ObjForModel { type_: Box::new(ObjForModelType::Box((1.0,1.0,1.0))), x: 0.0, y:0.0, z: 0.0, angle: (0.0,0.0,0.0) }
+                ObjForModel { type_: Box::new(ObjForModelType::Box((1.0,4.0,1.0))), x: 0.0, y:0.0, z: 0.0, angle: (0.0,0.0,0.0) }
                 , ObjForModel 
                 { type_: Box::new(ObjForModelType::Union(
                     ObjForModel { type_: Box::new(ObjForModelType::Torus(2.0, 1.0)), x: 0.0, y:0.0, z: 2.0, angle: (0.0,0.0,0.0) }
@@ -160,13 +160,14 @@ impl Modlling{
                 },
                 ObjForModelType::Union(ob, ob2) => {
                     let old_i = i + 1;
-                    (new_model_code,i) = Modlling::object_to_model_text(ob,new_model_code,i,i);
+                    (new_model_code,i) = Modlling::object_to_model_text(ob,new_model_code,i,old_i - 1);
                     let old_i2 = i + 1;
-                    (new_model_code,i) = Modlling::object_to_model_text(ob2,new_model_code,i,i);
+                    (new_model_code,i) = Modlling::object_to_model_text(ob2,new_model_code,i,old_i - 1);
                     i += 1;
                     new_model_code = format!("{}
-    float s{} = opUnion(s{},{});
-    ",new_model_code,i,old_i,old_i2);
+    float s{} = opUnion(s{},s{});
+    ",new_model_code,old_i - 1,old_i,old_i2);
+                i = old_i - 1;
                 },
             }
             (new_model_code,i)

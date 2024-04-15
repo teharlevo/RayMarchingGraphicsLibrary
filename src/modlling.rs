@@ -8,7 +8,7 @@ use crate::input::*;
 pub struct Modlling{
     model_name:String,
     model_code:String,
-    model_objects:Vec<ObjForModel>,
+    model_objects:ObjForModel,
     line_x:f32,
     line_y:f32,
     dis:f32,
@@ -16,20 +16,35 @@ pub struct Modlling{
 
 impl Modlling{
     pub fn start(s:&mut Scene) -> Modlling{
-        s.clear();
-        s.set_shader();
         let cam = &mut s.cam;
         cam.x = 0.0;cam.y = 0.0;cam.z = -10.0;
         cam.angle_x = 0.0;cam.angle_y = 0.0;
         cam.angle_z = 0.0;
-        Modlling{
+        let mut modlling = Modlling{
             model_name:String::from("new_object") + &format!("{}",'\n'),
-            model_code:String::from("return sdBox( p ,vec3(1.0));"),
-            model_objects:vec![],
+            model_code:String::from("return 1000;"),
+            model_objects:ObjForModel 
+            { type_: Box::new(ObjForModelType::Union(
+                ObjForModel { type_: Box::new(ObjForModelType::Box((1.0,1.0,1.0))), x: 0.0, y:0.0, z: 0.0, angle: (0.0,0.0,0.0) }
+                , ObjForModel 
+                { type_: Box::new(ObjForModelType::Union(
+                    ObjForModel { type_: Box::new(ObjForModelType::Torus(2.0, 1.0)), x: 0.0, y:0.0, z: 2.0, angle: (0.0,0.0,0.0) }
+                    , ObjForModel { type_: Box::new(ObjForModelType::Torus(2.0, 1.0)), x: 0.0, y:0.0, z: -2.0, angle: (0.0,0.0,0.0) })),
+                     x: 0.0,
+                     y: 0.0,
+                     z: 0.0,
+                     angle: (0.0,0.0,3.14/2.0) 
+                    },)),
+                 x: 0.0,
+                 y: 0.0,
+                 z: 0.0,
+                 angle: (0.0,0.0,0.0) },
             line_x:0.0,
-            line_y:0.0,
+            line_y:3.14/2.0,
             dis:10.0,
-        }
+        };
+        modlling.reset(s);
+        modlling
     }
 
     pub fn update(&mut self,s:&mut Scene,win:&Winsdl){
@@ -46,42 +61,22 @@ impl Modlling{
             self.line_y -= 0.1;
         }
         if is_pressed(&win.event_pump,Scancode::E) {
-            self.dis += 0.1;
+            self.dis += 0.3;
         }
         if is_pressed(&win.event_pump,Scancode::Q) {
-            self.dis -= 0.1;
+            self.dis -= 0.3;
         }
         if is_pressed(&win.event_pump,Scancode::Space){
-            s.clear();
-            s.add_model(&self.object_text());
-            s.set_shader();
-            s.add_object(&self.model_name[0..self.model_name.len() - 2]);
-        }
-        if is_pressed(&win.event_pump,Scancode::Z) {
-            let mut x_move = 0.0;
-            let mut size = 0.0;
-            for i in 0..self.model_objects.len(){
-                size = (i as f32 + 1.0);
-                x_move += size;
-            }
-            let obj = ObjForModel{
-                type_: ObjForModelType::Box((size,size,size)),
-                x: x_move,
-                y: 0.0,
-                z: 0.0,
-                angle: (0.0,0.0,0.0),
-            };
-            self.model_objects.push(obj);
+            self.reset(s);
         }
 
         let cam = &mut s.cam;
 
-        cam.z = self.line_y.sin() * self.line_x.cos() * -self.dis;
-        cam.y = self.line_y.cos() * self.line_x.sin() * -self.dis;
-        cam.angle_y = -self.line_x;
-        cam.x = self.line_y.sin() * -self.dis;
-        cam.z = self.line_x.cos() * self.line_y.cos() * -self.dis;
-        cam.angle_x = -self.line_y;
+
+        let obj = s.objects.first_mut().unwrap();
+        obj.angle_x = self.line_x;  
+        obj.angle_z = self.line_y;
+        cam.z = -self.dis;
     }
 
     fn object_text(&mut self) -> String{
@@ -96,41 +91,85 @@ impl Modlling{
     fn update_model_code(&mut self){
         let mut new_model_code = String::from("");
         let mut i = 0;
-        for model in &mut self.model_objects{
-            i = i + 1;
-            new_model_code = format!("{}
-    vec3 q{} = p;
+        (new_model_code,i) = Self::object_to_model_text(&mut self.model_objects,new_model_code, i,0);
+        new_model_code = format!("{}
+        return s{};",new_model_code,i);
+        println!("{}",new_model_code);
+        if i == 0{
+            new_model_code = String::from("return 1000.0;");
+            self.model_code = new_model_code;
+            return;
+        }
+        
+        self.model_code = new_model_code;
+    }
+
+    fn reset(&mut self,s:&mut Scene){
+
+        s.clear();
+        s.add_model(&self.object_text());
+        s.set_shader();
+        s.add_object(&self.model_name[0..self.model_name.len() - 2]);
+
+    }
+
+    fn object_to_model_text(object:&ObjForModel,mut new_model_code:String,mut i:i32,origen:i32) -> (String,i32){
+        i += 1;
+        let p = if origen == 0{String::from("p")}else{format!("q{}",origen)};
+        new_model_code = format!("{new_model_code}
+    vec3 q{} = {p};
     q{} -= vec3({},{},{});
     q{} = rotateVec3(q{},vec3{:?});
-    ",new_model_code,i,i,model.x,model.y,model.z,i,i,model.angle);
-            match model.type_ {
+    ",i,i,object.x,object.y,object.z,i,i,object.angle);
+
+            let type_ = object.type_.as_ref();
+            match type_ {
                 ObjForModelType::Box(pos) => {
                     new_model_code = format!("{}
     float s{} = sdBox(q{},vec3{:?});
     ",new_model_code,i,i,pos);
                 },
-                ObjForModelType::Sphere(r) => todo!(),
-                ObjForModelType::Cylinder(h, r) => todo!(),
-                ObjForModelType::Ellipsoid(rx,ry,rz) => todo!(),
-                ObjForModelType::Torus(R, r) => todo!(),
-                ObjForModelType::Cone(rx, ry, h) => todo!(),
+
+                ObjForModelType::Sphere(r) => {
+                    new_model_code = format!("{}
+    float s{} = sdSphere(q{},{});
+    ",new_model_code,i,i,r);
+                },
+
+                ObjForModelType::Cylinder(h, r) =>{
+                    new_model_code = format!("{}
+    float s{} = sdCylinder(q{},{},{});
+    ",new_model_code,i,i,h, r);
+                },
+
+                ObjForModelType::Ellipsoid(rx,ry,rz) => {
+                    new_model_code = format!("{}
+    float s{} = sdEllipsoid(q{},vec3({},{},{}));
+    ",new_model_code,i,i,rx,ry,rz);
+                },
+                ObjForModelType::Torus(R, r) => {
+                    new_model_code = format!("{}
+    float s{} = sdTorus(q{},vec2({},{}));
+    ",new_model_code,i,i,R,r);
+                },
+
+                ObjForModelType::Cone(rx, ry, h) => {
+                    new_model_code = format!("{}
+    float s{} = sdBox(q{},vec2({},{}),{});
+    ",new_model_code,i,i,rx,ry,h);
+                },
+                ObjForModelType::Union(ob, ob2) => {
+                    let old_i = i + 1;
+                    (new_model_code,i) = Modlling::object_to_model_text(ob,new_model_code,i,i);
+                    let old_i2 = i + 1;
+                    (new_model_code,i) = Modlling::object_to_model_text(ob2,new_model_code,i,i);
+                    i += 1;
+                    new_model_code = format!("{}
+    float s{} = opUnion(s{},{});
+    ",new_model_code,i,old_i,old_i2);
+                },
             }
-        }
-        new_model_code = format!("{}
-        return",new_model_code);
-        for i in 1..self.model_objects.len(){
-            new_model_code = format!("{} opUnion(s{},",new_model_code,i);
-        }
-        new_model_code = format!("{}s{}",new_model_code,self.model_objects.len());
-        for _ in 0..self.model_objects.len() - 1 {
-            new_model_code = format!("{})",new_model_code);
-        }
-        new_model_code = format!("{};",new_model_code);
-        if i == 0{
-            new_model_code = String::from("return 1000.0;");
-        }
-        println!("{}",new_model_code);
-        self.model_code = new_model_code;
+            (new_model_code,i)
     }
 }
 
@@ -141,10 +180,11 @@ enum ObjForModelType {
     Ellipsoid(f32,f32,f32),
     Torus(f32,f32),
     Cone(f32,f32,f32),
+    Union(ObjForModel,ObjForModel),
 }
 
 struct ObjForModel{
-    type_:ObjForModelType,
+    type_:Box<ObjForModelType>,
     x:f32,
     y:f32,
     z:f32,

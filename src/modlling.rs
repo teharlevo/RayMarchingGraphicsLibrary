@@ -20,21 +20,29 @@ impl Modlling{
         cam.x = 0.0;cam.y = 0.0;cam.z = -10.0;
         cam.angle_x = 0.0;cam.angle_y = 0.0;
         cam.angle_z = 0.0;
+
+        let modelbox1 = ObjForModel 
+        { type_: Box::new(ObjForModelType::Box((1.5,0.5,1.0))),
+             x: 0.0,
+             y: 0.0,
+             z: 0.0,
+             angle: (0.0,0.0,0.0),
+        };
+        let modelbox2 = ObjForModel 
+        { type_: Box::new(ObjForModelType::Torus(1.2,0.7)),
+             x: 0.0,
+             y: 0.0,
+             z: 0.0,
+             angle: (0.0,0.0,0.0),
+        };
+
         let mut modlling = Modlling{
             model_name:String::from("new_object") + &format!("{}",'\n'),
             model_code:String::from("return 1000;"),
             model_objects:ObjForModel 
-            { type_: Box::new(ObjForModelType::Union(
-                ObjForModel { type_: Box::new(ObjForModelType::Box((1.0,4.0,1.0))), x: 0.0, y:0.0, z: 0.0, angle: (0.0,0.0,0.0) }
-                , ObjForModel 
-                { type_: Box::new(ObjForModelType::Union(
-                    ObjForModel { type_: Box::new(ObjForModelType::Torus(2.0, 1.0)), x: 0.0, y:0.0, z: 2.0, angle: (0.0,0.0,0.0) }
-                    , ObjForModel { type_: Box::new(ObjForModelType::Torus(2.0, 1.0)), x: 0.0, y:0.0, z: -2.0, angle: (0.0,0.0,0.0) })),
-                     x: 0.0,
-                     y: 0.0,
-                     z: 0.0,
-                     angle: (0.0,0.0,3.14/2.0) 
-                    },)),
+            { type_: Box::new(ObjForModelType::Xor
+                (modelbox1
+                , modelbox2)),
                  x: 0.0,
                  y: 0.0,
                  z: 0.0,
@@ -93,7 +101,7 @@ impl Modlling{
         let mut i = 0;
         (new_model_code,i) = Self::object_to_model_text(&mut self.model_objects,new_model_code, i,0);
         new_model_code = format!("{}
-        return s{};",new_model_code,i);
+        return s{};",new_model_code,1);
         println!("{}",new_model_code);
         if i == 0{
             new_model_code = String::from("return 1000.0;");
@@ -159,20 +167,36 @@ impl Modlling{
     ",new_model_code,i,i,rx,ry,h);
                 },
                 ObjForModelType::Union(ob, ob2) => {
-                    let old_i = i + 1;
-                    (new_model_code,i) = Modlling::object_to_model_text(ob,new_model_code,i,old_i - 1);
-                    let old_i2 = i + 1;
-                    (new_model_code,i) = Modlling::object_to_model_text(ob2,new_model_code,i,old_i - 1);
-                    i += 1;
-                    new_model_code = format!("{}
-    float s{} = opUnion(s{},s{});
-    ",new_model_code,old_i - 1,old_i,old_i2);
-                i = old_i - 1;
+                    (new_model_code,i) = Modlling::k(ob,ob2,&"Union",new_model_code,i);
+                },
+                ObjForModelType::Subtraction(ob, ob2) => {
+                    (new_model_code,i) = Modlling::k(ob,ob2,&"Subtraction",new_model_code,i);
+                },
+                ObjForModelType::Intersection(ob, ob2) => {
+                    (new_model_code,i) = Modlling::k(ob,ob2,&"Intersection",new_model_code,i);
+                },
+                ObjForModelType::Xor(ob, ob2) => {
+                    (new_model_code,i) = Modlling::k(ob,ob2,&"Xor",new_model_code,i);
                 },
             }
             (new_model_code,i)
     }
+
+    fn k(ob:&ObjForModel,ob2:&ObjForModel
+        ,name:&str,mut new_model_code:String,mut i:i32) -> (String,i32){
+        let old_i = i;
+        (new_model_code,i) = Modlling::object_to_model_text(ob,new_model_code,i,old_i);
+        let ob_i = i;
+        (new_model_code,i) = Modlling::object_to_model_text(ob2,new_model_code,i,old_i);
+        let ob_i2 = i;
+        new_model_code = format!("{}
+float s{} = op{}(s{},s{});
+",new_model_code,old_i,name,ob_i,ob_i2);
+        (new_model_code,i)
+    }
 }
+
+
 
 enum ObjForModelType {
     Box((f32,f32,f32)),
@@ -182,6 +206,9 @@ enum ObjForModelType {
     Torus(f32,f32),
     Cone(f32,f32,f32),
     Union(ObjForModel,ObjForModel),
+    Subtraction(ObjForModel,ObjForModel),
+    Intersection(ObjForModel,ObjForModel),
+    Xor(ObjForModel,ObjForModel),
 }
 
 struct ObjForModel{

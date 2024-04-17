@@ -1,7 +1,0 @@
-coolspere
-
-{
-    float g = sdBox( p ,vec3(1.0));
-    float k = sdSphere( p ,1.3);
-    return opSubtraction(g,k);
-}

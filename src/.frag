@@ -125,7 +125,7 @@ vec3 opRepetition(vec3 p,vec3 s )
     return q;
 }
 
-vec3 opLimitedRepetition(vec3 p,vec3 s,float l )
+vec3 opLimitedRepetition(vec3 p,vec3 s,vec3 l )
 {
     vec3 q = p - s*clamp(round(p/s),-l,l);
     return q;

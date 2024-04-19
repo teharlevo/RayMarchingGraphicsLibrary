@@ -11,6 +11,9 @@ uniform int maxRays;
 uniform float minDisRay;
 uniform float maxDisRay;
 
+uniform float colorSenstivity;
+uniform float colorOffset;
+
 uniform vec3 camareAngles;
 uniform vec3 camarePos;
 uniform int size;
@@ -242,8 +245,8 @@ void main()
         
     }
 
-    if(totalDis < 500. ){
-        Color = vec4(palette(10.0 - totalDis * 0.01), 1.0);
+    if(totalDis < maxDisRay ){
+        Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
     }
     else{
         Color = vec4(vec3(0.0), 1.0);

@@ -138,6 +138,9 @@ pub struct SceneSttinges{
     pub max_rays:i32,
     pub min_dis_ray:f32,
     pub max_dis_ray:f32,
+
+    pub color_senstivity:f32,
+    pub color_offset:f32,
 }
 
 impl SceneSttinges {
@@ -146,10 +149,16 @@ impl SceneSttinges {
         let u_min_dis_rays = Uniform::new(shader.id(), "minDisRay").expect("size Uniform");
         let u_max_dis_rays = Uniform::new(shader.id(), "maxDisRay").expect("size Uniform");
 
+        let u_color_senstivity = Uniform::new(shader.id(), "colorSenstivity").expect("size Uniform");
+        let u_color_offset = Uniform::new(shader.id(), "colorOffset").expect("size Uniform");
+
         unsafe {
             gl::Uniform1i(u_max_rays.id,self.max_rays as i32);
             gl::Uniform1f(u_min_dis_rays.id,self.min_dis_ray as f32);
             gl::Uniform1f(u_max_dis_rays.id,self.max_dis_ray as f32);
+
+            gl::Uniform1f(u_color_senstivity.id,self.color_senstivity as f32);
+            gl::Uniform1f(u_color_offset.id,self.color_offset as f32);
         }
     }
 }

@@ -20,9 +20,12 @@ fn main(){
 
     let cam = Camare::new(0.0, 0.0, -3.0);
     let set = SceneSttinges{
-        max_rays: 60,
+        max_rays: 10,
         min_dis_ray: 0.1,
-        max_dis_ray: 100.0,
+        max_dis_ray: 1000.0,
+
+        color_senstivity:0.01,
+        color_offset:10.7,
     };
     let mut se = Scene::new(set,cam);
     se.set_shader(); 

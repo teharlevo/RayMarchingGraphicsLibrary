@@ -1,6 +1,6 @@
 use std::{any::Any, ffi::CString};
 
-use sdl2::{sys::SDL_SetWindowSize, video::{GLContext, SwapInterval, Window}, EventPump, Sdl};
+use sdl2::{sys::{seed48_r, SDL_SetWindowSize}, video::{GLContext, SwapInterval, Window}, EventPump, Sdl};
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
@@ -54,8 +54,6 @@ impl Winsdl {
         })
     }
 }
-
-
 
 pub struct Camare{
     pub x:f32,
@@ -134,15 +132,38 @@ impl Object {
         }
     }
 }
+
+
+pub struct SceneSttinges{
+    pub max_rays:i32,
+    pub min_dis_ray:f32,
+    pub max_dis_ray:f32,
+}
+
+impl SceneSttinges {
+    pub fn send_info(&self,shader:&Program){
+        let u_max_rays = Uniform::new(shader.id(), "maxRays").expect("size Uniform");
+        let u_min_dis_rays = Uniform::new(shader.id(), "minDisRay").expect("size Uniform");
+        let u_max_dis_rays = Uniform::new(shader.id(), "maxDisRay").expect("size Uniform");
+
+        unsafe {
+            gl::Uniform1i(u_max_rays.id,self.max_rays as i32);
+            gl::Uniform1f(u_min_dis_rays.id,self.min_dis_ray as f32);
+            gl::Uniform1f(u_max_dis_rays.id,self.max_dis_ray as f32);
+        }
+    }
+}
+
 pub struct Scene{
     pub cam:Camare,
     pub objects:Vec<Object>,
     pub objects_models:Vec<(String,String)>,
+    pub sttinges:SceneSttinges,
     shader:Program,
 }
 
 impl Scene{
-    pub fn new(cam:Camare)-> Scene{
+    pub fn new(sttinges:SceneSttinges,cam:Camare)-> Scene{
         let types:Vec<(String, String)> = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
         ,("".to_string(),"Sphere".to_string())
@@ -155,6 +176,7 @@ impl Scene{
             cam:cam,
             objects:vec![],
             objects_models:types,
+            sttinges:sttinges,
             shader,
         };
         s
@@ -182,6 +204,7 @@ impl Scene{
         for i in 0..self.objects.len(){
             self.objects[i].sand_info(&self.shader, i);
         }
+        self.sttinges.send_info(&self.shader);
     }
 
     pub fn add_folder_to_model(&mut self,folder_path: &str){

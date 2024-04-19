@@ -7,6 +7,10 @@ struct transform{
     int type;
 };
 
+uniform int maxRays;
+uniform float minDisRay;
+uniform float maxDisRay;
+
 uniform vec3 camareAngles;
 uniform vec3 camarePos;
 uniform int size;
@@ -227,19 +231,19 @@ void main()
 {
     vec3 rayDir = getRayDir();
     float totalDis = 0.0;
-    for (int i = 0; i < 80; i++) {
+    for (int i = 0; i < maxRays; i++) {
         vec3 p = camarePos + rayDir * totalDis;
 
         float dis = map(p);
 
         totalDis += dis;
 
-        if (dis < .01 || totalDis > 500.) break;
+        if (dis < minDisRay || totalDis > maxDisRay) break;
         
     }
 
     if(totalDis < 500. ){
-        Color = vec4(palette(10.0 - totalDis * 0.1), 1.0);
+        Color = vec4(palette(10.0 - totalDis * 0.01), 1.0);
     }
     else{
         Color = vec4(vec3(0.0), 1.0);

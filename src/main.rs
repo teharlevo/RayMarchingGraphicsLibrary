@@ -19,7 +19,12 @@ fn main(){
     let mut win = win;
 
     let cam = Camare::new(0.0, 0.0, -3.0);
-    let mut se = Scene::new(cam);
+    let set = SceneSttinges{
+        max_rays: 60,
+        min_dis_ray: 0.1,
+        max_dis_ray: 100.0,
+    };
+    let mut se = Scene::new(set,cam);
     se.set_shader(); 
     let k = 4.0;
     for i in 0..30{

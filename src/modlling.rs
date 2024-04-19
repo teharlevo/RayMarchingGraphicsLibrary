@@ -26,21 +26,21 @@ impl Modlling{
         cam.angle_z = 0.0;
 
         let modelbox1 = ObjForModel 
-        { type_: Box::new(ObjForModelType::Box((3.0,0.5,0.7))),
+        { type_: Box::new(ObjForModelType::Box((5.0,1.0,1.0))),
             displacemen:vec![
                 Displacement{
-                    type_:Displacement_type::Twist(0.1),
+                    type_:Displacement_type::Twist(0.05),
                     afccte_by_trasform:true,
                 },
                 Displacement{
-                    type_:Displacement_type::Repetition((5.0,5.0,5.0),(false,false,false)),
+                    type_:Displacement_type::Repetition((30.0,30.0,30.0),(false,false,false)),
                     afccte_by_trasform:true,
                 },
             ],
              x: 0.0,
              y: -0.9,
              z: -0.4,
-             angle: (3.14/4.0,3.14/4.0,0.0),
+             angle: (3.14/4.0,3.14/4.0,3.14/4.0),
         };
         let modelbox12 = ObjForModel 
         { type_: Box::new(ObjForModelType::Box((0.0,0.0,0.0))),
@@ -82,7 +82,7 @@ impl Modlling{
             model_objects:ObjForModel 
             { type_: Box::new(ObjForModelType::Union
                 (modelbox
-                , modelbox2,0.5)),
+                , modelbox2,5.5)),
                 displacemen:vec![
                 ],
                  x: 0.0,
@@ -147,7 +147,7 @@ impl Modlling{
         (new_model_code,i) = Self::object_to_model_text(&mut self.model_objects,new_model_code, i,0);
         new_model_code = format!("{}
         return s{};",new_model_code,1);
-        println!("{}",new_model_code);
+        //println!("{}",new_model_code);
         if i == 0{
             new_model_code = String::from("return 1000.0;");
             self.model_code = new_model_code;

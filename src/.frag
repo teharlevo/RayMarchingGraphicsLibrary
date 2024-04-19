@@ -14,6 +14,11 @@ uniform float maxDisRay;
 uniform float colorSenstivity;
 uniform float colorOffset;
 
+uniform vec3 colorA;
+uniform vec3 colorB;
+uniform vec3 colorC;
+uniform vec3 colorD;
+
 uniform vec3 camareAngles;
 uniform vec3 camarePos;
 uniform int size;
@@ -212,8 +217,9 @@ float map(vec3 pos){
     return len;
 }
 
-vec3 palette(float t) {
-    return .5+.5*cos(6.28318*(t+vec3(.3,.416,.557)));
+vec3 palette( in float t )
+{
+    return colorA + colorB*cos( 6.28318*(colorC*t+colorD) );
 }
 
 mat2 rot2D(float a) {

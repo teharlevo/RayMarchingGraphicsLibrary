@@ -141,6 +141,8 @@ pub struct SceneSttinges{
 
     pub color_senstivity:f32,
     pub color_offset:f32,
+
+    pub colors_rgb:[(f32,f32,f32);4],
 }
 
 impl SceneSttinges {
@@ -152,6 +154,12 @@ impl SceneSttinges {
         let u_color_senstivity = Uniform::new(shader.id(), "colorSenstivity").expect("size Uniform");
         let u_color_offset = Uniform::new(shader.id(), "colorOffset").expect("size Uniform");
 
+        let u_color_a = Uniform::new(shader.id(), "colorA").expect("size Uniform");
+        let u_color_b = Uniform::new(shader.id(), "colorB").expect("size Uniform");
+        let u_color_c = Uniform::new(shader.id(), "colorC").expect("size Uniform");
+        let u_color_d = Uniform::new(shader.id(), "colorD").expect("size Uniform");
+
+
         unsafe {
             gl::Uniform1i(u_max_rays.id,self.max_rays as i32);
             gl::Uniform1f(u_min_dis_rays.id,self.min_dis_ray as f32);
@@ -159,6 +167,13 @@ impl SceneSttinges {
 
             gl::Uniform1f(u_color_senstivity.id,self.color_senstivity as f32);
             gl::Uniform1f(u_color_offset.id,self.color_offset as f32);
+
+            gl::Uniform3f(u_color_a.id,self.colors_rgb[0].0,self.colors_rgb[0].1,self.colors_rgb[0].2);
+            gl::Uniform3f(u_color_b.id,self.colors_rgb[1].0,self.colors_rgb[1].1,self.colors_rgb[1].2);
+            gl::Uniform3f(u_color_c.id,self.colors_rgb[2].0,self.colors_rgb[2].1,self.colors_rgb[2].2);
+            gl::Uniform3f(u_color_d.id,self.colors_rgb[3].0,self.colors_rgb[3].1,self.colors_rgb[3].2);
+
+
         }
     }
 }

@@ -280,7 +280,6 @@ impl Scene{
     }
 
     pub fn set_shader(&mut self){
-        println!("{:?}",self.shader_text());
         self.shader = Scene::shader_maker(&self.objects_models)
     }
 

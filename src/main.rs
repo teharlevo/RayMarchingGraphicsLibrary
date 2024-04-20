@@ -2,7 +2,7 @@
 use std::time::Instant;
 
 use sdl2::event::Event;
-use sdl2::keyboard::Scancode;
+use sdl2::keyboard::{Keycode, Scancode};
 
 mod  input;
 use input::*;
@@ -20,11 +20,11 @@ fn main(){
 
     let cam = Camare::new(0.0, 0.0, -3.0);
     let set = SceneSttinges{
-        max_rays: 7,
+        max_rays: 60,
         min_dis_ray: 0.1,
         max_dis_ray: 1000.0,
 
-        color_senstivity:0.005,
+        color_senstivity:0.001,
         color_offset:10.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
     };
@@ -45,6 +45,8 @@ fn main(){
         for event in win.event_pump.poll_iter() {
             match event {
                 Event::Quit { .. } => break 'main,
+                Event::KeyDown { keycode: Some(Keycode::Escape)
+                    ,timestamp, window_id, scancode, keymod, repeat } => break 'main,
                 _ => {}
 
             }

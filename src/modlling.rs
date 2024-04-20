@@ -1,6 +1,9 @@
 use std::fs::File;
+use std::env;
+use std::fs;
 use std::io::Read;
 use std::io::Write;
+use std::path::Path;
 
 use sdl2::keyboard::Scancode;
 use sdl2::sys::va_list;
@@ -12,10 +15,12 @@ use crate::input::*;
 pub struct Modlling{
     model_name:String,
     model_code:String,
-    model_objects:ObjForModel,
+    model_object:ObjForModel,
     line_x:f32,
     line_y:f32,
     dis:f32,
+    update_lest_frame:bool,
+    exported_lest_frame:bool,
 }
 
 impl Modlling{
@@ -25,82 +30,23 @@ impl Modlling{
         cam.angle_x = 0.0;cam.angle_y = 0.0;
         cam.angle_z = 0.0;
 
-        let modelbox1 = ObjForModel 
-        { type_: Box::new(ObjForModelType::Box((1.0,1.0,1.0))),
-            displacemen:vec![
-                Displacement{
-                    type_:Displacement_type::Twist(0.05),
-                    afccte_by_trasform:true,
-                },
-                Displacement{
-                    type_:Displacement_type::Repetition((10.0,10.0,10.0),(true,true,false)),
-                    afccte_by_trasform:true,
-                },
-            ],
-             x: 0.0,
-             y: -0.9,
-             z: -0.4,
-             angle: (3.14/4.0,3.14/4.0,3.14/4.0),
-        };
-        let modelbox12 = ObjForModel 
-        { type_: Box::new(ObjForModelType::Box((0.0,0.0,0.0))),
-            displacemen:vec![
-                Displacement{
-                    type_:Displacement_type::Bend(0.1),
-                    afccte_by_trasform:false,
-                }
-            ],
-             x: 0.0,
-             y: -0.9,
-             z: 0.0,
-             angle: (0.0,0.0,0.0),
-        };
-
-        let modelbox = ObjForModel 
-        { type_: Box::new(ObjForModelType::Union(modelbox1,modelbox12,0.5)),
-            displacemen:vec![
-                //Displacement::Bend(0.1)
-            ],
-             x: 0.0,
-             y: 0.0,
-             z: 0.0,
-             angle: (0.0,0.0,0.0),
-        };
-
-        let modelbox2 = ObjForModel 
-        { type_: Box::new(ObjForModelType::Torus(3.2,0.7)),
-            displacemen:vec![],
-             x: 0.0,
-             y: 0.0,
-             z: 0.0,
-             angle: (0.0,0.0,0.0),
-        };
-
         let mut modlling = Modlling{
             model_name:String::from("new_object") + &format!("{}",'\n'),
             model_code:String::from("return 1000;"),
-            model_objects:ObjForModel{
-                type_: Box::new(ObjForModelType::Torus(10.0,3.0)),
+            model_object:ObjForModel{
+                type_: Box::new(ObjForModelType::Empty()),
                 displacemen:vec![],
                 x: 0.0,
                 y: 0.0,
                 z: 0.0,
-                angle: (0.0,0.0,0.0) 
+                angle: (0.0,0.0,0.0),
             },
-            //}
-            //model_objects:ObjForModel 
-            //{ type_: Box::new(ObjForModelType::Union
-            //    (modelbox
-            //    , modelbox2,5.5)),
-            //    displacemen:vec![
-            //    ],
-            //     x: 0.0,
-            //     y: 0.0,
-            //     z: 0.0,
-            //     angle: (0.0,0.0,0.0) },
+
             line_x:0.0,
             line_y:3.14/2.0,
             dis:10.0,
+            update_lest_frame:   false,
+            exported_lest_frame: false,
         };
         modlling.reset(s);
         modlling
@@ -127,11 +73,20 @@ impl Modlling{
         if is_pressed(&win.event_pump,Scancode::Q) {
             self.dis -= 0.3 * speed;
         }
-        if is_pressed(&win.event_pump,Scancode::Space){
+        if is_pressed(&win.event_pump,Scancode::Space) && !self.update_lest_frame{
             self.reset(s);
+            self.update_lest_frame = true;
         }
-        if is_pressed(&win.event_pump,Scancode::R){
+        else if !is_pressed(&win.event_pump,Scancode::Space) {
+            self.update_lest_frame = false;
+        }
+        if is_pressed(&win.event_pump,Scancode::R) && is_pressed(&win.event_pump,Scancode::LShift)
+        && !self.exported_lest_frame{
             self.export();
+            self.exported_lest_frame = true;
+        }
+        else if is_pressed(&win.event_pump,Scancode::R) && is_pressed(&win.event_pump,Scancode::LShift) {
+            self.exported_lest_frame = false;
         }
 
         let cam = &mut s.cam;
@@ -155,7 +110,7 @@ impl Modlling{
     fn update_model_code(&mut self){
         let mut new_model_code = String::from("");
         let mut i = 0;
-        (new_model_code,i) = Self::object_to_model_text(&mut self.model_objects,new_model_code, i,0);
+        (new_model_code,i) = Self::object_to_model_text(&mut self.model_object,new_model_code, i,0);
         new_model_code = format!("{}
         return s{};",new_model_code,1);
         //println!("{}",new_model_code);
@@ -169,7 +124,11 @@ impl Modlling{
     }
 
     fn reset(&mut self,s:&mut Scene){
-
+        //let new_object = make_object_sdf_maker();
+        //match new_object {
+        //    Ok(ob) => self.model_object = ob,
+        //    Err(text) => println!("{text}"),
+        //}
         s.clear();
         s.add_model(&self.object_text());
         s.set_shader();
@@ -243,6 +202,11 @@ impl Modlling{
             ObjForModelType::Xor(ob, ob2) => {
                 (new_model_code,i) = Modlling::objects_contctor(ob,ob2,&"Xor",new_model_code,i,0.0);
             },
+            ObjForModelType::Empty() => {
+                new_model_code = format!("{}
+                float s{} = maxDisRay * 2.0;
+                ",new_model_code,i); 
+            },
             }
             (new_model_code,i)
     }
@@ -310,11 +274,11 @@ float s{} = op{}(s{},s{}{});
         file.write_all(self.object_text().as_bytes())?;
         Ok(())
     }
+
 }
 
-
-
 enum ObjForModelType {
+    Empty(),
     Box((f32,f32,f32)),
     Sphere(f32),
     Cylinder(f32,f32),
@@ -347,3 +311,65 @@ struct ObjForModel{
     z:f32,
     angle:(f32,f32,f32),
 }
+
+enum Word {
+    num(f32),
+    word(String),
+}
+
+//fn make_object_sdf_maker() -> Result<ObjForModel,String>{
+//    if !Path::new("object_maker.sdfMaker").exists(){
+//        let mut file = File::create("object_maker.sdfMaker");
+//        match file{
+//            Ok(mut file_to_write) => {file_to_write.write(b"lol");},
+//            Err(_) => return Err(String::from("there are not object_maker.sdfMaker file field to make one")),
+//        }
+//    }
+//    let file_read = fs::read_to_string("object_maker.sdfMaker");
+//    let file_read = 
+//    match file_read{
+//        Ok(file_to_write) => {file_to_write},
+//        Err(_) => return Err(String::from("field to read object_maker.sdfMaker")),
+//    };
+//    let mut word_list = text_to_word_list(&file_read);
+//
+//    object_maker_from_world_list(&mut word_list)
+//}
+//
+//fn object_maker_from_world_list(world_list:&mut Vec<Word>) -> Result<ObjForModel,String>{
+//    let mut serch_for_object = true;
+//    let object_type = ObjForModelType::
+//    while serch_for_object {
+//        let word = world_list.first().unwrap();
+//        word
+//    }
+//}
+
+fn text_to_word_list(text:&str) -> Vec<Word>{
+
+    let mut word_list = vec![];
+    let lines = text.lines();
+    for line in lines{
+        let mut m = 0;
+        let line = line.replace(",", " ");
+        let line = line.replace(":", " ");
+        let line = line.replace(")", " ");
+        let line = line.replace("(", " ");
+        let words = line.split(" ");
+        for word in words{
+            m = m + 1;
+            match word.parse::<f32>() {
+                Ok(num) =>{
+                    word_list.push(Word::num(num));
+                },
+                Err(_) => {
+                    word_list.push(Word::word(String::from(word)));
+                },
+            }
+        }
+    }
+    word_list
+}
+
+
+

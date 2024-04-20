@@ -19,7 +19,7 @@ deimenShit
     
         q3 = opTwist(q3,0.1);
                     
-        q3 = opRepetition(q3,vec3(301,3,3));
+        q3 = opRepetitionXYZ(q3,vec3(301,3,3));
                     
     float s3 = sdBox(q3,vec3(3.0, 0.5, 0.7));
     

@@ -7,6 +7,9 @@ struct transform{
     int type;
 };
 
+uniform float width;
+uniform float height;
+
 uniform int maxRays;
 uniform float minDisRay;
 uniform float maxDisRay;
@@ -131,9 +134,51 @@ vec3 opCheapBend( vec3 p ,float k)
     return q;
 }
 
-vec3 opRepetition(vec3 p,vec3 s )
+vec3 opRepetitionXYZ(vec3 p,vec3 s )
 {
     vec3 q = p - s*round(p/s);
+    return q;
+}
+
+vec3 opRepetitionX(vec3 p,vec3 s)
+{
+    vec3 q = p;
+    q.x = p.x - s.x*round(p.x/s.x);
+    return q;
+}
+
+vec3 opRepetitionY(vec3 p,vec3 s)
+{
+    vec3 q = p;
+    q.y = p.y - s.y*round(p.y/s.y);
+    return q;
+}
+
+vec3 opRepetitionZ(vec3 p,vec3 s)
+{
+    vec3 q = p;
+    q.z = p.z - s.z*round(p.z/s.z);
+    return q;
+}
+
+vec3 opRepetitionXY(vec3 p,vec3 s)
+{
+    vec3 q = p;
+    q.xy = p.xy - s.xy*round(p.xy/s.xy);
+    return q;
+}
+
+vec3 opRepetitionXZ(vec3 p,vec3 s )
+{
+    vec3 q = p;
+    q.xz = p.xz - s.xz*round(p.xz/s.xz);
+    return q;
+}
+
+vec3 opRepetitionYZ(vec3 p,vec3 s)
+{
+    vec3 q = p;
+    q.yz = p.yz - s.yz*round(p.yz/s.yz);
     return q;
 }
 
@@ -227,7 +272,9 @@ mat2 rot2D(float a) {
 }
 
 vec3 getRayDir() {
-    vec2 coords = fUV * 2.0 -1.0f;
+    //vec2 a = fUV;
+    
+    vec2 coords = ((fUV * 2.0 - 1.0)* vec2(width,height))/height;
     vec3 rayDir = normalize(vec3(rot2D(camareAngles.z) * coords,1));
     rayDir.xz = rayDir.xz * rot2D(camareAngles.x);
     rayDir = normalize(rayDir);

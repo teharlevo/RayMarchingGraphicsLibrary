@@ -19,7 +19,7 @@ cool_shit
     
         q3 = opTwist(q3,0.05);
                     
-        q3 = opRepetition(q3,vec3(30,30,30));
+        q3 = opRepetitionXYZ(q3,vec3(30,30,30));
                     
     float s3 = sdBox(q3,vec3(5.0, 1.0, 1.0));
     

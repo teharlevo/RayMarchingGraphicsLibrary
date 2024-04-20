@@ -26,14 +26,14 @@ impl Modlling{
         cam.angle_z = 0.0;
 
         let modelbox1 = ObjForModel 
-        { type_: Box::new(ObjForModelType::Box((5.0,1.0,1.0))),
+        { type_: Box::new(ObjForModelType::Box((1.0,1.0,1.0))),
             displacemen:vec![
                 Displacement{
                     type_:Displacement_type::Twist(0.05),
                     afccte_by_trasform:true,
                 },
                 Displacement{
-                    type_:Displacement_type::Repetition((30.0,30.0,30.0),(false,false,false)),
+                    type_:Displacement_type::Repetition((10.0,10.0,10.0),(true,true,false)),
                     afccte_by_trasform:true,
                 },
             ],
@@ -79,16 +79,25 @@ impl Modlling{
         let mut modlling = Modlling{
             model_name:String::from("new_object") + &format!("{}",'\n'),
             model_code:String::from("return 1000;"),
-            model_objects:ObjForModel 
-            { type_: Box::new(ObjForModelType::Union
-                (modelbox
-                , modelbox2,5.5)),
-                displacemen:vec![
-                ],
-                 x: 0.0,
-                 y: 0.0,
-                 z: 0.0,
-                 angle: (0.0,0.0,0.0) },
+            model_objects:ObjForModel{
+                type_: Box::new(ObjForModelType::Torus(10.0,3.0)),
+                displacemen:vec![],
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+                angle: (0.0,0.0,0.0) 
+            },
+            //}
+            //model_objects:ObjForModel 
+            //{ type_: Box::new(ObjForModelType::Union
+            //    (modelbox
+            //    , modelbox2,5.5)),
+            //    displacemen:vec![
+            //    ],
+            //     x: 0.0,
+            //     y: 0.0,
+            //     z: 0.0,
+            //     angle: (0.0,0.0,0.0) },
             line_x:0.0,
             line_y:3.14/2.0,
             dis:10.0,
@@ -98,23 +107,25 @@ impl Modlling{
     }
 
     pub fn update(&mut self,s:&mut Scene,win:&Winsdl){
+        let speed = if is_pressed(&win.event_pump,Scancode::LShift) {5.0}else{1.0};
+
         if is_pressed(&win.event_pump,Scancode::W) {
-            self.line_x += 0.1;
+            self.line_x += 0.1 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::S) {
-            self.line_x -= 0.1;
+            self.line_x -= 0.1 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::D) {
-            self.line_y += 0.1;
+            self.line_y += 0.1 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::A) {
-            self.line_y -= 0.1;
+            self.line_y -= 0.1 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::E) {
-            self.dis += 0.3;
+            self.dis += 0.3 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::Q) {
-            self.dis -= 0.3;
+            self.dis -= 0.3 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::Space){
             self.reset(s);
@@ -276,10 +287,16 @@ float s{} = op{}(s{},s{}{});
         q{i} = opLimitedRepetition(q{i},vec3({X},{Y},{Z}),vec3({x},{y},{z}));
                     ");
                     }
+
                     Displacement_type::Repetition((w,h,o),(x,y,z)) => {
+                    if x || y | z{
+                        let kotert = format!("{}{}{}",
+                        if x{"X"}else{""},if y{"Y"}else{""},if z{"Z"}else{""});
+
                         new_model_code = format!("{new_model_code}
-        q{i} = opRepetition(q{i},vec3({w},{h},{o}));
+        q{i} = opRepetition{kotert}(q{i},vec3({w},{h},{o}));
                     ");
+                        }
                     },
                 }
             }

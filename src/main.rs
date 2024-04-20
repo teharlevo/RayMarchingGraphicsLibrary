@@ -15,20 +15,20 @@ use ray_marching_objects::*;
 mod modlling;
 use modlling::*;
 fn main(){
-    let win = create_window(500,500,"lol");
+    let win = create_window(1000,500,"🥳");
     let mut win = win;
 
     let cam = Camare::new(0.0, 0.0, -3.0);
     let set = SceneSttinges{
-        max_rays: 20,
+        max_rays: 7,
         min_dis_ray: 0.1,
         max_dis_ray: 1000.0,
 
-        color_senstivity:0.01,
-        color_offset:10.7,
+        color_senstivity:0.005,
+        color_offset:10.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
     };
-    let mut se = Scene::new(set,cam);
+    let mut se = Scene::new(set,cam,1000,500);
     se.set_shader(); 
     let k = 4.0;
     for i in 0..30{

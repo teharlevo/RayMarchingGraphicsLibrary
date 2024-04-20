@@ -78,7 +78,7 @@ impl Camare {
         cam
     }
 
-    fn sand_info(&self,shader:&Program){
+    fn send_info(&self,shader:&Program){
         let u_pos = Uniform::new(shader.id(), "camarePos").expect("camarePos Uniform");
         let u_angle = Uniform::new(shader.id(), "camareAngles").expect("camreAngles Uniform");
         unsafe {
@@ -115,7 +115,7 @@ impl Object {
         return ob;
     }
 
-    fn sand_info(&self,shader:&Program,num:usize){
+    fn send_info(&self,shader:&Program,num:usize){
         let u_pos = Uniform::new(shader.id(),
          &["tran[",&num.to_string().as_str(),"].pos"].join("")).expect("tran.pos Uniform");
         let u_angle = Uniform::new(shader.id(),
@@ -183,11 +183,13 @@ pub struct Scene{
     pub objects:Vec<Object>,
     pub objects_models:Vec<(String,String)>,
     pub sttinges:SceneSttinges,
+    scene_width:usize,
+    scene_height:usize,
     shader:Program,
 }
 
 impl Scene{
-    pub fn new(sttinges:SceneSttinges,cam:Camare)-> Scene{
+    pub fn new(sttinges:SceneSttinges,cam:Camare,scene_width:usize,scene_height:usize)-> Scene{
         let types:Vec<(String, String)> = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
         ,("".to_string(),"Sphere".to_string())
@@ -202,6 +204,8 @@ impl Scene{
             objects_models:types,
             sttinges:sttinges,
             shader,
+            scene_width,
+            scene_height,
         };
         s
     }
@@ -220,13 +224,18 @@ impl Scene{
     }
 
     pub fn update(&self){
-        self.cam.sand_info(&self.shader);
+        self.cam.send_info(&self.shader);
         let u_size = Uniform::new(self.shader.id(), "size").expect("size Uniform");
+        let u_width= Uniform::new(self.shader.id(), "width").expect("height Uniform");
+        let u_height = Uniform::new(self.shader.id(), "height").expect("height Uniform");
+
         unsafe {
             gl::Uniform1i(u_size.id,self.objects.len() as i32);
+            gl::Uniform1f(u_width.id ,self.scene_width  as f32);
+            gl::Uniform1f(u_height.id,self.scene_height as f32);
         }
         for i in 0..self.objects.len(){
-            self.objects[i].sand_info(&self.shader, i);
+            self.objects[i].send_info(&self.shader, i);
         }
         self.sttinges.send_info(&self.shader);
     }
@@ -271,13 +280,13 @@ impl Scene{
     }
 
     pub fn set_shader(&mut self){
+        println!("{:?}",self.shader_text());
         self.shader = Scene::shader_maker(&self.objects_models)
     }
 
     fn shader_maker(ob_types:&Vec<(String,String)>) -> Program{
         let program = create_program(&CString::new(include_str!(".vert")).unwrap()
         ,&make_frag(ob_types)).unwrap();
-        
         
         program.set();
         program
@@ -288,12 +297,10 @@ pub fn create_window(width: usize, height: usize,title:&str) -> Winsdl{
     
     let winsdl: Winsdl = Winsdl::new(width, height,title).unwrap();
     unsafe {gl::Viewport(0, 0, width as i32, height as i32); }
-
-    let aspect = width as f32/height as f32;
     let vertices: Vec<f32> = vec![
-        1.0, -1.0,aspect,0.0,
+        1.0, -1.0,1.0,0.0,
        -1.0,  1.0,0.0,1.0,
-        1.0,  1.0,aspect, 1.0,
+        1.0,  1.0,1.0, 1.0,
        -1.0, -1.0,0.0,0.0,
    ];
 

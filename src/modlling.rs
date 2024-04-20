@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::fs::File;
 use std::env;
 use std::fs;
@@ -124,11 +125,11 @@ impl Modlling{
     }
 
     fn reset(&mut self,s:&mut Scene){
-        //let new_object = make_object_sdf_maker();
-        //match new_object {
-        //    Ok(ob) => self.model_object = ob,
-        //    Err(text) => println!("{text}"),
-        //}
+        let new_object = make_object_sdf_maker();
+        match new_object {
+            Ok(ob) => self.model_object = ob,
+            Err(text) => println!("{text}"),
+        }
         s.clear();
         s.add_model(&self.object_text());
         s.set_shader();
@@ -317,33 +318,117 @@ enum Word {
     word(String),
 }
 
-//fn make_object_sdf_maker() -> Result<ObjForModel,String>{
-//    if !Path::new("object_maker.sdfMaker").exists(){
-//        let mut file = File::create("object_maker.sdfMaker");
-//        match file{
-//            Ok(mut file_to_write) => {file_to_write.write(b"lol");},
-//            Err(_) => return Err(String::from("there are not object_maker.sdfMaker file field to make one")),
-//        }
-//    }
-//    let file_read = fs::read_to_string("object_maker.sdfMaker");
-//    let file_read = 
-//    match file_read{
-//        Ok(file_to_write) => {file_to_write},
-//        Err(_) => return Err(String::from("field to read object_maker.sdfMaker")),
-//    };
-//    let mut word_list = text_to_word_list(&file_read);
-//
-//    object_maker_from_world_list(&mut word_list)
-//}
-//
-//fn object_maker_from_world_list(world_list:&mut Vec<Word>) -> Result<ObjForModel,String>{
-//    let mut serch_for_object = true;
-//    let object_type = ObjForModelType::
-//    while serch_for_object {
-//        let word = world_list.first().unwrap();
-//        word
-//    }
-//}
+fn make_object_sdf_maker() -> Result<ObjForModel,String>{
+    if !Path::new("object_maker.sdfMaker").exists(){
+        let mut file = File::create("object_maker.sdfMaker");
+        match file{
+            Ok(mut file_to_write) => {file_to_write.write(b"lol");},
+            Err(_) => return Err(String::from("there are not object_maker.sdfMaker file field to make one")),
+        }
+    }
+    let file_read = fs::read_to_string("object_maker.sdfMaker");
+    let file_read = 
+    match file_read{
+        Ok(file_to_write) => {file_to_write},
+        Err(_) => return Err(String::from("field to read object_maker.sdfMaker")),
+    };
+    let mut word_list = text_to_word_list(&file_read);
+
+    object_maker_from_world_list(&mut word_list)
+}
+
+fn object_maker_from_world_list(world_list:&mut Vec<Word>) -> Result<ObjForModel,String>{
+    println!("lol");
+    if world_list.len() == 0{
+        return Err(String::from("sertch for object not that not exsit fix!"));
+    }
+
+    let mut serch_for_object = true;
+    let mut object_type = ObjForModelType::Empty();
+    let mut pos = (0.0,0.0,0.0);
+    let mut angle = (0.0,0.0,0.0);
+    while serch_for_object {
+
+        let word = world_list.remove(0);
+
+        if world_list.len() == 0{
+            return Err(String::from("sertch for object not that not exsit fix!"));
+        }
+
+        match word{
+            Word::num(_) => {},
+            Word::word(str) => {
+                println!("{}",str);
+                if str == "empty" {
+                    object_type = ObjForModelType::Empty();
+                    serch_for_object = false;
+                }
+                if str == "box" {
+                    object_type = ObjForModelType::Box(
+                    (num_in_word_list(world_list)?,num_in_word_list(world_list)?,num_in_word_list(world_list)?));
+                    serch_for_object = false;
+                }
+                if str == "sphere" {
+                    object_type = ObjForModelType::Sphere(
+                    num_in_word_list(world_list)?);
+                    serch_for_object = false;
+                }
+                if str == "cylinder" {
+                    object_type = ObjForModelType::Cylinder(
+                    num_in_word_list(world_list)?,num_in_word_list(world_list)?);
+                    serch_for_object = false;
+                }
+                if str == "ellipsoid" {
+                    object_type = ObjForModelType::Ellipsoid(
+                    num_in_word_list(world_list)?,num_in_word_list(world_list)?,num_in_word_list(world_list)?);
+                    serch_for_object = false;
+                }
+                if str == "torus"{
+                    object_type = ObjForModelType::Torus(
+                        num_in_word_list(world_list)?,num_in_word_list(world_list)?);
+                        serch_for_object = false;
+                }
+                if str == "cone"{
+                    object_type = ObjForModelType::Cone(
+                        num_in_word_list(world_list)?,num_in_word_list(world_list)?,num_in_word_list(world_list)?);
+                        serch_for_object = false;
+                }
+                if str == "union"{
+                    object_type = ObjForModelType::Union(
+                        object_maker_from_world_list(world_list)?,object_maker_from_world_list(world_list)?,num_in_word_list(world_list)?
+                    );
+                    serch_for_object = false;
+                }
+                if str == "subtraction" || str == "sub"{
+                    object_type = ObjForModelType::Subtraction(
+                        object_maker_from_world_list(world_list)?,object_maker_from_world_list(world_list)?,num_in_word_list(world_list)?
+                    );
+                    serch_for_object = false;
+                }
+                if str == "intersection" || str == "inter"{
+                    object_type = ObjForModelType::Intersection(
+                        object_maker_from_world_list(world_list)?,object_maker_from_world_list(world_list)?,num_in_word_list(world_list)?
+                    );
+                    serch_for_object = false;
+                }
+                if str == "xor" || str == "Xor" {
+                    object_type = ObjForModelType::Xor(
+                        object_maker_from_world_list(world_list)?,object_maker_from_world_list(world_list)?);
+                    serch_for_object = false;
+                }
+            },
+        }
+    }
+    Ok(
+        ObjForModel { type_: Box::new(object_type), 
+            displacemen: vec![],
+            x: pos.0,
+            y: pos.1,
+            z: pos.2,
+            angle: angle 
+        }
+    )
+}
 
 fn text_to_word_list(text:&str) -> Vec<Word>{
 
@@ -371,5 +456,41 @@ fn text_to_word_list(text:&str) -> Vec<Word>{
     word_list
 }
 
+fn num_in_word_list(world_list:&mut Vec<Word>) -> Result<f32,String>{
+    if world_list.len() == 0{
+        return Err(String::from("sertch for num not that not exsit fix!"));
+    }
+    loop {
+        let word = world_list.remove(0);
+        if world_list.len() == 0{
+            return Err(String::from("sertch for num not that not exsit fix!"));
+        }
+        match word {
+            Word::num(num) => {return Ok(num)},
+            Word::word(_) => {},
+        }
+    }
+}
 
-
+fn bool_in_word_list(world_list:&mut Vec<Word>) -> Result<bool,String>{
+    if world_list.len() == 0{
+        return Err(String::from("sertch for bool not that not exsit fix!"));
+    }
+    loop {
+        let word = world_list.remove(0);
+        if world_list.len() == 0{
+            return Err(String::from("sertch for bool not that not exsit fix!"));
+        }
+        match word {
+            Word::num(_) => {},
+            Word::word(w) => {
+                if w == "true" || w == "True" || w == "T" || w == "t"{
+                    return Ok(true);
+                }
+                else if w == "false" || w == "False" || w == "f" || w == "F"{
+                    return Ok(false);
+                }
+            },
+        }
+    }
+}

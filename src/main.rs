@@ -5,7 +5,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::{Keycode, Scancode};
 
 mod  input;
-use input::*;
+//use input::*;
 mod opengl_shit;
 //use opengl_shit::*;
 mod shader_maker;
@@ -24,7 +24,7 @@ fn main(){
         min_dis_ray: 0.1,
         max_dis_ray: 1000.0,
 
-        color_senstivity:0.001,
+        color_senstivity:0.1,
         color_offset:10.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
     };

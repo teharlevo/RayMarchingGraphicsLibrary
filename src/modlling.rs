@@ -114,7 +114,6 @@ impl Modlling{
         (new_model_code,i) = Self::object_to_model_text(&mut self.model_object,new_model_code, i,0);
         new_model_code = format!("{}
         return s{};",new_model_code,1);
-        //println!("{}",new_model_code);
         if i == 0{
             new_model_code = String::from("return 1000.0;");
             self.model_code = new_model_code;
@@ -127,7 +126,9 @@ impl Modlling{
     fn reset(&mut self,s:&mut Scene){
         let new_object = make_object_sdf_maker();
         match new_object {
-            Ok(ob) => self.model_object = ob,
+            Ok((ob,sttings)) => {
+                self.model_object = ob;
+                s.sttinges = sttings},
             Err(text) => println!("{text}"),
         }
         s.clear();
@@ -237,23 +238,23 @@ float s{} = op{}(s{},s{}{});
         for displacement in &object.displacemen {
             if abt == displacement.afccte_by_trasform{
                 match displacement.type_ {
-                    Displacement_type::Twist(k) => {
+                    DisplacementType::Twist(k) => {
                         new_model_code = format!("{new_model_code}
         q{i} = opTwist(q{i},{k});
                     ");
                     }
-                    Displacement_type::Bend(k) => {
+                    DisplacementType::Bend(k) => {
                         new_model_code = format!("{new_model_code}
         q{i} = opCheapBend(q{i},{k});
                     ");
                     }
-                    Displacement_type::LimitedRepetition((X,Y,Z), (x,y,z)) => {
+                    DisplacementType::LimitedRepetition((X,Y,Z), (x,y,z)) => {
                         new_model_code = format!("{new_model_code}
         q{i} = opLimitedRepetition(q{i},vec3({X},{Y},{Z}),vec3({x},{y},{z}));
                     ");
                     }
 
-                    Displacement_type::Repetition((w,h,o),(x,y,z)) => {
+                    DisplacementType::Repetition((w,h,o),(x,y,z)) => {
                     if x || y | z{
                         let kotert = format!("{}{}{}",
                         if x{"X"}else{""},if y{"Y"}else{""},if z{"Z"}else{""});
@@ -292,7 +293,7 @@ enum ObjForModelType {
     Xor(ObjForModel,ObjForModel),
 }
 
-enum Displacement_type {
+enum DisplacementType {
     Twist(f32),
     Bend(f32),
     LimitedRepetition((f32,f32,f32),(f32,f32,f32)),
@@ -300,7 +301,7 @@ enum Displacement_type {
 }
 
 struct Displacement{
-    type_:Displacement_type,
+    type_:DisplacementType,
     afccte_by_trasform:bool,
 }
 
@@ -318,11 +319,23 @@ enum Word {
     word(String),
 }
 
-fn make_object_sdf_maker() -> Result<ObjForModel,String>{
+fn make_object_sdf_maker() -> Result<(ObjForModel,SceneSttinges),String>{
     if !Path::new("object_maker.sdfMaker").exists(){
-        let mut file = File::create("object_maker.sdfMaker");
+        let file = File::create("object_maker.sdfMaker");
         match file{
-            Ok(mut file_to_write) => {file_to_write.write(b"lol");},
+            Ok(mut file_to_write) => {let _ = file_to_write.write(b"
+max_rays: 60,
+min_dis_ray: 0.1,
+max_dis_ray: 500.0,
+color_senstivity: 0.1,
+color_offset:0.0,
+
+colors[(0.5, 0.5, 0.5),(0.5, 0.5, 0.5),(1.0, 1.0, 1.0),(0.00, 0.33, 0.67)]            
+empty
+pos(0.0,0.0,0.0)
+rot(0.0,0.0,0.0)
+");},
+
             Err(_) => return Err(String::from("there are not object_maker.sdfMaker file field to make one")),
         }
     }
@@ -333,20 +346,29 @@ fn make_object_sdf_maker() -> Result<ObjForModel,String>{
         Err(_) => return Err(String::from("field to read object_maker.sdfMaker")),
     };
     let mut word_list = text_to_word_list(&file_read);
+    let settings =   SceneSttinges{
+        max_rays: num_in_word_list(&mut word_list)? as i32,
+        min_dis_ray: num_in_word_list(&mut word_list)?,
+        max_dis_ray: num_in_word_list(&mut word_list)?,
+        color_senstivity: num_in_word_list(&mut word_list)?,
+        color_offset: num_in_word_list(&mut word_list)?,
+        colors_rgb: [(num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?)
+        ,(num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?)
+        ,(num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?)
+        ,(num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?)],
+    };
 
-    object_maker_from_world_list(&mut word_list)
+    Ok((object_maker_from_world_list(&mut word_list)?,settings))
 }
 
 fn object_maker_from_world_list(world_list:&mut Vec<Word>) -> Result<ObjForModel,String>{
-    println!("lol");
     if world_list.len() == 0{
         return Err(String::from("sertch for object not that not exsit fix!"));
     }
 
     let mut serch_for_object = true;
     let mut object_type = ObjForModelType::Empty();
-    let mut pos = (0.0,0.0,0.0);
-    let mut angle = (0.0,0.0,0.0);
+
     while serch_for_object {
 
         let word = world_list.remove(0);
@@ -358,7 +380,6 @@ fn object_maker_from_world_list(world_list:&mut Vec<Word>) -> Result<ObjForModel
         match word{
             Word::num(_) => {},
             Word::word(str) => {
-                println!("{}",str);
                 if str == "empty" {
                     object_type = ObjForModelType::Empty();
                     serch_for_object = false;
@@ -422,10 +443,12 @@ fn object_maker_from_world_list(world_list:&mut Vec<Word>) -> Result<ObjForModel
     Ok(
         ObjForModel { type_: Box::new(object_type), 
             displacemen: vec![],
-            x: pos.0,
-            y: pos.1,
-            z: pos.2,
-            angle: angle 
+            x: num_in_word_list(world_list)?,
+            y: num_in_word_list(world_list)?,
+            z: num_in_word_list(world_list)?,
+            angle: (num_in_word_list(world_list)? * (180.0/3.1415)
+            ,num_in_word_list(world_list)? * (180.0/3.1415)
+            ,num_in_word_list(world_list)? * (180.0/3.1415)) 
         }
     )
 }
@@ -438,8 +461,10 @@ fn text_to_word_list(text:&str) -> Vec<Word>{
         let mut m = 0;
         let line = line.replace(",", " ");
         let line = line.replace(":", " ");
+        let line = line.replace(";", " ");
         let line = line.replace(")", " ");
         let line = line.replace("(", " ");
+
         let words = line.split(" ");
         for word in words{
             m = m + 1;

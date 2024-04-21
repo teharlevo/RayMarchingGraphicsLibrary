@@ -1,11 +1,6 @@
-use std::{any::Any, ffi::CString};
+use std:: ffi::CString;
 
-use sdl2::{sys::{seed48_r, SDL_SetWindowSize}, video::{GLContext, SwapInterval, Window}, EventPump, Sdl};
-use std::collections::HashMap;
-use std::time::{Duration, Instant};
-
-use sdl2::event::Event;
-use sdl2::keyboard::Scancode;
+use sdl2::{ video::{GLContext, SwapInterval, Window}, EventPump, Sdl};
 use crate::opengl_shit::*;
 use crate::shader_maker::*;
 

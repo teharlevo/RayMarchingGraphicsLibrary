@@ -86,7 +86,7 @@ impl Modlling{
             self.export();
             self.exported_lest_frame = true;
         }
-        else if is_pressed(&win.event_pump,Scancode::R) && is_pressed(&win.event_pump,Scancode::LShift) {
+        else if !is_pressed(&win.event_pump,Scancode::R) || !is_pressed(&win.event_pump,Scancode::LShift) {
             self.exported_lest_frame = false;
         }
 
@@ -100,7 +100,6 @@ impl Modlling{
     }
 
     fn object_text(&mut self) -> String{
-        println!("{}",self.model_name);
         self.update_model_code();
         return format!("{}
         
@@ -414,55 +413,55 @@ fn object_maker_from_word_list(word_list:&mut Vec<Word>) -> Result<ObjForModel,S
                     object_type = ObjForModelType::Empty();
                     serch_for_object = false;
                 }
-                if str == "box" {
+                else if str == "box" {
                     object_type = ObjForModelType::Box(
                     (num_in_word_list(word_list)?,num_in_word_list(word_list)?,num_in_word_list(word_list)?));
                     serch_for_object = false;
                 }
-                if str == "sphere" {
+                else if str == "sphere" {
                     object_type = ObjForModelType::Sphere(
                     num_in_word_list(word_list)?);
                     serch_for_object = false;
                 }
-                if str == "cylinder" {
+                else if str == "cylinder" {
                     object_type = ObjForModelType::Cylinder(
                     num_in_word_list(word_list)?,num_in_word_list(word_list)?);
                     serch_for_object = false;
                 }
-                if str == "ellipsoid" {
+                else if str == "ellipsoid" {
                     object_type = ObjForModelType::Ellipsoid(
                     num_in_word_list(word_list)?,num_in_word_list(word_list)?,num_in_word_list(word_list)?);
                     serch_for_object = false;
                 }
-                if str == "torus"{
+                else if str == "torus"{
                     object_type = ObjForModelType::Torus(
                         num_in_word_list(word_list)?,num_in_word_list(word_list)?);
                         serch_for_object = false;
                 }
-                if str == "cone"{
+                else if str == "cone"{
                     object_type = ObjForModelType::Cone(
                         num_in_word_list(word_list)? / (180.0/3.1415),num_in_word_list(word_list)?);
                         serch_for_object = false;
                 }
-                if str == "union"{
+                else if str == "union"{
                     object_type = ObjForModelType::Union(
                         object_maker_from_word_list(word_list)?,object_maker_from_word_list(word_list)?,num_in_word_list(word_list)?
                     );
                     serch_for_object = false;
                 }
-                if str == "subtraction" || str == "sub"{
+                else if str == "subtraction" || str == "sub"{
                     object_type = ObjForModelType::Subtraction(
                         object_maker_from_word_list(word_list)?,object_maker_from_word_list(word_list)?,num_in_word_list(word_list)?
                     );
                     serch_for_object = false;
                 }
-                if str == "intersection" || str == "inter"{
+                else if str == "intersection" || str == "inter"{
                     object_type = ObjForModelType::Intersection(
                         object_maker_from_word_list(word_list)?,object_maker_from_word_list(word_list)?,num_in_word_list(word_list)?
                     );
                     serch_for_object = false;
                 }
-                if str == "xor" || str == "Xor" {
+                else if str == "xor" || str == "Xor" {
                     object_type = ObjForModelType::Xor(
                         object_maker_from_word_list(word_list)?,object_maker_from_word_list(word_list)?);
                     serch_for_object = false;
@@ -472,7 +471,7 @@ fn object_maker_from_word_list(word_list:&mut Vec<Word>) -> Result<ObjForModel,S
     }
     Ok(
         ObjForModel { type_: Box::new(object_type), 
-            displacemen: vec![],
+            displacemen: displacement_list_maker_from_word_list(word_list)?,
             x: num_in_word_list(word_list)?,
             y: num_in_word_list(word_list)?,
             z: num_in_word_list(word_list)?,
@@ -481,6 +480,63 @@ fn object_maker_from_word_list(word_list:&mut Vec<Word>) -> Result<ObjForModel,S
             ,num_in_word_list(word_list)? / (180.0/3.1415)) 
         }
     )
+}
+
+fn displacement_list_maker_from_word_list(word_list:&mut Vec<Word>) ->  Result<Vec<Displacement>,String>{
+    let mut list = vec![];
+    let mut serch_for_end = true;
+
+    while serch_for_end {
+        
+        if word_list.len() == 0{
+            return Err(String::from("prablem in displacement list"));
+        }
+        
+        let word = word_list.remove(0);
+
+        match word{
+            Word::num(_) => {},
+            Word::word(str) => {
+                if str == "end" || str == "End" || str == "END" {
+                    println!("lol");
+                    serch_for_end = false;
+                }
+                else if str == "Twist" || str == "twist" {
+                    list.push(Displacement { 
+                        type_:DisplacementType::Twist(num_in_word_list(word_list)?), 
+                        afcctet_by_trasform:bool_in_word_list(word_list)?,
+                    })
+                }
+                else if str == "Bend" || str == "bend" {
+                    list.push(Displacement { 
+                        type_:DisplacementType::Bend(num_in_word_list(word_list)?), 
+                        afcctet_by_trasform:bool_in_word_list(word_list)?,
+                    })
+                }
+                else if str == "LimitedRepetition" || str == "Limitedrepetition" || str == "LimitedRepetition"
+                || str == "limrep" {
+                    list.push(Displacement { 
+                        type_:DisplacementType::LimitedRepetition((num_in_word_list(word_list)?,num_in_word_list(word_list)?,num_in_word_list(word_list)?)
+                    ,(num_in_word_list(word_list)?,num_in_word_list(word_list)?,num_in_word_list(word_list)?)), 
+                        afcctet_by_trasform:bool_in_word_list(word_list)?,
+                    })
+                }
+                else if str == "Repetition" || str == "repetition" || str == "rep"{
+                    list.push(Displacement { 
+                        type_:DisplacementType::Repetition((num_in_word_list(word_list)?,num_in_word_list(word_list)?,num_in_word_list(word_list)?)
+                    ,(bool_in_word_list(word_list)?,bool_in_word_list(word_list)?,bool_in_word_list(word_list)?)), 
+                        afcctet_by_trasform:bool_in_word_list(word_list)?,
+                    })
+                }
+            },
+        }
+
+        //Twist(f32),
+        //Bend(f32),
+        //LimitedRepetition((f32,f32,f32),(f32,f32,f32
+        //Repetition((f32,f32,f32),(bool,bool,bool)),
+    }
+    Ok(list)
 }
 
 fn text_to_word_list(text:&str) -> Vec<Word>{

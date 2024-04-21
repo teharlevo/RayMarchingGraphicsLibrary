@@ -23,7 +23,7 @@ pub fn make_frag(models:&Vec<(String,String)>)->CString{
     string_frag = string_frag.replace("//#dis funcans here#", dis_funcans.as_str());
     string_frag = string_frag.replace("//#else if else if#", else_ifs.as_str());
 
-    //rintln!("{}",string_frag);
+    //println!("{}",string_frag);
     
     CString::new(string_frag.as_bytes()).expect("CString conversion failed")
 }
@@ -72,8 +72,6 @@ pub fn add_object_from_file(file_name:&str) -> Option<(String,String)>{
     let ra: Vec<&str> = file_name.split(".").collect();
     let file_type = ra.last().unwrap();
     if String::from(*file_type) != "sdf" {return None;}
-
-    println!("{}",file_name);
     let file_text = fs::read_to_string(file_name)
         .expect("Should have been able to read the file");
     Some(add_object(&file_text))

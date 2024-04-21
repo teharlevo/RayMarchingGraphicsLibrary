@@ -30,7 +30,13 @@ fn main(){
     };
     let mut se = Scene::new(set,cam,1000,500);
     
-    se.set_shader(); 
+
+    se.add_folder_to_model("src/objects");
+    let ob = se.add_object("evil_man");
+
+    ob.z = 3.0;
+    ob.angle_x = 3.14/2.0;
+    se.set_shader();
     
     let mut time = Instant::now();
     let mut fps = 0;
@@ -41,8 +47,6 @@ fn main(){
         for event in win.event_pump.poll_iter() {
             match event {
                 Event::Quit { .. } => break 'main,
-                Event::KeyDown { keycode: Some(Keycode::Escape)
-                    ,timestamp, window_id, scancode, keymod, repeat } => break 'main,
                 _ => {}
 
             }

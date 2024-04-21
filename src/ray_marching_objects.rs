@@ -208,7 +208,6 @@ impl Scene{
     pub fn add_object(&mut self,ob_type:&str) -> &mut Object{
         let mut i = 0;
         for (_, name) in &self.objects_models {
-            println!("{i}:{}",name);
             if name == ob_type {
                 break;
             }

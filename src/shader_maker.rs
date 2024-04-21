@@ -23,7 +23,7 @@ pub fn make_frag(models:&Vec<(String,String)>)->CString{
     string_frag = string_frag.replace("//#dis funcans here#", dis_funcans.as_str());
     string_frag = string_frag.replace("//#else if else if#", else_ifs.as_str());
 
-    //println!("{}",string_frag);
+    //rintln!("{}",string_frag);
     
     CString::new(string_frag.as_bytes()).expect("CString conversion failed")
 }
@@ -35,7 +35,7 @@ pub fn get_dis_funcans_folder(folder_path: &str) -> Option<Vec<(String,String)>>
     let objects_texts = get_files_in_folder(folder_path)?;
 
     for object_text in objects_texts {
-        let g = add_object_from_file(&(String::from(folder_path) + object_text.as_str()));
+        let g = add_object_from_file(&(String::from(folder_path) + "/" + object_text.as_str()));
         if let Some(model) = g {
             models.push(model);
         }
@@ -73,20 +73,27 @@ pub fn add_object_from_file(file_name:&str) -> Option<(String,String)>{
     let file_type = ra.last().unwrap();
     if String::from(*file_type) != "sdf" {return None;}
 
-    //println!("{}",file_name);
+    println!("{}",file_name);
     let file_text = fs::read_to_string(file_name)
         .expect("Should have been able to read the file");
     Some(add_object(&file_text))
 }
 
 pub fn add_object(text:&str) -> (String,String){
-    let lines: Vec<&str> = text.split('\n').collect();
-    let mut object_name = lines.get(0).unwrap().to_string();
-    object_name = object_name[0..object_name.len() - 1].to_owned();
-    let mut g = format!("
-    float sd{}(vec3 p)",&object_name);
-    for line in &lines[2..]{
-        g = format!("{}{}\n",g,line);
+    let lines = text.lines();
+    let mut object_name = String::from("new_object");
+    let mut g = String::from("");
+    let mut i = 0;
+    for line in lines{
+        if i == 0{
+            object_name = String::from(line);
+            g = format!("
+            float sd{}(vec3 p)",&object_name);
+        }
+        else if i > 1 {
+            g = format!("{}{}\n",g,line);   
+        }
+        i += 1;
     }
     (g,object_name)
 }

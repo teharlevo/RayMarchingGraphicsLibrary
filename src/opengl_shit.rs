@@ -1,12 +1,14 @@
 use std::{
-    ffi::{CStr, CString},
-    ptr::{null, null_mut},
+    ffi::{CStr, CString}, path::Path, ptr::{null, null_mut}
 };
 
 use gl::{
     types::{GLchar, GLenum, GLint, GLuint},
     UseProgram,
 };
+
+use image::{EncodableLayout, ImageError};
+
 
 /// An OpenGL Shader (of the graphics pipeline)
 pub struct Shader {
@@ -337,5 +339,65 @@ impl Uniform {
             return Err("Couldn't get a uniform location");
         }
         Ok(Uniform { id: location })
+    }
+}
+
+pub struct Texture {
+    pub id: GLuint,
+}
+
+impl Texture {
+    pub  fn new() -> Texture {
+        let mut id: GLuint = 0;
+        unsafe {
+            gl::GenTextures(1, &mut id);     
+        }
+        println!("{}",id);
+        Texture{
+            id
+        }
+    }
+
+    pub fn bind(&self) {
+        unsafe {
+            gl::BindTexture(gl::TEXTURE_2D, self.id) ;  
+        }
+    }
+
+    pub fn unbind(&self) {
+        unsafe {
+            gl::BindTexture(gl::TEXTURE_2D, 0);
+        }
+    }
+
+    pub fn load(&self, path: &str) -> Result<(), ImageError> {
+        self.bind();
+
+        let img = image::open(path)?.into_rgba8();
+        unsafe {
+            gl::TexImage2D(
+                gl::TEXTURE_2D,
+                0,
+                gl::RGBA as i32,
+                img.width() as i32,
+                img.height() as i32,
+                0,
+                gl::RGBA,
+                gl::UNSIGNED_BYTE,
+                img.as_bytes().as_ptr() as *const _,
+            );
+            gl::GenerateMipmap(gl::TEXTURE_2D);
+        }
+
+        println!("{}",img.width());
+        Ok(())
+    }
+}
+
+impl Drop for Texture {
+    fn drop(&mut self) {
+        unsafe {
+            gl::DeleteTextures(1, [self.id].as_ptr());
+        }
     }
 }

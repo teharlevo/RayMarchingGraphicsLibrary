@@ -1,9 +1,9 @@
 
 //struct
 //use sdl2::keyboard::Keycode;
-use sdl2::{keyboard::Scancode, EventPump, Sdl};
+use sdl2::{keyboard::Scancode, EventPump};
 //use std::collections::HashSet;
-use crate::{ray_marching_objects, Winsdl};
+use crate::Winsdl;
 
 pub fn is_pressed(e: &sdl2::EventPump,key:Scancode) -> bool {
     e.keyboard_state().is_scancode_pressed(key)

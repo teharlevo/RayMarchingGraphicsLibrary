@@ -145,13 +145,14 @@ pub struct Scene{
     pub objects:Vec<Object>,
     pub objects_models:Vec<(String,String)>,
     pub sttinges:SceneSttinges,
+    pub background_image:Texture,
     scene_width:usize,
     scene_height:usize,
     shader:Program,
 }
 
 impl Scene{
-    pub fn new(sttinges:SceneSttinges,cam:Camare,scene_width:usize,scene_height:usize)-> Scene{
+    pub fn new(sttinges:SceneSttinges,cam:Camare,background_image:Texture,scene_width:usize,scene_height:usize)-> Scene{
         let types:Vec<(String, String)> = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
         ,("".to_string(),"Sphere".to_string())
@@ -166,6 +167,7 @@ impl Scene{
             objects_models:types,
             sttinges:sttinges,
             shader,
+            background_image,
             scene_width,
             scene_height,
         };
@@ -185,7 +187,11 @@ impl Scene{
         self.objects.last_mut().unwrap()
     }
 
-    pub fn update(&self){
+    pub fn draw(&self){
+        unsafe { gl::ActiveTexture(gl::TEXTURE0) };
+
+        self.background_image.bind();
+
         self.shader.set();
         self.cam.send_info(&self.shader);
         let u_size = Uniform::new(self.shader.id(), "size").expect("size Uniform");
@@ -258,7 +264,16 @@ impl Scene{
 
 pub fn create_opengl_contest(width: usize, height: usize){
     
-    unsafe {gl::Viewport(0, 0, width as i32, height as i32); }
+    unsafe {gl::Viewport(0, 0, width as i32, height as i32); 
+        gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
+        gl::Enable(gl::BLEND);
+        gl::Enable(gl::TEXTURE_2D);}
+
+        unsafe {
+            // Set texture parameters
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as i32);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
+        }
     let vertices: Vec<f32> = vec![
         1.0, -1.0,1.0,0.0,
        -1.0,  1.0,0.0,1.0,

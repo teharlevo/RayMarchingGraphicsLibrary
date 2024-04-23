@@ -1,8 +1,8 @@
 
 use std::time::Instant;
 
+use opengl_shit::Texture;
 use sdl2::event::Event;
-use sdl2::keyboard::{Keycode, Scancode};
 
 mod  input;
 //use input::*;
@@ -13,7 +13,9 @@ mod shader_maker;
 mod ray_marching_objects;
 use ray_marching_objects::*;
 mod modlling;
-use modlling::*;
+//use modlling::*;
+mod demo_game;
+use demo_game::*;
 
 mod sdl2objects;
 use sdl2objects::*;
@@ -32,7 +34,11 @@ fn main(){
         color_offset:10.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
     };
-    let mut se = Scene::new(set,cam,1000,500);
+
+    let bchk_grund = Texture::new();
+    bchk_grund.load("camera_pitch_yaw_roll.png");
+    bchk_grund.bind();
+    let mut se = Scene::new(set,cam,bchk_grund,1000,500);
     
 
     se.add_folder_to_model("src/objects");
@@ -45,7 +51,8 @@ fn main(){
     let mut time = Instant::now();
     let mut fps = 0;
 
-    let mut w = Modlling::start(&mut se);
+    //let mut modlling = Modlling::start(&mut se);
+    let mut game = DemoGameLogik::new(&win);
 
     'main: loop {
         for event in win.event_pump.poll_iter() {
@@ -55,8 +62,9 @@ fn main(){
 
             }
         }
-        w.update(&mut se, &win);
-        se.update();
+        //modlling.update(&mut se, &win);
+        game.update(&mut se, &win);
+        se.draw();
         
         if Instant::now().duration_since(time).as_secs_f32() > 1.0 {
             println!("fps:{}", fps);

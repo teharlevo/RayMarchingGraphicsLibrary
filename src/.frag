@@ -24,6 +24,9 @@ uniform vec3 colorD;
 
 uniform vec3 camareAngles;
 uniform vec3 camarePos;
+
+uniform sampler2D background;
+
 uniform int size;
 uniform transform tran[200];
 
@@ -302,6 +305,8 @@ void main()
         Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
     }
     else{
-        Color = vec4(vec3(0.0), 1.0);
+        Color = texture(background, fUV);
     }
+    //Color = texture(background, fUV) * vec4(1.0);
+    //Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
 }

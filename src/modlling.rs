@@ -5,10 +5,8 @@ use std::io::Write;
 use std::path::Path;
 
 use sdl2::keyboard::Scancode;
-use sdl2::sys::va_list;
 
 use crate::ray_marching_objects::*;
-use crate::opengl_shit::*;
 use crate::input::*;
 
 use crate::sdl2objects::*;
@@ -324,8 +322,8 @@ struct ObjForModel{
 }
 
 enum Word {
-    num(f32),
-    word(String),
+    Num(f32),
+    Word(String),
 }
 
 fn make_object_sdf_maker() -> Result<(ObjForModel,SceneSttinges,String),String>{
@@ -367,8 +365,8 @@ rot(0.0,0.0,0.0)
         let word = word_list.remove(0);
 
         match word {
-            Word::num(_) => {},
-            Word::word(str) => {
+            Word::Num(_) => {},
+            Word::Word(str) => {
                 if str == "name"{
                     break;
                 }
@@ -376,10 +374,10 @@ rot(0.0,0.0,0.0)
         }
     }    let word = word_list.remove(0);
     match word {
-        Word::num(g) => {
+        Word::Num(g) => {
             name = format!("{g}");
         },
-        Word::word(str) => {
+        Word::Word(str) => {
             name = str;
         },
     }
@@ -416,8 +414,8 @@ fn object_maker_from_word_list(word_list:&mut Vec<Word>) -> Result<ObjForModel,S
         }
 
         match word{
-            Word::num(_) => {},
-            Word::word(str) => {
+            Word::Num(_) => {},
+            Word::Word(str) => {
                 if str == "empty" {
                     object_type = ObjForModelType::Empty();
                     serch_for_object = false;
@@ -504,8 +502,8 @@ fn displacement_list_maker_from_word_list(word_list:&mut Vec<Word>) ->  Result<V
         let word = word_list.remove(0);
 
         match word{
-            Word::num(_) => {},
-            Word::word(str) => {
+            Word::Num(_) => {},
+            Word::Word(str) => {
                 if str == "end" || str == "End" || str == "END" {
                     println!("lol");
                     serch_for_end = false;
@@ -565,10 +563,10 @@ fn text_to_word_list(text:&str) -> Vec<Word>{
             m = m + 1;
             match word.parse::<f32>() {
                 Ok(num) =>{
-                    word_list.push(Word::num(num));
+                    word_list.push(Word::Num(num));
                 },
                 Err(_) => {
-                    word_list.push(Word::word(String::from(word)));
+                    word_list.push(Word::Word(String::from(word)));
                 },
             }
         }
@@ -586,8 +584,8 @@ fn num_in_word_list(word_list:&mut Vec<Word>) -> Result<f32,String>{
             return Err(String::from("sertch for num not that not exsit fix!"));
         }
         match word {
-            Word::num(num) => {return Ok(num)},
-            Word::word(_) => {},
+            Word::Num(num) => {return Ok(num)},
+            Word::Word(_) => {},
         }
     }
 }
@@ -602,8 +600,8 @@ fn bool_in_word_list(word_list:&mut Vec<Word>) -> Result<bool,String>{
             return Err(String::from("sertch for bool not that not exsit fix!"));
         }
         match word {
-            Word::num(_) => {},
-            Word::word(w) => {
+            Word::Num(_) => {},
+            Word::Word(w) => {
                 if w == "true" || w == "True" || w == "T" || w == "t"{
                     return Ok(true);
                 }

@@ -1,8 +1,6 @@
-use std::any::Any;
-use std::fs::File;
-use std::env;
+
 use std::fs;
-use std::io::Read;
+use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
@@ -12,6 +10,8 @@ use sdl2::sys::va_list;
 use crate::ray_marching_objects::*;
 use crate::opengl_shit::*;
 use crate::input::*;
+
+use crate::sdl2objects::*;
 
 pub struct Modlling{
     model_name:String,

@@ -14,8 +14,12 @@ mod ray_marching_objects;
 use ray_marching_objects::*;
 mod modlling;
 use modlling::*;
+
+mod sdl2objects;
+use sdl2objects::*;
 fn main(){
-    let win = create_window(1000,500,"🥳");
+    let win = Winsdl::new(1000,500,"🥳").unwrap();
+    create_opengl_contest(1000,500);
     let mut win = win;
 
     let cam = Camare::new(0.0, 0.0, -3.0);
@@ -53,12 +57,13 @@ fn main(){
         }
         w.update(&mut se, &win);
         se.update();
-        draw(&win);
+        
         if Instant::now().duration_since(time).as_secs_f32() > 1.0 {
             println!("fps:{}", fps);
             fps = 0;
             time = Instant::now();
         }
         fps = fps + 1;
+        win.window.gl_swap_window();
     }
 }

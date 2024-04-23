@@ -81,6 +81,19 @@ impl Camare {
             gl::Uniform3f(u_angle.id, self.angle_x,self.angle_y,self.angle_z);
         }
     }
+
+    pub fn direction(&self) -> (f32, f32, f32) {
+        
+        let x = self.angle_x.cos() * self.angle_y.cos();
+        let y = self.angle_y.sin();
+        let z = self.angle_x.sin() * self.angle_y.cos();
+
+        //x = Math.cos(alpha) * Math.cos(beta);
+        //z = Math.sin(alpha) * Math.cos(beta);
+        //y = Math.sin(beta);
+        
+        (x, y, z)
+    }
     
 }
 

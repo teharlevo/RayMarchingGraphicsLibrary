@@ -1,0 +1,15 @@
+death
+        
+{
+    
+    vec3 q1 = p;
+    
+        q1 = opRepetitionXYZ(q1,vec3(10,10,10));
+                    
+    q1 -= vec3(0,8,0);
+    q1 = rotateVec3(q1,vec3(0.17452778, 0.17452778, 0.0));
+    
+    float s1 = sdBox(q1,vec3(1.0, 1.0, 1.0));
+    
+        return s1;
+}

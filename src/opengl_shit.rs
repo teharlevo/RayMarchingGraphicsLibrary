@@ -388,8 +388,7 @@ impl Texture {
             );
             gl::GenerateMipmap(gl::TEXTURE_2D);
         }
-
-        println!("{}",img.width());
+        
         Ok(())
     }
 }

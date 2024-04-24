@@ -36,8 +36,8 @@ fn main(){
     };
 
     let bchk_grund = Texture::new();
-    bchk_grund.load("camera_pitch_yaw_roll.png");
-    bchk_grund.bind();
+    _ = bchk_grund.load("camera_pitch_yaw_roll.png");
+    
     let mut se = Scene::new(set,cam,bchk_grund,1000,500);
     
 

@@ -268,12 +268,7 @@ pub fn create_opengl_contest(width: usize, height: usize){
         gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
         gl::Enable(gl::BLEND);
         gl::Enable(gl::TEXTURE_2D);}
-
-        unsafe {
-            // Set texture parameters
-            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as i32);
-            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
-        }
+        
     let vertices: Vec<f32> = vec![
         1.0, -1.0,1.0,0.0,
        -1.0,  1.0,0.0,1.0,

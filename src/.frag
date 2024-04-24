@@ -305,7 +305,7 @@ void main()
         Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
     }
     else{
-        Color = texture(background, fUV);
+        Color = texture(background, vec2(fUV.x,-fUV.y));
     }
     //Color = texture(background, fUV) * vec4(1.0);
     //Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);

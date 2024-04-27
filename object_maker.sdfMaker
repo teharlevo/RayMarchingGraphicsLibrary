@@ -6,7 +6,9 @@ max_dis_ray: 1000.0,
 color_senstivity: 0.0003,
 color_offset:0.0,
 
-colors[(0.5, 0.5, 0.5),(0.5, 0.5, 0.5),(1.0, 1.0, 1.0),(0.00, 0.33, 0.67)]            
+colors[(0.5, 0.5, 0.5),(0.5, 0.5, 0.5),(1.0, 1.0, 1.0),(0.00, 0.33, 0.67)]          
+background_text: img camera_pitch_yaw_roll.png
+
 box(10.0,10.0,10.0)
 Displasment_list
 END

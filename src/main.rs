@@ -12,7 +12,7 @@ mod shader_maker;
 mod ray_marching_objects;
 use ray_marching_objects::*;
 mod modlling;
-//use modlling::*;
+use modlling::*;
 mod demo_game;
 use demo_game::*;
 
@@ -24,6 +24,9 @@ fn main(){
     let mut win = win;
 
     let cam = Camare::new(0.0, 0.0, -3.0);
+    let bchk_grund = Texture::new();
+    _ = bchk_grund.load("camera_pitch_yaw_roll.png");
+
     let set = SceneSttinges{
         max_rays: 60,
         min_dis_ray: 0.1,
@@ -32,12 +35,13 @@ fn main(){
         color_senstivity:0.1,
         color_offset:10.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
+        background:SceneBackGround::Image(bchk_grund),
     };
 
     let bchk_grund = Texture::new();
     _ = bchk_grund.load("camera_pitch_yaw_roll.png");
     
-    let mut se = Scene::new(set,cam,ray_marching_objects::SceneBackGround::Color(0.3,0.3,0.1),1000,500);
+    let mut se = Scene::new(set,cam,1000,500);
     
 
     se.add_folder_to_model("src/objects");
@@ -50,8 +54,8 @@ fn main(){
     let mut time = Instant::now();
     let mut fps = 0;
 
-    //let mut modlling = Modlling::start(&mut se);
-    let mut game = DemoGameLogik::new(&win);
+    let mut modlling = Modlling::start(&mut se);
+    //let mut game = DemoGameLogik::new(&win);
 
     'main: loop {
         for event in win.event_pump.poll_iter() {
@@ -61,8 +65,8 @@ fn main(){
 
             }
         }
-        //modlling.update(&mut se, &win);
-        game.update(&mut se, &win);
+        modlling.update(&mut se, &win);
+        //game.update(&mut se, &win);
         se.draw();
         
         if Instant::now().duration_since(time).as_secs_f32() > 1.0 {

@@ -28,6 +28,8 @@ uniform vec3 camarePos;
 uniform sampler2D background;
 //uniform samplerCube skybox;
 uniform vec3 backgroundcolor;
+uniform float ContinuationOfRayColorOffset;
+uniform float ContinuationOfRayColorSenstivity;
 
 uniform int size;
 uniform transform tran[200];
@@ -306,15 +308,19 @@ void main()
     if(totalDis < maxDisRay ){
         Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
     }
-    else if (texture(background, vec2(fUV.x,-fUV.y)) != vec4(0.0,0.0,0.0,0.0)){
+    else if (length(texture(background, vec2(fUV.x,-fUV.y)).rgb) != 0.0){
         Color = texture(background, vec2(fUV.x,-fUV.y));
     }
-    //else if (texture(skybox, rayDir) != vec4(0.0,0.0,0.0,0.0)){
-    //    Color = texture(skybox, rayDir);
-    //}
+    else if (ContinuationOfRayColorSenstivity != 0.0){
+        Color = vec4(palette(totalDis * ContinuationOfRayColorSenstivity + ContinuationOfRayColorOffset), 1.0);
+    }
+    else if (ContinuationOfRayColorOffset != 0.0){
+        Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
+    }
     else{
         Color = vec4(backgroundcolor,1.0);
     }
+    //Color = vec4(1.0);
     //Color = texture(background, fUV) * vec4(1.0);
     //Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
 }

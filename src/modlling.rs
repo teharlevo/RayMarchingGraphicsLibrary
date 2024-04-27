@@ -8,6 +8,7 @@ use sdl2::keyboard::Scancode;
 
 use crate::ray_marching_objects::*;
 use crate::input::*;
+use crate::opengl_shit::Texture;
 
 use crate::sdl2objects::*;
 
@@ -401,6 +402,8 @@ rot(0.0,0.0,0.0)
         ,(num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?)
         ,(num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?)
         ,(num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?)],
+
+        background:background_from_text(&mut word_list)?,
     };
 
     Ok((object_maker_from_word_list(&mut word_list)?,settings,name))
@@ -553,6 +556,48 @@ fn displacement_list_maker_from_word_list(word_list:&mut Vec<Word>) ->  Result<V
         //Repetition((f32,f32,f32),(bool,bool,bool)),
     }
     Ok(list)
+}
+
+fn background_from_text(word_list:&mut Vec<Word>) -> Result<SceneBackGround,String>{
+    if word_list.len() == 0{
+        return Err(String::from("sertch for background_text not that not exsit fix!"));
+    }
+    'main: loop {
+        let word = word_list.remove(0);
+        if word_list.len() == 0{
+            return Err(String::from("sertch for background_text not that not exsit fix!"));
+        }
+        match word {
+            Word::Num(_) => {},
+            Word::Word(text) => {
+                if text == "color"{
+
+                    return Ok(SceneBackGround::Color(num_in_word_list(word_list)?, num_in_word_list(word_list)?, num_in_word_list(word_list)?));
+                } 
+                if text == "image" || text == "img"{
+                    loop{
+                        let word = word_list.remove(0);
+                        let image = Texture::new();
+                        if word_list.len() == 0{
+                            return Err(String::from("sertch for background_text not that not exsit fix!"));
+                        }
+                        match word {
+                            Word::Num(_) => {},
+                            Word::Word(text) => {
+                                _ = image.load(&text);
+                                return Ok(SceneBackGround::Image(image));
+                            },
+                        }
+                    }
+                    
+                }
+                if text == "cor" || text == "ContinuationOfRay"{
+                    return  Ok(SceneBackGround::ContinuationOfRay(num_in_word_list(word_list)?, num_in_word_list(word_list)?));
+                }
+            },
+        }
+    }
+    
 }
 
 fn text_to_word_list(text:&str) -> Vec<Word>{

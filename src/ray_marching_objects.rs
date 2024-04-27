@@ -105,6 +105,7 @@ pub struct SceneSttinges{
     pub color_offset:f32,
 
     pub colors_rgb:[(f32,f32,f32);4],
+    pub background:SceneBackGround,
 }
 
 impl SceneSttinges {
@@ -145,14 +146,13 @@ pub struct Scene{
     pub objects:Vec<Object>,
     pub objects_models:Vec<(String,String)>,
     pub sttinges:SceneSttinges,
-    pub background:SceneBackGround,
     scene_width:usize,
     scene_height:usize,
     shader:Program,
 }
 
 impl Scene{
-    pub fn new(sttinges:SceneSttinges,cam:Camare,background:SceneBackGround,scene_width:usize,scene_height:usize)-> Scene{
+    pub fn new(sttinges:SceneSttinges,cam:Camare,scene_width:usize,scene_height:usize)-> Scene{
         let types:Vec<(String, String)> = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
         ,("".to_string(),"Sphere".to_string())
@@ -167,7 +167,6 @@ impl Scene{
             objects_models:types,
             sttinges:sttinges,
             shader,
-            background,
             scene_width,
             scene_height,
         };
@@ -190,7 +189,17 @@ impl Scene{
     pub fn draw(&self){
         unsafe { gl::ActiveTexture(gl::TEXTURE0) };
 
-        match &self.background {
+        let u_color_offset = Uniform::new(self.shader.id(), "ContinuationOfRayColorOffset")
+        .expect("ContinuationOfRayColorOffset Uniform");
+        let u_color_senstivity = Uniform::new(self.shader.id(), "ContinuationOfRayColorSenstivity")
+        .expect("ContinuationOfRayColorSenstivity Uniform");
+        unsafe {
+            gl::Uniform1f(u_color_offset.id,0.0);
+            gl::Uniform1f(u_color_senstivity.id,0.0);
+
+        }
+
+        match &self.sttinges.background {
             //SceneBackGround::SkyBox(cubemap) => {
             //    cubemap.bind();
             //},
@@ -201,6 +210,17 @@ impl Scene{
                 let u_back_ground_color = Uniform::new(self.shader.id(), "backgroundcolor").expect("backgroundcolor Uniform");
                 unsafe {
                     gl::Uniform3f(u_back_ground_color.id,*r,*g,*b);
+                }
+            },
+            SceneBackGround::ContinuationOfRay(color_offset, color_senstivity) => {
+                let u_color_offset = Uniform::new(self.shader.id(), "ContinuationOfRayColorOffset")
+                .expect("ContinuationOfRayColorOffset Uniform");
+                let u_color_senstivity = Uniform::new(self.shader.id(), "ContinuationOfRayColorSenstivity")
+                .expect("ContinuationOfRayColorSenstivity Uniform");
+                unsafe {
+                    gl::Uniform1f(u_color_offset.id,*color_offset);
+                    gl::Uniform1f(u_color_senstivity.id,*color_senstivity);
+
                 }
             },
         }
@@ -279,6 +299,7 @@ pub enum SceneBackGround {
     //SkyBox(Cubemap),
     Image(Texture),
     Color(f32,f32,f32),
+    ContinuationOfRay(f32,f32),
 }
 
 pub fn create_opengl_contest(width: usize, height: usize){

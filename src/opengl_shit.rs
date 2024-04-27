@@ -388,10 +388,6 @@ impl Texture {
             );
             gl::GenerateMipmap(gl::TEXTURE_2D);
         }
-        let error = unsafe { gl::GetError() };
-        if error != gl::NO_ERROR {
-            println!("OpenGL error: {}", error);
-        }
         self.unbind();
         
         Ok(())

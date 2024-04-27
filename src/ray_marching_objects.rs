@@ -145,14 +145,14 @@ pub struct Scene{
     pub objects:Vec<Object>,
     pub objects_models:Vec<(String,String)>,
     pub sttinges:SceneSttinges,
-    pub background_image:Texture,
+    pub background:SceneBackGround,
     scene_width:usize,
     scene_height:usize,
     shader:Program,
 }
 
 impl Scene{
-    pub fn new(sttinges:SceneSttinges,cam:Camare,background_image:Texture,scene_width:usize,scene_height:usize)-> Scene{
+    pub fn new(sttinges:SceneSttinges,cam:Camare,background:SceneBackGround,scene_width:usize,scene_height:usize)-> Scene{
         let types:Vec<(String, String)> = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
         ,("".to_string(),"Sphere".to_string())
@@ -167,7 +167,7 @@ impl Scene{
             objects_models:types,
             sttinges:sttinges,
             shader,
-            background_image,
+            background,
             scene_width,
             scene_height,
         };
@@ -190,7 +190,20 @@ impl Scene{
     pub fn draw(&self){
         unsafe { gl::ActiveTexture(gl::TEXTURE0) };
 
-        self.background_image.bind();
+        match &self.background {
+            //SceneBackGround::SkyBox(cubemap) => {
+            //    cubemap.bind();
+            //},
+            SceneBackGround::Image(image) => {
+                image.bind()
+            },
+            SceneBackGround::Color(r, g,b) => {
+                let u_back_ground_color = Uniform::new(self.shader.id(), "backgroundcolor").expect("backgroundcolor Uniform");
+                unsafe {
+                    gl::Uniform3f(u_back_ground_color.id,*r,*g,*b);
+                }
+            },
+        }
 
         self.shader.set();
         self.cam.send_info(&self.shader);
@@ -262,17 +275,23 @@ impl Scene{
     }
 }
 
+pub enum SceneBackGround {
+    //SkyBox(Cubemap),
+    Image(Texture),
+    Color(f32,f32,f32),
+}
+
 pub fn create_opengl_contest(width: usize, height: usize){
     
     unsafe {gl::Viewport(0, 0, width as i32, height as i32); 
         gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
         gl::Enable(gl::BLEND);
         gl::Enable(gl::TEXTURE_2D);}
-        
+
     let vertices: Vec<f32> = vec![
         1.0, -1.0,1.0,0.0,
        -1.0,  1.0,0.0,1.0,
-        1.0,  1.0,1.0, 1.0,
+        1.0,  1.0,1.0,1.0,
        -1.0, -1.0,0.0,0.0,
    ];
 

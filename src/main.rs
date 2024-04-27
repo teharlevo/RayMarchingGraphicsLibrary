@@ -1,6 +1,5 @@
 
 use std::time::Instant;
-
 use opengl_shit::Texture;
 use sdl2::event::Event;
 
@@ -38,7 +37,7 @@ fn main(){
     let bchk_grund = Texture::new();
     _ = bchk_grund.load("camera_pitch_yaw_roll.png");
     
-    let mut se = Scene::new(set,cam,bchk_grund,1000,500);
+    let mut se = Scene::new(set,cam,ray_marching_objects::SceneBackGround::Color(0.3,0.3,0.1),1000,500);
     
 
     se.add_folder_to_model("src/objects");

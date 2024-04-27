@@ -76,7 +76,7 @@ checksum = "6678909d8c5d46a42abcf571271e15fdbc0a225e3646cf23762cd415046c78bf"
 dependencies = [
  "anyhow",
  "arrayvec",
- "log",
+ "log 0.4.21",
  "nom",
  "num-rational",
  "v_frame",
@@ -301,21 +301,21 @@ dependencies = [
 
 [[package]]
 name = "gl"
-version = "0.14.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a94edab108827d67608095e269cf862e60d920f144a5026d3dbcfd8b877fb404"
+checksum = "0660ae8cc64fe83bab1ab77eacce0dc23f8e458f4498ccb52018d8c57ccc4234"
 dependencies = [
  "gl_generator",
 ]
 
 [[package]]
 name = "gl_generator"
-version = "0.14.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a95dfc23a2b4a9a2f5ab41d194f8bfda3cabec42af4e39f08c339eb2a0c124d"
+checksum = "04e3e0220a68b8875b5a311fe67ee3b76d3d9b719a92277aff0ec5bb5e7b0ec1"
 dependencies = [
  "khronos_api",
- "log",
+ "log 0.3.9",
  "xml-rs",
 ]
 
@@ -427,9 +427,9 @@ checksum = "f5d4a7da358eff58addd2877a45865158f0d78c911d43a5784ceb7bbf52833b0"
 
 [[package]]
 name = "khronos_api"
-version = "3.1.0"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e2db585e1d738fc771bf08a151420d3ed193d9d895a36df7f6f8a9456b911ddc"
+checksum = "037ab472c33f67b5fbd3e9163a2645319e5356fcd355efa6d4eb7fff4bbcb554"
 
 [[package]]
 name = "lazy_static"
@@ -468,6 +468,15 @@ checksum = "3c168f8615b12bc01f9c17e2eb0cc07dcae1940121185446edc3744920e8ef45"
 dependencies = [
  "autocfg",
  "scopeguard",
+]
+
+[[package]]
+name = "log"
+version = "0.3.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e19e8d5c34a3e0e2223db8e060f9e8264aeeb5c5fc64a4ee9965c062211c024b"
+dependencies = [
+ "log 0.4.21",
 ]
 
 [[package]]
@@ -727,7 +736,7 @@ dependencies = [
  "itertools",
  "libc",
  "libfuzzer-sys",
- "log",
+ "log 0.4.21",
  "maybe-rayon",
  "new_debug_unreachable",
  "noop_proc_macro",
@@ -1024,7 +1033,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "614d787b966d3989fa7bb98a654e369c762374fd3213d212cfc0251257e747da"
 dependencies = [
  "bumpalo",
- "log",
+ "log 0.4.21",
  "once_cell",
  "proc-macro2",
  "quote",
@@ -1078,9 +1087,12 @@ dependencies = [
 
 [[package]]
 name = "xml-rs"
-version = "0.8.19"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fcb9cbac069e033553e8bb871be2fbdffcab578eb25bd0f7c508cedc6dcd75a"
+checksum = "3c1cb601d29fe2c2ac60a2b2e5e293994d87a1f6fa9687a31a15270f909be9c2"
+dependencies = [
+ "bitflags",
+]
 
 [[package]]
 name = "zune-core"

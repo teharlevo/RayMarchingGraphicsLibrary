@@ -57,24 +57,32 @@ impl Modlling{
         if is_pressed(&win.event_pump,Scancode::W) {
             self.line_x += 0.1 * speed;
         }
+
         if is_pressed(&win.event_pump,Scancode::S) {
             self.line_x -= 0.1 * speed;
         }
+
         if is_pressed(&win.event_pump,Scancode::D) {
             self.line_y += 0.1 * speed;
         }
+
         if is_pressed(&win.event_pump,Scancode::A) {
             self.line_y -= 0.1 * speed;
         }
+
         if is_pressed(&win.event_pump,Scancode::E) {
             self.dis += 0.3 * speed;
         }
+
+        if is_pressed(&win.event_pump,Scancode::Q) {
+            self.dis -= 0.3 * speed;
+
+        }
+
         if is_pressed(&win.event_pump,Scancode::Q) {
             self.dis -= 0.3 * speed;
         }
-        if is_pressed(&win.event_pump,Scancode::Q) {
-            self.dis -= 0.3 * speed;
-        }
+
         if is_pressed(&win.event_pump,Scancode::F) && is_pressed(&win.event_pump,Scancode::LCtrl) {
             self.dis = 0.0;
             self.line_x = 0.0;
@@ -88,6 +96,7 @@ impl Modlling{
         else if !is_pressed(&win.event_pump,Scancode::Space) {
             self.update_lest_frame = false;
         }
+
         if is_pressed(&win.event_pump,Scancode::R) && is_pressed(&win.event_pump,Scancode::LCtrl)
         && !self.exported_lest_frame{
             self.export();

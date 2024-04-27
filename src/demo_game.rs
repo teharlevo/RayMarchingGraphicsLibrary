@@ -11,6 +11,7 @@ impl DemoGameLogik{
 
     pub fn new(win:&Winsdl) -> DemoGameLogik{
         win.sdl.mouse().show_cursor(false);
+        _ = move_mouse_to_center(win);
         DemoGameLogik{
             velosty_y:0.0,
         }

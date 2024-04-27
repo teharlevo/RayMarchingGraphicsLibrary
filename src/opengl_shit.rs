@@ -1,11 +1,12 @@
 use std::{
-    ffi::{CStr, CString}, path::Path, ptr::{null, null_mut}
+    ffi::{CStr, CString}, ptr::{null, null_mut}
 };
 
 use gl::{
     types::{GLchar, GLenum, GLint, GLuint},
     UseProgram,
 };
+use gl::TEXTURE_CUBE_MAP;
 
 use image::{EncodableLayout, ImageError};
 
@@ -343,16 +344,15 @@ impl Uniform {
 }
 
 pub struct Texture {
-    pub id: GLuint,
+    pub id: u32,
 }
 
 impl Texture {
     pub  fn new() -> Texture {
-        let mut id: GLuint = 0;
+        let mut id:u32 = 0;
         unsafe {
             gl::GenTextures(1, &mut id);     
         }
-        println!("{}",id);
         Texture{
             id
         }
@@ -388,6 +388,11 @@ impl Texture {
             );
             gl::GenerateMipmap(gl::TEXTURE_2D);
         }
+        let error = unsafe { gl::GetError() };
+        if error != gl::NO_ERROR {
+            println!("OpenGL error: {}", error);
+        }
+        self.unbind();
         
         Ok(())
     }
@@ -400,3 +405,101 @@ impl Drop for Texture {
         }
     }
 }
+
+
+//pub struct Cubemap {
+//    pub id: u32,
+//}
+//
+//impl Cubemap {
+//    pub  fn new() -> Cubemap {
+//        let mut id: u32 = 0;
+//        unsafe {
+//            gl::GenTextures(1, &mut id);     
+//        }
+//        Cubemap{
+//            id
+//        }
+//    }
+//
+//    pub fn bind(&self) {
+//        unsafe {
+//            gl::BindTexture(gl::TEXTURE_CUBE_MAP, self.id) ;  
+//        }
+//    }
+//
+//    pub fn unbind(&self) {
+//        unsafe {
+//            gl::BindTexture(gl::TEXTURE_CUBE_MAP, 0);
+//        }
+//    }
+//
+//    pub fn load(&self, path: &str) -> Result<(), ImageError> {
+//        unsafe { gl::ActiveTexture(gl::TEXTURE0) };
+//        self.unbind();
+//        self.bind();
+//        let img = image::open(&format!("{}", path))?.into_rgba8();
+//        unsafe{
+//            let error = gl::GetError();
+//            if error != gl::NO_ERROR {
+//                println!("OpenGL error: {} + {}", error,"er;y");
+//            }
+//            let error = gl::GetError();
+//            if error != gl::NO_ERROR {
+//                println!("OpenGL error: {} + {}", error,"er;y");
+//            }
+//        }
+//            
+//        for i in 0..6{
+//
+//            let bind_point = gl::TEXTURE_CUBE_MAP_POSITIVE_X + i as u32;
+//            unsafe {
+//                gl::TexImage2D(
+//                    bind_point,
+//                    0,
+//                    gl::RGBA as i32,
+//                    img.width() as i32,
+//                    img.height() as i32,
+//                    0,
+//                    gl::RGBA,
+//                    gl::UNSIGNED_BYTE,
+//                    img.as_bytes().as_ptr() as *const _,
+//                );
+//                
+//            let error = gl::GetError();
+//            if error != gl::NO_ERROR {
+//                println!("OpenGL error: {} + {}", error,i);
+//            }
+//            let error = gl::GetError();
+//            if error != gl::NO_ERROR {
+//                println!("OpenGL error: {} + {}", error,i);
+//            }
+//            }
+//        }
+//            unsafe{
+//                gl::TexParameteri(gl::TEXTURE_CUBE_MAP, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
+//                gl::TexParameteri(gl::TEXTURE_CUBE_MAP, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
+//                gl::TexParameteri(gl::TEXTURE_CUBE_MAP, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as i32);
+//                gl::TexParameteri(gl::TEXTURE_CUBE_MAP, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as i32);
+//                gl::TexParameteri(gl::TEXTURE_CUBE_MAP, gl::TEXTURE_WRAP_R, gl::CLAMP_TO_EDGE as i32);
+//    
+//                gl::GenerateMipmap(gl::TEXTURE_CUBE_MAP);
+//            
+//                let error = gl::GetError();
+//                if error != gl::NO_ERROR {
+//                    println!("OpenGL error: {}", error);
+//                }
+//            }
+//    
+//        self.unbind();
+//        Ok(())
+//    }
+//}
+//
+//impl Drop for Cubemap {
+//    fn drop(&mut self) {
+//        unsafe {
+//            gl::DeleteTextures(1, [self.id].as_ptr());
+//        }
+//    }
+//}

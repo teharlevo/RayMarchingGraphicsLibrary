@@ -24,7 +24,32 @@ pub struct Modlling{
 }
 
 impl Modlling{
-    pub fn start(s:&mut Scene) -> Modlling{
+    pub fn empty() -> Modlling{
+        Modlling{
+            model_name:String::from(""),
+            model_code:String::from(""),
+            model_object:ObjForModel{
+                type_: Box::new(ObjForModelType::Empty()),
+                displacemen:vec![],
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+                angle: (0.0,0.0,0.0),
+            },
+
+            line_x:0.0,
+            line_y:0.0,
+            dis:0.0,
+            update_lest_frame:   false,
+            exported_lest_frame: false,
+        }
+    }
+
+
+    pub fn start(s:&mut Scene,win:&Winsdl) -> Modlling{
+        s.clear();
+        
+        win.sdl.mouse().show_cursor(true);
         let cam = &mut s.cam;
         cam.x = 0.0;cam.y = 0.0;cam.z = -10.0;
         cam.angle_x = 0.0;cam.angle_y = 0.0;
@@ -151,7 +176,7 @@ impl Modlling{
         }
         s.clear();
         s.add_model(&self.object_text());
-        s.set_shader();
+        s.update_shader();
         s.add_object(&self.model_name);
     }
 
@@ -517,7 +542,6 @@ fn displacement_list_maker_from_word_list(word_list:&mut Vec<Word>) ->  Result<V
             Word::Num(_) => {},
             Word::Word(str) => {
                 if str == "end" || str == "End" || str == "END" {
-                    println!("lol");
                     serch_for_end = false;
                 }
                 else if str == "Twist" || str == "twist" {

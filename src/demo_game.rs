@@ -1,19 +1,50 @@
 use sdl2::keyboard::Scancode;
 
-use crate::{input::{is_pressed, move_mouse_to_center}, Scene, Winsdl};
+use crate::{input::{is_pressed, move_mouse_to_center}, Camare, Scene, SceneBackGround, SceneSttinges, Winsdl};
 
 pub struct DemoGameLogik{
+    background_secne:Scene,
     velosty_y:f32,
 }
 
 
 impl DemoGameLogik{
 
-    pub fn new(win:&Winsdl) -> DemoGameLogik{
+    pub fn empty() -> DemoGameLogik{
+        DemoGameLogik{
+            background_secne: Scene::new(SceneSttinges{
+                max_rays:         0,
+                min_dis_ray:      0.0,
+                max_dis_ray:      0.0,
+                color_senstivity: 0.0,
+                color_offset:     0.0,
+                colors_rgb:       [(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0)],
+                background: SceneBackGround::Color(0.0, 0.0, 0.0),
+            }, Camare::new(0.0,0.0,0.0),0,0),
+            velosty_y:0.0,
+        }
+    }
+
+    pub fn new(s:&mut Scene,win:&Winsdl) -> DemoGameLogik{
+        s.clear_objects();
+
+        let k = s.add_object("evil_man");
+
+        k.z = 3.0;
+        k.angle_x = 3.14/2.0;
+
         win.sdl.mouse().show_cursor(false);
         _ = move_mouse_to_center(win);
+
+        let mut bs = s.clone();
+        bs.sttinges.color_senstivity = 0.003;
+        bs.clear_objects();
+        let d = bs.add_object("death");
+        d.angle_z = 3.14/2.0;
+        
         DemoGameLogik{
             velosty_y:0.0,
+            background_secne: bs,
         }
     }
 
@@ -53,14 +84,19 @@ impl DemoGameLogik{
             cam.angle_x += mouse_cange.0 as f32/1000.0;
             cam.angle_y -= mouse_cange.1 as f32/1000.0;
 
-            if cam.angle_y >= 3.14/2.1{
-                cam.angle_y = 3.14/2.1
+            if cam.angle_y >= 3.14/4.0{
+                cam.angle_y = 3.14/4.0
             }
-            else if cam.angle_y <= -3.14/1.9{
-                cam.angle_y = -3.14/1.9
+            else if cam.angle_y <= -3.14/4.0{
+                cam.angle_y = -3.14/4.0
             }
         }
-        
 
+        self.upade_backgrund(&cam);
+    }
+
+    fn upade_backgrund(&mut self,cam:&Camare){
+        self.background_secne.cam =cam.clone();
+        self.background_secne.draw();
     }
 }

@@ -1,5 +1,6 @@
 
 use std::time::Instant;
+use input::mouse_pressed_left;
 use opengl_shit::Texture;
 use sdl2::event::Event;
 
@@ -35,27 +36,23 @@ fn main(){
         color_senstivity:0.1,
         color_offset:10.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
-        background:SceneBackGround::Image(bchk_grund),
+        background:SceneBackGround::Color(0.3, 0.1, 0.1),
     };
 
-    let bchk_grund = Texture::new();
-    _ = bchk_grund.load("camera_pitch_yaw_roll.png");
+    let mut game_mode = 0;
     
     let mut se = Scene::new(set,cam,1000,500);
     
 
     se.add_folder_to_model("src/objects");
-    let ob = se.add_object("evil_man");
-
-    ob.z = 3.0;
-    ob.angle_x = 3.14/2.0;
-    se.set_shader();
+    
+    se.update_shader();
     
     let mut time = Instant::now();
     let mut fps = 0;
 
-    let mut modlling = Modlling::start(&mut se);
-    //let mut game = DemoGameLogik::new(&win);
+    let mut modlling:Modlling = Modlling::empty();
+    let mut game:DemoGameLogik = DemoGameLogik::empty();
 
     'main: loop {
         for event in win.event_pump.poll_iter() {
@@ -65,9 +62,15 @@ fn main(){
 
             }
         }
-        modlling.update(&mut se, &win);
-        //game.update(&mut se, &win);
-        se.draw();
+
+        (game_mode,game,modlling) = menu_update(game_mode,&mut se, &win,game,modlling);
+        if game_mode == 1{
+            modlling.update(&mut se, &win);
+        }
+        else if game_mode == 2 {
+            game.update(&mut se, &win);   
+        }
+        //se.draw();
         
         if Instant::now().duration_since(time).as_secs_f32() > 1.0 {
             println!("fps:{}", fps);
@@ -77,4 +80,18 @@ fn main(){
         fps = fps + 1;
         win.window.gl_swap_window();
     }
+}
+
+fn menu_update(gm:i32,s:&mut Scene,win:&Winsdl,mut game:DemoGameLogik,mut modling:Modlling) -> (i32,DemoGameLogik,Modlling){
+    let mut new_gm = gm;
+    if gm == 0{
+        if mouse_pressed_left(&win.event_pump){
+            game = DemoGameLogik::new(s,win);
+            new_gm = 2;
+        }else if mouse_pressed_left(&win.event_pump){
+            modling = Modlling::start(s, win);
+            new_gm = 1;
+        }
+    }
+    (new_gm,game,modling)
 }

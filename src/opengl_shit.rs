@@ -62,6 +62,7 @@ impl Drop for Shader {
 }
 
 /// An OpenGL Program, a sequence of shaders calls.
+#[derive(Clone)]
 pub struct Program {
     id: GLuint,
     
@@ -343,6 +344,7 @@ impl Uniform {
     }
 }
 
+#[derive(Clone)]
 pub struct Texture {
     pub id: u32,
 }
@@ -497,5 +499,55 @@ impl Drop for Texture {
 //        unsafe {
 //            gl::DeleteTextures(1, [self.id].as_ptr());
 //        }
+//    }
+//}
+
+pub struct FrameBuffer{
+    id:u32,
+    tex:Texture,
+}
+
+//impl FrameBuffer {
+//
+//    pub fn new(int width,int height){
+//
+//        fboID = glGenFramebuffers();
+//        glBindFramebuffer(GL_FRAMEBUFFER, fboID);
+//        
+//        tex = new Texture(width, height);
+//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width,height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+//        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+//        tex.getID(), 0);
+//        int rboID = glGenRenderbuffers();
+//        glBindRenderbuffer(GL_RENDERBUFFER, rboID);
+//        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
+//        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboID);
+//
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
+//
+//        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+//            System.out.println("Error: Framebuffer is not complete");
+//        }
+//        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//    }
+//    
+//    pub fn bind(&self){
+//        unsafe { gl::BindFramebuffer(gl::FRAMEBUFFER,self.id);
+//
+//        };
+//
+//    }
+//
+//    pub fn unbind(&self){
+//        unsafe { gl::BindFramebuffer(gl::FRAMEBUFFER,0);}; 
+//    }
+//
+//    pub fn get_id(&self) -> u32{
+//        self.id
+//    }
+//
+//    pub fn get_texture(&self) -> &Texture{
+//        &self.tex
 //    }
 //}

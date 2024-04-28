@@ -4,6 +4,7 @@ use crate::opengl_shit::*;
 use crate::shader_maker::*;
 
 
+#[derive(Clone)]
 pub struct Camare{
     pub x:f32,
     pub y:f32,
@@ -51,6 +52,7 @@ impl Camare {
     
 }
 
+#[derive(Clone)]
 pub struct Object{
     pub x:f32,
     pub y:f32,
@@ -96,6 +98,7 @@ impl Object {
 }
 
 
+#[derive(Clone)]
 pub struct SceneSttinges{
     pub max_rays:i32,
     pub min_dis_ray:f32,
@@ -141,18 +144,19 @@ impl SceneSttinges {
     }
 }
 
+#[derive(Clone)]
 pub struct Scene{
     pub cam:Camare,
     pub objects:Vec<Object>,
     pub objects_models:Vec<(String,String)>,
     pub sttinges:SceneSttinges,
-    scene_width:usize,
-    scene_height:usize,
+    scene_width:u32,
+    scene_height:u32,
     shader:Program,
 }
 
 impl Scene{
-    pub fn new(sttinges:SceneSttinges,cam:Camare,scene_width:usize,scene_height:usize)-> Scene{
+    pub fn new(sttinges:SceneSttinges,cam:Camare,scene_width:u32,scene_height:u32)-> Scene{
         let types:Vec<(String, String)> = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
         ,("".to_string(),"Sphere".to_string())
@@ -189,16 +193,6 @@ impl Scene{
     pub fn draw(&self){
         unsafe { gl::ActiveTexture(gl::TEXTURE0) };
 
-        let u_color_offset = Uniform::new(self.shader.id(), "ContinuationOfRayColorOffset")
-        .expect("ContinuationOfRayColorOffset Uniform");
-        let u_color_senstivity = Uniform::new(self.shader.id(), "ContinuationOfRayColorSenstivity")
-        .expect("ContinuationOfRayColorSenstivity Uniform");
-        unsafe {
-            gl::Uniform1f(u_color_offset.id,0.0);
-            gl::Uniform1f(u_color_senstivity.id,0.0);
-
-        }
-
         match &self.sttinges.background {
             //SceneBackGround::SkyBox(cubemap) => {
             //    cubemap.bind();
@@ -212,7 +206,7 @@ impl Scene{
                     gl::Uniform3f(u_back_ground_color.id,*r,*g,*b);
                 }
             },
-            SceneBackGround::ContinuationOfRay(color_offset, color_senstivity) => {
+            SceneBackGround::ContinuationOfRay(color_senstivity,color_offset) => {
                 let u_color_offset = Uniform::new(self.shader.id(), "ContinuationOfRayColorOffset")
                 .expect("ContinuationOfRayColorOffset Uniform");
                 let u_color_senstivity = Uniform::new(self.shader.id(), "ContinuationOfRayColorSenstivity")
@@ -282,7 +276,7 @@ impl Scene{
         ,&make_frag(&self.objects_models).to_string_lossy().into_owned())
     }
 
-    pub fn set_shader(&mut self){
+    pub fn update_shader(&mut self){
         self.shader = Scene::shader_maker(&self.objects_models)
     }
 
@@ -293,8 +287,17 @@ impl Scene{
         program.set();
         program
     }
+
+    pub fn get_scene_width(&self) -> u32{
+        self.scene_width
+    }
+
+    pub fn get_scene_height(&self) -> u32{
+        self.scene_height
+    }
 }
 
+#[derive(Clone)]
 pub enum SceneBackGround {
     //SkyBox(Cubemap),
     Image(Texture),

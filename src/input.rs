@@ -9,6 +9,10 @@ pub fn is_pressed(e: &sdl2::EventPump,key:Scancode) -> bool {
     e.keyboard_state().is_scancode_pressed(key)
 }
 
+pub fn mouse_pressed_left(e:&EventPump) -> bool{
+    e.mouse_state().left()
+}
+
 pub fn mouse_pos(e:&EventPump) -> (i32,i32){
     (e.mouse_state().x(),e.mouse_state().y())
 }

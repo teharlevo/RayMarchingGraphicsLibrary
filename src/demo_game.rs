@@ -48,7 +48,7 @@ impl DemoGameLogik{
         d.angle_z = 3.14/2.0;
 
         let fb = FrameBuffer::new(s.get_scene_width(),s.get_scene_height());
-        fb.get_texture().load("Screenshot 2024-04-18 012040.jpg");
+        //fb.get_texture().load("Screenshot 2024-04-18 012040.jpg");
         s.sttinges.background = SceneBackGround::FrameBuffer(fb);
         
         print!("{}:{}",bs.objects.len(),bs.objects_models.len());

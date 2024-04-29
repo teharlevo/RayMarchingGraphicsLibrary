@@ -373,6 +373,7 @@ impl Texture {
                 gl::UNSIGNED_BYTE,
                 std::ptr::null(),
             );   
+            gl::GenerateMipmap(gl::TEXTURE_2D);
             gl::BindTexture(gl::TEXTURE_2D, 0) ;  
 
         }

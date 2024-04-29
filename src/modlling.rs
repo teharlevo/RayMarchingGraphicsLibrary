@@ -52,8 +52,7 @@ impl Modlling{
         win.sdl.mouse().show_cursor(true);
         let cam = &mut s.cam;
         cam.x = 0.0;cam.y = 0.0;cam.z = -10.0;
-        cam.angle_x = 0.0;cam.angle_y = 0.0;
-        cam.angle_z = 0.0;
+        cam.dir = (0.0,0.0,1.0);
 
         let mut modlling = Modlling{
             model_name:String::from("new_object") + &format!("{}",'\n'),

@@ -22,7 +22,8 @@ uniform vec3 colorB;
 uniform vec3 colorC;
 uniform vec3 colorD;
 
-uniform vec3 camareAngles;
+uniform vec3 camareDir;
+uniform float camareRoll;
 uniform vec3 camarePos;
 
 uniform sampler2D background;
@@ -282,11 +283,9 @@ vec3 getRayDir() {
     //vec2 a = fUV;
     
     vec2 coords = ((fUV * 2.0 - 1.0)* vec2(width,height))/height;
-    vec3 rayDir = normalize(vec3(rot2D(camareAngles.z) * coords,1));
-    rayDir.xz = rayDir.xz * rot2D(camareAngles.x);
-    rayDir = normalize(rayDir);
-    rayDir.yz = rayDir.yz * rot2D(camareAngles.y);
-    rayDir = normalize(rayDir);
+    vec3 rayDir =  mat3(1,0,camareDir.x,
+                        0,1,camareDir.y,
+                        0,0,camareDir.z) * normalize(vec3(rot2D(camareRoll) * coords,1));
  return rayDir;
 }
 

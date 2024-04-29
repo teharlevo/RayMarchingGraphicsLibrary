@@ -109,9 +109,9 @@ impl DemoGameLogik{
                 self.cam_look_y = -3.14/4.0
             }
             self.cam_look_x = 3.14/2.0;
-            cam.angle_x = self.cam_look_x;
+            //cam.angle_x = self.cam_look_x;
             //cam.angle_y = self.cam_look_y * self.cam_look_x.tan();
-            cam.angle_y = self.cam_look_y;
+            //cam.angle_y = self.cam_look_y;
         }
 
         match &mut s.sttinges.background {

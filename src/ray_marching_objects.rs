@@ -9,9 +9,7 @@ pub struct Camare{
     pub x:f32,
     pub y:f32,
     pub z:f32,
-    pub angle_x:f32,
-    pub angle_y:f32,
-    pub angle_z:f32,
+    pub dir:(f32,f32,f32),
 }
 
 impl Camare {
@@ -21,33 +19,18 @@ impl Camare {
             x:x,
             y:y,
             z:z,
-            angle_x:0.0,
-            angle_y:0.0,
-            angle_z:0.0,
+            dir:(0.0,0.0,1.0),
         };
         cam
     }
 
     fn send_info(&self,shader:&Program){
         let u_pos = Uniform::new(shader.id(), "camarePos").expect("camarePos Uniform");
-        let u_angle = Uniform::new(shader.id(), "camareAngles").expect("camreAngles Uniform");
+        let u_angle = Uniform::new(shader.id(), "camareDir").expect("camreAngles Uniform");
         unsafe {
             gl::Uniform3f(u_pos.id, self.x,self.y,self.z);
-            gl::Uniform3f(u_angle.id, self.angle_x,self.angle_y,self.angle_z);
+            gl::Uniform3f(u_angle.id, self.dir.0,self.dir.1,self.dir.2);
         }
-    }
-
-    pub fn direction(&self) -> (f32, f32, f32) {
-        
-        let x = self.angle_x.cos() * self.angle_y.cos();
-        let y = self.angle_y.sin();
-        let z = self.angle_x.sin() * self.angle_y.cos();
-
-        //x = Math.cos(alpha) * Math.cos(beta);
-        //z = Math.sin(alpha) * Math.cos(beta);
-        //y = Math.sin(beta);
-        
-        (x, y, z)
     }
     
 }

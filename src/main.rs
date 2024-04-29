@@ -25,7 +25,7 @@ fn main(){
     let mut win = win;
 
     let cam = Camare::new(0.0, 0.0, -3.0);
-    let bchk_grund = Texture::new();
+    let bchk_grund = Texture::new(0,0);
     _ = bchk_grund.load("camera_pitch_yaw_roll.png");
 
     let set = SceneSttinges{
@@ -70,7 +70,8 @@ fn main(){
         else if game_mode == 2 {
             game.update(&mut se, &win);   
         }
-        //se.draw();
+        
+        se.draw();
         
         if Instant::now().duration_since(time).as_secs_f32() > 1.0 {
             println!("fps:{}", fps);

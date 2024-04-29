@@ -117,10 +117,16 @@ impl Program {
     }
 
 
-    pub fn set(&self) {
+    pub fn bind(&self) {
         unsafe {
             UseProgram(self.id);
         }
+    }
+
+    pub fn unbind(&self) {
+        //unsafe {
+        //    UseProgram(0);
+        //}
     }
 }
 
@@ -350,11 +356,27 @@ pub struct Texture {
 }
 
 impl Texture {
-    pub  fn new() -> Texture {
+
+    pub fn new(width:u32,height:u32) -> Texture {
         let mut id:u32 = 0;
         unsafe {
-            gl::GenTextures(1, &mut id);     
+            gl::GenTextures(1, &mut id);  
+            gl::BindTexture(gl::TEXTURE_2D, id) ;  
+            gl::TexImage2D(
+                gl::TEXTURE_2D,
+                0,
+                gl::RGBA as i32,
+                width as i32,
+                height as i32,
+                0,
+                gl::RGBA,
+                gl::UNSIGNED_BYTE,
+                std::ptr::null(),
+            );   
+            gl::BindTexture(gl::TEXTURE_2D, 0) ;  
+
         }
+        
         Texture{
             id
         }
@@ -502,52 +524,55 @@ impl Drop for Texture {
 //    }
 //}
 
+#[derive(Clone)]
 pub struct FrameBuffer{
     id:u32,
     tex:Texture,
 }
 
-//impl FrameBuffer {
-//
-//    pub fn new(int width,int height){
-//
-//        fboID = glGenFramebuffers();
-//        glBindFramebuffer(GL_FRAMEBUFFER, fboID);
-//        
-//        tex = new Texture(width, height);
-//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width,height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-//        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-//        tex.getID(), 0);
-//        int rboID = glGenRenderbuffers();
-//        glBindRenderbuffer(GL_RENDERBUFFER, rboID);
-//        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
-//        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboID);
-//
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
-//
-//        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-//            System.out.println("Error: Framebuffer is not complete");
-//        }
-//        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//    }
-//    
-//    pub fn bind(&self){
-//        unsafe { gl::BindFramebuffer(gl::FRAMEBUFFER,self.id);
-//
-//        };
-//
-//    }
-//
-//    pub fn unbind(&self){
-//        unsafe { gl::BindFramebuffer(gl::FRAMEBUFFER,0);}; 
-//    }
-//
-//    pub fn get_id(&self) -> u32{
-//        self.id
-//    }
-//
-//    pub fn get_texture(&self) -> &Texture{
-//        &self.tex
-//    }
-//}
+impl FrameBuffer {
+
+    pub fn new(width:u32,height:u32) ->FrameBuffer{
+
+        unsafe {
+            let mut id = 0;
+            let tex = Texture::new(width, height);
+            gl::GenFramebuffers(1, &mut id);
+            gl::BindFramebuffer(gl::FRAMEBUFFER, id);
+            gl::FramebufferTexture2D(
+                gl::FRAMEBUFFER,
+                gl::COLOR_ATTACHMENT0,
+                gl::TEXTURE_2D,
+                tex.id,
+                0,
+            );
+
+            let status = gl::CheckFramebufferStatus(gl::FRAMEBUFFER);
+            if status != gl::FRAMEBUFFER_COMPLETE {
+                panic!("Framebuffer is not complete!");
+            }
+            gl::BindFramebuffer(gl::FRAMEBUFFER, 0);
+            FrameBuffer { id: id, tex }
+        }
+    }
+    
+    pub fn bind(&self){
+        unsafe {
+             gl::BindFramebuffer(gl::FRAMEBUFFER,self.id);
+             gl::Clear(gl::COLOR_BUFFER_BIT);
+        };
+
+    }
+
+    pub fn unbind(&self){
+        unsafe { gl::BindFramebuffer(gl::FRAMEBUFFER,0);}; 
+    }
+
+    pub fn get_id(&self) -> u32{
+        self.id
+    }
+
+    pub fn get_texture(&self) -> &Texture{
+        &self.tex
+    }
+}

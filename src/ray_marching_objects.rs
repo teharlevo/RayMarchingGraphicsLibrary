@@ -191,6 +191,7 @@ impl Scene{
     }
 
     pub fn draw(&self){
+        self.shader.bind();
         unsafe { gl::ActiveTexture(gl::TEXTURE0) };
 
         match &self.sttinges.background {
@@ -217,9 +218,15 @@ impl Scene{
 
                 }
             },
+            SceneBackGround::FrameBuffer(fra) => {
+                fra.get_texture().bind();
+                //let u_back_ground_color = Uniform::new(self.shader.id(), "backgroundcolor").expect("backgroundcolor Uniform");
+                //unsafe {
+                //    gl::Uniform3f(u_back_ground_color.id,0.0,1.0,0.0);
+                //}
+            },
         }
 
-        self.shader.set();
         self.cam.send_info(&self.shader);
         let u_size = Uniform::new(self.shader.id(), "size").expect("size Uniform");
         let u_width= Uniform::new(self.shader.id(), "width").expect("height Uniform");
@@ -235,6 +242,27 @@ impl Scene{
         }
         self.sttinges.send_info(&self.shader);
         draw();
+
+        match &self.sttinges.background {
+            //SceneBackGround::SkyBox(cubemap) => {
+            //    cubemap.bind();
+            //},
+            SceneBackGround::Image(image) => {
+                image.unbind()
+            },
+            SceneBackGround::Color(r, g,b) => {
+            },
+            SceneBackGround::ContinuationOfRay(color_senstivity,color_offset) => {},
+            SceneBackGround::FrameBuffer(fra) => {
+                fra.get_texture().unbind();
+                let u_back_ground_color = Uniform::new(self.shader.id(), "backgroundcolor").expect("backgroundcolor Uniform");
+                unsafe {
+                    gl::Uniform3f(u_back_ground_color.id,1.0,1.0,0.0);
+                }
+            },
+        }
+
+        //self.shader.unbind();
     }
 
     pub fn add_folder_to_model(&mut self,folder_path: &str){
@@ -284,7 +312,6 @@ impl Scene{
         let program = create_program(&CString::new(include_str!(".vert")).unwrap()
         ,&make_frag(ob_types)).unwrap();
         
-        program.set();
         program
     }
 
@@ -300,6 +327,7 @@ impl Scene{
 #[derive(Clone)]
 pub enum SceneBackGround {
     //SkyBox(Cubemap),
+    FrameBuffer(FrameBuffer),
     Image(Texture),
     Color(f32,f32,f32),
     ContinuationOfRay(f32,f32),

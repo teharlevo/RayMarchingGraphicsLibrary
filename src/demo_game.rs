@@ -1,8 +1,9 @@
 use sdl2::keyboard::Scancode;
 
-use crate::{input::{is_pressed, move_mouse_to_center}, Camare, Scene, SceneBackGround, SceneSttinges, Winsdl};
+use crate::{input::{is_pressed, move_mouse_to_center}, opengl_shit::{FrameBuffer, Texture}, Camare, Scene, SceneBackGround, SceneSttinges, Winsdl};
 
 pub struct DemoGameLogik{
+    //background_framebuffer:FrameBuffer,
     background_secne:Scene,
     velosty_y:f32,
 }
@@ -12,6 +13,7 @@ impl DemoGameLogik{
 
     pub fn empty() -> DemoGameLogik{
         DemoGameLogik{
+            //background_framebuffer:FrameBuffer::new(0,0),
             background_secne: Scene::new(SceneSttinges{
                 max_rays:         0,
                 min_dis_ray:      0.0,
@@ -36,13 +38,22 @@ impl DemoGameLogik{
         win.sdl.mouse().show_cursor(false);
         _ = move_mouse_to_center(win);
 
-        let mut bs = s.clone();
+        let mut bs = Scene::new(s.sttinges.clone(), s.cam.clone(), s.get_scene_width(),s.get_scene_height());
+        bs.add_folder_to_model("src/objects");
+        bs.update_shader();
+        bs.sttinges.background = SceneBackGround::Color(1.0, 1.0, 1.0);
         bs.sttinges.color_senstivity = 0.003;
-        bs.clear_objects();
+        
         let d = bs.add_object("death");
         d.angle_z = 3.14/2.0;
+
+        let fb = FrameBuffer::new(s.get_scene_width(),s.get_scene_height());
+        fb.get_texture().load("Screenshot 2024-04-18 012040.jpg");
+        s.sttinges.background = SceneBackGround::FrameBuffer(fb);
         
+        print!("{}:{}",bs.objects.len(),bs.objects_models.len());
         DemoGameLogik{
+            //background_framebuffer:fb,
             velosty_y:0.0,
             background_secne: bs,
         }
@@ -92,11 +103,20 @@ impl DemoGameLogik{
             }
         }
 
-        self.upade_backgrund(&cam);
+        match &mut s.sttinges.background {
+            SceneBackGround::FrameBuffer(fb) => {
+                self.upade_backgrund(cam,fb)
+            },
+            SceneBackGround::Image(_) => {},
+            SceneBackGround::Color(_, _, _) => {},
+            SceneBackGround::ContinuationOfRay(_, _) => {},
+        }
     }
 
-    fn upade_backgrund(&mut self,cam:&Camare){
-        self.background_secne.cam =cam.clone();
+    fn upade_backgrund(&mut self,cam:&Camare,fb:&mut FrameBuffer){
+        self.background_secne.cam = cam.clone();
+        fb.bind();
         self.background_secne.draw();
+        fb.unbind();
     }
 }

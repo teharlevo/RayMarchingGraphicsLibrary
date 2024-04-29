@@ -6,6 +6,8 @@ pub struct DemoGameLogik{
     //background_framebuffer:FrameBuffer,
     background_secne:Scene,
     velosty_y:f32,
+    cam_look_x:f32,
+    cam_look_y:f32,
 }
 
 
@@ -24,6 +26,8 @@ impl DemoGameLogik{
                 background: SceneBackGround::Color(0.0, 0.0, 0.0),
             }, Camare::new(0.0,0.0,0.0),0,0),
             velosty_y:0.0,
+            cam_look_x:0.0,
+            cam_look_y:0.0,
         }
     }
 
@@ -43,19 +47,22 @@ impl DemoGameLogik{
         bs.update_shader();
         bs.sttinges.background = SceneBackGround::Color(1.0, 1.0, 1.0);
         bs.sttinges.color_senstivity = 0.003;
+        bs.sttinges.max_dis_ray = 1000.0;
+
+        let k = s.add_object("floor");
+        k.y = -2.0;
         
         let d = bs.add_object("death");
         d.angle_z = 3.14/2.0;
 
         let fb = FrameBuffer::new(s.get_scene_width(),s.get_scene_height());
-        //fb.get_texture().load("Screenshot 2024-04-18 012040.jpg");
         s.sttinges.background = SceneBackGround::FrameBuffer(fb);
-        
-        print!("{}:{}",bs.objects.len(),bs.objects_models.len());
         DemoGameLogik{
             //background_framebuffer:fb,
             velosty_y:0.0,
             background_secne: bs,
+            cam_look_x:0.0,
+            cam_look_y:0.0,
         }
     }
 
@@ -92,15 +99,19 @@ impl DemoGameLogik{
 
         if !is_pressed(&win.event_pump,Scancode::Escape) {
             let mouse_cange = move_mouse_to_center(win);
-            cam.angle_x += mouse_cange.0 as f32/1000.0;
-            cam.angle_y -= mouse_cange.1 as f32/1000.0;
+            self.cam_look_x += mouse_cange.0 as f32/1000.0;
+            self.cam_look_y -= mouse_cange.1 as f32/1000.0;
 
-            if cam.angle_y >= 3.14/4.0{
-                cam.angle_y = 3.14/4.0
+            if self.cam_look_y >= 3.14/4.0{
+                self.cam_look_y = 3.14/4.0
             }
-            else if cam.angle_y <= -3.14/4.0{
-                cam.angle_y = -3.14/4.0
+            else if self.cam_look_y <= -3.14/4.0{
+                self.cam_look_y = -3.14/4.0
             }
+            self.cam_look_x = 3.14/2.0;
+            cam.angle_x = self.cam_look_x;
+            //cam.angle_y = self.cam_look_y * self.cam_look_x.tan();
+            cam.angle_y = self.cam_look_y;
         }
 
         match &mut s.sttinges.background {

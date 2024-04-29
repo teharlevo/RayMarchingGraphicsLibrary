@@ -1,0 +1,43 @@
+floor
+        
+{
+    
+    vec3 q1 = p;
+    
+        q1 = opRepetitionXZ(q1,vec3(3.5,10,3.5));
+                    
+    q1 -= vec3(0,-1,0);
+    q1 = rotateVec3(q1,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q2 = q1;
+    
+    q2 -= vec3(0,0,0);
+    q2 = rotateVec3(q2,vec3(0.0, 0.0, 0.0));
+    
+    float s2 = sdBox(q2,vec3(1.3, 1.3, 1.3));
+    
+    vec3 q3 = q1;
+    
+    q3 -= vec3(0,0,0);
+    q3 = rotateVec3(q3,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q4 = q3;
+    
+    q4 -= vec3(0,0,0);
+    q4 = rotateVec3(q4,vec3(0.0, 0.0, 0.0));
+    
+    float s4 = sdBox(q4,vec3(0.8, 0.8, 1.8));
+    
+    vec3 q5 = q3;
+    
+    q5 -= vec3(0,0,0);
+    q5 = rotateVec3(q5,vec3(0.0, 0.0, 0.0));
+    
+    float s5 = sdBox(q5,vec3(1.8, 0.8, 0.8));
+    
+float s3 = opUnion(s4,s5);
+
+float s1 = opUnion(s2,s3);
+
+        return s1;
+}

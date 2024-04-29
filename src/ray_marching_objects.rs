@@ -220,10 +220,6 @@ impl Scene{
             },
             SceneBackGround::FrameBuffer(fra) => {
                 fra.get_texture().bind();
-                //let u_back_ground_color = Uniform::new(self.shader.id(), "backgroundcolor").expect("backgroundcolor Uniform");
-                //unsafe {
-                //    gl::Uniform3f(u_back_ground_color.id,0.0,1.0,0.0);
-                //}
             },
         }
 

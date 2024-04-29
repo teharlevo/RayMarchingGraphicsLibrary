@@ -1,6 +1,6 @@
 
 use std::time::Instant;
-use input::mouse_pressed_left;
+use input::{mouse_pos, mouse_pressed_left};
 use opengl_shit::Texture;
 use sdl2::event::Event;
 
@@ -31,7 +31,7 @@ fn main(){
     let set = SceneSttinges{
         max_rays: 60,
         min_dis_ray: 0.1,
-        max_dis_ray: 1000.0,
+        max_dis_ray: 200.0,
 
         color_senstivity:0.1,
         color_offset:10.0,
@@ -86,12 +86,17 @@ fn main(){
 fn menu_update(gm:i32,s:&mut Scene,win:&Winsdl,mut game:DemoGameLogik,mut modling:Modlling) -> (i32,DemoGameLogik,Modlling){
     let mut new_gm = gm;
     if gm == 0{
-        if mouse_pressed_left(&win.event_pump){
+        let mp = mouse_pos(&win.event_pump);
+        if mouse_pressed_left(&win.event_pump) && mp.0 > 0 && mp.0 < 500
+        && mp.1 > 0 && mp.1 < 500{
             game = DemoGameLogik::new(s,win);
             new_gm = 2;
-        }else if mouse_pressed_left(&win.event_pump){
+        }else if mouse_pressed_left(&win.event_pump) && mp.0 > 500 && mp.0 < 1000
+        && mp.1 > 0 && mp.1 < 500 {
             modling = Modlling::start(s, win);
             new_gm = 1;
+        }else if mouse_pressed_left(&win.event_pump) {
+            println!("{:?}",mp);
         }
     }
     (new_gm,game,modling)

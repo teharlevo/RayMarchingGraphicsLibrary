@@ -10,6 +10,7 @@ pub struct Camare{
     pub y:f32,
     pub z:f32,
     pub dir:(f32,f32,f32),
+    pub roll:f32,
 }
 
 impl Camare {
@@ -20,6 +21,7 @@ impl Camare {
             y:y,
             z:z,
             dir:(0.0,0.0,1.0),
+            roll:0.0,
         };
         cam
     }
@@ -27,9 +29,11 @@ impl Camare {
     fn send_info(&self,shader:&Program){
         let u_pos = Uniform::new(shader.id(), "camarePos").expect("camarePos Uniform");
         let u_angle = Uniform::new(shader.id(), "camareDir").expect("camreAngles Uniform");
+        let u_roll = Uniform::new(shader.id(), "camareRoll").expect("camareRoll Uniform");
         unsafe {
             gl::Uniform3f(u_pos.id, self.x,self.y,self.z);
             gl::Uniform3f(u_angle.id, self.dir.0,self.dir.1,self.dir.2);
+            gl::Uniform1f(u_roll.id, self.roll);
         }
     }
     

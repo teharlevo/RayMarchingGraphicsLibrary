@@ -279,14 +279,23 @@ mat2 rot2D(float a) {
     return mat2(cos(a), -sin(a), sin(a), cos(a));
 }
 
+mat3 createRotationMatrix(vec3 direction, vec3 up) {
+    vec3 right = cross(up, direction);
+    vec3 newUp = cross(direction, right);
+    return mat3(normalize(right), normalize(newUp), normalize(-direction));
+}
+
 vec3 getRayDir() {
-    //vec2 a = fUV;
-    
+
     vec2 coords = ((fUV * 2.0 - 1.0)* vec2(width,height))/height;
-    vec3 rayDir =  mat3(1,0,camareDir.x,
-                        0,1,camareDir.y,
-                        0,0,camareDir.z) * normalize(vec3(rot2D(camareRoll) * coords,1));
- return rayDir;
+
+    vec3 rayDirection = normalize(vec3(rot2D(camareRoll) * vec2(coords),1.0));
+
+    mat3 rotationMatrix = createRotationMatrix(normalize(camareDir), vec3(0,1,0));
+
+    //rotationMatrix = inverse(rotationMatrix);
+    vec3 rayDir = rotationMatrix * rayDirection;
+ return normalize(rayDir);
 }
 
 void main()
@@ -319,7 +328,5 @@ void main()
     else{
         Color = vec4(backgroundcolor,1.0);
     }
-    //Color = vec4(1.0);
-    //Color = texture(background, fUV) * vec4(1.0);
-    //Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
+
 }

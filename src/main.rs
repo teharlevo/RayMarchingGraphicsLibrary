@@ -30,8 +30,8 @@ fn main(){
 
     let set = SceneSttinges{
         max_rays: 60,
-        min_dis_ray: 0.1,
-        max_dis_ray: 200.0,
+        min_dis_ray: 0.01,
+        max_dis_ray: 500.0,
 
         color_senstivity:0.1,
         color_offset:10.0,

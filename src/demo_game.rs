@@ -71,7 +71,7 @@ impl DemoGameLogik{
 
         let cam = &mut s.cam;
 
-        self.velosty_y -= 0.1;
+        self.velosty_y -= 0.05;
         
         cam.y += self.velosty_y;
 
@@ -94,24 +94,26 @@ impl DemoGameLogik{
             cam.z -= 0.1 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::Space) && cam.y == 0.0{
-            self.velosty_y = 1.0;
+            self.velosty_y = 1.5;
         }
 
         if !is_pressed(&win.event_pump,Scancode::Escape) {
             let mouse_cange = move_mouse_to_center(win);
-            self.cam_look_x += mouse_cange.0 as f32/1000.0;
+            self.cam_look_x -= mouse_cange.0 as f32/1000.0;
             self.cam_look_y -= mouse_cange.1 as f32/1000.0;
 
-            if self.cam_look_y >= 3.14/4.0{
-                self.cam_look_y = 3.14/4.0
-            }
-            else if self.cam_look_y <= -3.14/4.0{
-                self.cam_look_y = -3.14/4.0
-            }
-            self.cam_look_x = 3.14/2.0;
-            //cam.angle_x = self.cam_look_x;
-            //cam.angle_y = self.cam_look_y * self.cam_look_x.tan();
-            //cam.angle_y = self.cam_look_y;
+            //if self.cam_look_y >= 3.14/4.0{
+            //    self.cam_look_y = 3.14/4.0
+            //}
+            //else if self.cam_look_y <= -3.14/4.0{
+            //    self.cam_look_y = -3.14/4.0
+            //}
+            //self.cam_look_x = 3.14/2.0;
+            cam.dir =(
+                (self.cam_look_x - 3.14/2.0).cos() * self.cam_look_y.cos(),
+                self.cam_look_y.sin(),
+                (self.cam_look_x - 3.14/2.0).sin() * self.cam_look_y.cos(),
+            );
         }
 
         match &mut s.sttinges.background {
@@ -126,6 +128,8 @@ impl DemoGameLogik{
 
     fn upade_backgrund(&mut self,cam:&Camare,fb:&mut FrameBuffer){
         self.background_secne.cam = cam.clone();
+        self.background_secne.cam.dir = (-self.background_secne.cam.dir.0
+            ,-self.background_secne.cam.dir.1,-self.background_secne.cam.dir.2);
         fb.bind();
         self.background_secne.draw();
         fb.unbind();

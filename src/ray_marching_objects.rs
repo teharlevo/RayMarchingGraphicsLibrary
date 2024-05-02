@@ -188,10 +188,10 @@ impl Scene{
             SceneBackGround::Image(image) => {
                 image.bind()
             },
-            SceneBackGround::Color(r, g,b) => {
+            SceneBackGround::Color(r, g,b,a) => {
                 let u_back_ground_color = Uniform::new(self.shader.id(), "backgroundcolor").expect("backgroundcolor Uniform");
                 unsafe {
-                    gl::Uniform3f(u_back_ground_color.id,*r,*g,*b);
+                    gl::Uniform4f(u_back_ground_color.id,*r,*g,*b,*a);
                 }
             },
             SceneBackGround::ContinuationOfRay(color_senstivity,color_offset) => {
@@ -233,7 +233,7 @@ impl Scene{
             SceneBackGround::Image(image) => {
                 image.unbind()
             },
-            SceneBackGround::Color(r, g,b) => {
+            SceneBackGround::Color(r, g,b,a) => {
             },
             SceneBackGround::ContinuationOfRay(color_senstivity,color_offset) => {},
             SceneBackGround::FrameBuffer(fra) => {
@@ -312,7 +312,7 @@ pub enum SceneBackGround {
     //SkyBox(Cubemap),
     FrameBuffer(FrameBuffer),
     Image(Texture),
-    Color(f32,f32,f32),
+    Color(f32,f32,f32,f32),
     ContinuationOfRay(f32,f32),
 }
 
@@ -321,7 +321,9 @@ pub fn create_opengl_contest(width: usize, height: usize){
     unsafe {gl::Viewport(0, 0, width as i32, height as i32); 
         gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
         gl::Enable(gl::BLEND);
-        gl::Enable(gl::TEXTURE_2D);}
+        //gl::Enable(gl::TEXTURE_2D);
+    }
+        
 
     let vertices: Vec<f32> = vec![
         1.0, -1.0,1.0,0.0,

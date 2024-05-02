@@ -21,6 +21,8 @@ pub struct Modlling{
     dis:f32,
     update_lest_frame:bool,
     exported_lest_frame:bool,
+    free_cam_mode:bool,
+    cam_mode_update_lest_frame:bool,
 }
 
 impl Modlling{
@@ -42,6 +44,8 @@ impl Modlling{
             dis:0.0,
             update_lest_frame:   false,
             exported_lest_frame: false,
+            free_cam_mode: false,
+            cam_mode_update_lest_frame: false,
         }
     }
 
@@ -67,10 +71,12 @@ impl Modlling{
             },
 
             line_x:0.0,
-            line_y:3.14/2.0,
+            line_y:0.0,
             dis:10.0,
             update_lest_frame:   false,
             exported_lest_frame: false,
+            free_cam_mode: false,
+            cam_mode_update_lest_frame: false,
         };
         modlling.reset(s);
         modlling
@@ -79,40 +85,47 @@ impl Modlling{
     pub fn update(&mut self,s:&mut Scene,win:&Winsdl){
         let speed = if is_pressed(&win.event_pump,Scancode::LShift) {5.0}else{1.0};
 
-        if is_pressed(&win.event_pump,Scancode::W) {
-            self.line_x += 0.1 * speed;
-        }
-
-        if is_pressed(&win.event_pump,Scancode::S) {
-            self.line_x -= 0.1 * speed;
-        }
-
-        if is_pressed(&win.event_pump,Scancode::D) {
-            self.line_y += 0.1 * speed;
-        }
-
-        if is_pressed(&win.event_pump,Scancode::A) {
-            self.line_y -= 0.1 * speed;
-        }
-
-        if is_pressed(&win.event_pump,Scancode::E) {
-            self.dis += 0.3 * speed;
-        }
-
-        if is_pressed(&win.event_pump,Scancode::Q) {
-            self.dis -= 0.3 * speed;
+        if self.free_cam_mode{
 
         }
-
-        if is_pressed(&win.event_pump,Scancode::Q) {
-            self.dis -= 0.3 * speed;
+        else{
+            if is_pressed(&win.event_pump,Scancode::W) {
+                self.line_x += 0.1 * speed;
+            }
+    
+            if is_pressed(&win.event_pump,Scancode::S) {
+                self.line_x -= 0.1 * speed;
+            }
+    
+            if is_pressed(&win.event_pump,Scancode::D) {
+                self.line_y += 0.1 * speed;
+            }
+    
+            if is_pressed(&win.event_pump,Scancode::A) {
+                self.line_y -= 0.1 * speed;
+            }
+    
+            if is_pressed(&win.event_pump,Scancode::E) {
+                self.dis += 0.3 * speed;
+            }
+    
+            if is_pressed(&win.event_pump,Scancode::Q) {
+                self.dis -= 0.3 * speed;
+    
+            }
+    
+            if is_pressed(&win.event_pump,Scancode::Q) {
+                self.dis -= 0.3 * speed;
+            }
+    
+            if is_pressed(&win.event_pump,Scancode::F) && is_pressed(&win.event_pump,Scancode::LCtrl) {
+                self.dis = 0.0;
+                self.line_x = 0.0;
+                self.line_y = 0.0;
+            }
         }
 
-        if is_pressed(&win.event_pump,Scancode::F) && is_pressed(&win.event_pump,Scancode::LCtrl) {
-            self.dis = 0.0;
-            self.line_x = 0.0;
-            self.line_y = 0.0;
-        }
+
 
         if is_pressed(&win.event_pump,Scancode::Space) && !self.update_lest_frame{
             self.reset(s);
@@ -471,7 +484,7 @@ fn object_maker_from_word_list(word_list:&mut Vec<Word>) -> Result<ObjForModel,S
                     num_in_word_list(word_list)?,num_in_word_list(word_list)?);
                     serch_for_object = false;
                 }
-                else if str == "ellipsoid" {
+                else if str == "ellipsoid" || str == "Ellipsoid"{
                     object_type = ObjForModelType::Ellipsoid(
                     num_in_word_list(word_list)?,num_in_word_list(word_list)?,num_in_word_list(word_list)?);
                     serch_for_object = false;
@@ -595,7 +608,7 @@ fn background_from_text(word_list:&mut Vec<Word>) -> Result<SceneBackGround,Stri
             Word::Word(text) => {
                 if text == "color"{
 
-                    return Ok(SceneBackGround::Color(num_in_word_list(word_list)?, num_in_word_list(word_list)?, num_in_word_list(word_list)?));
+                    return Ok(SceneBackGround::Color(num_in_word_list(word_list)?, num_in_word_list(word_list)?, num_in_word_list(word_list)?,1.0));
                 } 
                 if text == "image" || text == "img"{
                     loop{

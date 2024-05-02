@@ -2,8 +2,12 @@ use sdl2::keyboard::Scancode;
 
 use crate::{input::{is_pressed, move_mouse_to_center}, opengl_shit::{FrameBuffer, Texture}, Camare, Scene, SceneBackGround, SceneSttinges, Winsdl};
 
+const BACKGRUND_SLOOWNES:f32 = 5.0;
+
+const HEAND_POS:usize = 0;
 pub struct DemoGameLogik{
     //background_framebuffer:FrameBuffer,
+    //hund_secne:Scene,
     background_secne:Scene,
     velosty_y:f32,
     cam_look_x:f32,
@@ -15,7 +19,15 @@ impl DemoGameLogik{
 
     pub fn empty() -> DemoGameLogik{
         DemoGameLogik{
-            //background_framebuffer:FrameBuffer::new(0,0),
+            //hund_secne: Scene::new(SceneSttinges{
+            //    max_rays:         0,
+            //    min_dis_ray:      0.0,
+            //    max_dis_ray:      0.0,
+            //    color_senstivity: 0.0,
+            //    color_offset:     0.0,
+            //    colors_rgb:       [(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0)],
+            //    background: SceneBackGround::Color(0.0, 0.0, 0.0, 0.0),
+            //}, Camare::new(0.0,0.0,0.0),0,0),
             background_secne: Scene::new(SceneSttinges{
                 max_rays:         0,
                 min_dis_ray:      0.0,
@@ -23,7 +35,7 @@ impl DemoGameLogik{
                 color_senstivity: 0.0,
                 color_offset:     0.0,
                 colors_rgb:       [(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0)],
-                background: SceneBackGround::Color(0.0, 0.0, 0.0),
+                background: SceneBackGround::Color(0.0, 0.0, 0.0, 0.0),
             }, Camare::new(0.0,0.0,0.0),0,0),
             velosty_y:0.0,
             cam_look_x:0.0,
@@ -32,12 +44,17 @@ impl DemoGameLogik{
     }
 
     pub fn new(s:&mut Scene,win:&Winsdl) -> DemoGameLogik{
+        //let mut hs = Scene::new(SceneSttinges{
+        //    max_rays:         60,
+        //    min_dis_ray:      0.001,
+        //    max_dis_ray:      100.0,
+        //    color_senstivity: 0.003,
+        //    color_offset:     0.0,
+        //    colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
+        //    background:SceneBackGround::Color(0.3, 0.1, 0.1,0.0),
+        //}, Camare::new(0.0,0.0,0.0),s.get_scene_width(),s.get_scene_height());
+
         s.clear_objects();
-
-        let k = s.add_object("evil_man");
-
-        k.z = 3.0;
-        k.angle_x = 3.14/2.0;
 
         win.sdl.mouse().show_cursor(false);
         _ = move_mouse_to_center(win);
@@ -45,9 +62,20 @@ impl DemoGameLogik{
         let mut bs = Scene::new(s.sttinges.clone(), s.cam.clone(), s.get_scene_width(),s.get_scene_height());
         bs.add_folder_to_model("src/objects");
         bs.update_shader();
-        bs.sttinges.background = SceneBackGround::Color(1.0, 1.0, 1.0);
+        bs.sttinges.background = SceneBackGround::Color(1.0, 1.0, 1.0,1.0);
         bs.sttinges.color_senstivity = 0.003;
         bs.sttinges.max_dis_ray = 1000.0;
+        bs.sttinges.max_rays = 60;
+
+        //let k = hs.add_object("hund");
+        //k.angle_y = 3.14;
+        //k.angle_z = 3.14/2.0;
+
+        let k = s.add_object("evil_man");
+
+        
+        k.z = 3.0;
+        k.angle_x = 3.14/2.0;
 
         let k = s.add_object("floor");
         k.y = -2.0;
@@ -59,6 +87,7 @@ impl DemoGameLogik{
         s.sttinges.background = SceneBackGround::FrameBuffer(fb);
         DemoGameLogik{
             //background_framebuffer:fb,
+            //hund_secne:hs, 
             velosty_y:0.0,
             background_secne: bs,
             cam_look_x:0.0,
@@ -81,34 +110,45 @@ impl DemoGameLogik{
         }
 
 
+        let mut move_f = 0.0;
+        let mut move_r = 0.0;
+
         if is_pressed(&win.event_pump,Scancode::W) {
-            cam.x += 0.1 * speed;
+            move_f -= 0.1 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::S) {
-            cam.x -= 0.1 * speed;
+            move_f += 0.1 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::D) {
-            cam.z += 0.1 * speed;
+            move_r -= 0.1 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::A) {
-            cam.z -= 0.1 * speed;
+            move_r += 0.1 * speed;
         }
         if is_pressed(&win.event_pump,Scancode::Space) && cam.y == 0.0{
             self.velosty_y = 1.5;
         }
+
+        let norlizer = (cam.dir.0 * cam.dir.0 + cam.dir.2 * cam.dir.2).sqrt();
+        cam.x += move_f * cam.dir.0/norlizer;
+        cam.z += move_f * cam.dir.2/norlizer;
+
+        cam.x -= move_r * cam.dir.2/norlizer;
+        cam.z += move_r * cam.dir.0/norlizer;
 
         if !is_pressed(&win.event_pump,Scancode::Escape) {
             let mouse_cange = move_mouse_to_center(win);
             self.cam_look_x -= mouse_cange.0 as f32/1000.0;
             self.cam_look_y -= mouse_cange.1 as f32/1000.0;
 
-            //if self.cam_look_y >= 3.14/4.0{
-            //    self.cam_look_y = 3.14/4.0
-            //}
-            //else if self.cam_look_y <= -3.14/4.0{
-            //    self.cam_look_y = -3.14/4.0
-            //}
-            //self.cam_look_x = 3.14/2.0;
+            if self.cam_look_y >= 3.14/2.0{
+                self.cam_look_y = 3.14/2.0;
+            }
+            else if self.cam_look_y <= -3.14/2.0{
+                self.cam_look_y = -3.14/2.0;
+            }
+            //println!("x:{} y:{}",self.cam_look_x,self.cam_look_y);
+            
             cam.dir =(
                 (self.cam_look_x - 3.14/2.0).cos() * self.cam_look_y.cos(),
                 self.cam_look_y.sin(),
@@ -121,15 +161,22 @@ impl DemoGameLogik{
                 self.upade_backgrund(cam,fb)
             },
             SceneBackGround::Image(_) => {},
-            SceneBackGround::Color(_, _, _) => {},
+            SceneBackGround::Color(_, _, _, _) => {},
             SceneBackGround::ContinuationOfRay(_, _) => {},
         }
+
+        s.draw();
     }
 
     fn upade_backgrund(&mut self,cam:&Camare,fb:&mut FrameBuffer){
         self.background_secne.cam = cam.clone();
         self.background_secne.cam.dir = (-self.background_secne.cam.dir.0
             ,-self.background_secne.cam.dir.1,-self.background_secne.cam.dir.2);
+
+        self.background_secne.cam.x = self.background_secne.cam.x/BACKGRUND_SLOOWNES;
+        self.background_secne.cam.y = self.background_secne.cam.y/BACKGRUND_SLOOWNES;
+        self.background_secne.cam.z = self.background_secne.cam.z/BACKGRUND_SLOOWNES;
+
         fb.bind();
         self.background_secne.draw();
         fb.unbind();

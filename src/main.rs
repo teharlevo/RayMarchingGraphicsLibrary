@@ -29,14 +29,14 @@ fn main(){
     _ = bchk_grund.load("camera_pitch_yaw_roll.png");
 
     let set = SceneSttinges{
-        max_rays: 60,
+        max_rays: 1000,
         min_dis_ray: 0.01,
-        max_dis_ray: 500.0,
+        max_dis_ray: 1500.0,
 
-        color_senstivity:0.1,
-        color_offset:10.0,
+        color_senstivity:0.03,
+        color_offset:0.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
-        background:SceneBackGround::Color(0.3, 0.1, 0.1),
+        background:SceneBackGround::Color(0.3, 0.1, 0.1,1.0),
     };
 
     let mut game_mode = 0;
@@ -71,14 +71,13 @@ fn main(){
             game.update(&mut se, &win);   
         }
         
-        se.draw();
-        
         if Instant::now().duration_since(time).as_secs_f32() > 1.0 {
             println!("fps:{}", fps);
             fps = 0;
             time = Instant::now();
         }
         fps = fps + 1;
+    
         win.window.gl_swap_window();
     }
 }

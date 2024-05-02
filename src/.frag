@@ -28,7 +28,7 @@ uniform vec3 camarePos;
 
 uniform sampler2D background;
 //uniform samplerCube skybox;
-uniform vec3 backgroundcolor;
+uniform vec4 backgroundcolor;
 uniform float ContinuationOfRayColorOffset;
 uniform float ContinuationOfRayColorSenstivity;
 
@@ -326,7 +326,7 @@ void main()
         Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
     }
     else{
-        Color = vec4(backgroundcolor,1.0);
+        Color = backgroundcolor;
     }
 
 }

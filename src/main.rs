@@ -7,7 +7,7 @@ use sdl2::event::Event;
 mod  input;
 //use input::*;
 mod opengl_shit;
-//use opengl_shit::*;
+use opengl_shit::*;
 mod shader_maker;
 //use shader_maker::*;
 mod ray_marching_objects;
@@ -30,13 +30,14 @@ fn main(){
 
     let set = SceneSttinges{
         max_rays: 1000,
-        min_dis_ray: 0.01,
+        min_dis_ray: 0.0001,
         max_dis_ray: 1500.0,
 
         color_senstivity:0.03,
         color_offset:0.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
-        background:SceneBackGround::Color(0.3, 0.1, 0.1,1.0),
+        background:SceneBackGround::Color(0.3, 0.1, 0.1),
+        dis_from_zero: true,
     };
 
     let mut game_mode = 0;
@@ -69,6 +70,9 @@ fn main(){
         }
         else if game_mode == 2 {
             game.update(&mut se, &win);   
+        }
+        else {
+            se.draw();
         }
         
         if Instant::now().duration_since(time).as_secs_f32() > 1.0 {

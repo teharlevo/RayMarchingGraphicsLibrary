@@ -16,6 +16,7 @@ uniform float maxDisRay;
 
 uniform float colorSenstivity;
 uniform float colorOffset;
+uniform bool disFromZERO;
 
 uniform vec3 colorA;
 uniform vec3 colorB;
@@ -28,7 +29,7 @@ uniform vec3 camarePos;
 
 uniform sampler2D background;
 //uniform samplerCube skybox;
-uniform vec4 backgroundcolor;
+uniform vec3 backgroundcolor;
 uniform float ContinuationOfRayColorOffset;
 uniform float ContinuationOfRayColorSenstivity;
 
@@ -301,9 +302,9 @@ vec3 getRayDir() {
 void main()
 {
     vec3 rayDir = getRayDir();
-    float totalDis = 0.0;
+    float totalDis = 0.0;vec3 p = vec3(0);
     for (int i = 0; i < maxRays; i++) {
-        vec3 p = camarePos + rayDir * totalDis;
+        p = camarePos + rayDir * totalDis;
 
         float dis = map(p);
 
@@ -314,19 +315,22 @@ void main()
     }
 
     if(totalDis < maxDisRay ){
+            if(disFromZERO){totalDis = length(p);}
         Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
     }
     else if (length(texture(background, vec2(fUV.x,-fUV.y)).rgb) != 0.0){
-        Color = texture(background, vec2(fUV.x,-fUV.y));
+        Color = texture(background, vec2(fUV.x,fUV.y));
     }
     else if (ContinuationOfRayColorSenstivity != 0.0){
+        if(disFromZERO){totalDis = length(p);}
         Color = vec4(palette(totalDis * ContinuationOfRayColorSenstivity + ContinuationOfRayColorOffset), 1.0);
     }
     else if (ContinuationOfRayColorOffset != 0.0){
+        if(disFromZERO){totalDis = length(p);}
         Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
     }
     else{
-        Color = backgroundcolor;
+        Color = vec4(backgroundcolor,1);
     }
 
 }

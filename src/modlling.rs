@@ -435,6 +435,7 @@ rot(0.0,0.0,0.0)
         max_dis_ray: num_in_word_list(&mut word_list)?,
         color_senstivity: num_in_word_list(&mut word_list)?,
         color_offset: num_in_word_list(&mut word_list)?,
+        dis_from_zero: bool_in_word_list(&mut word_list)?,
         colors_rgb: [(num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?)
         ,(num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?)
         ,(num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?,num_in_word_list(&mut word_list)?)
@@ -608,7 +609,7 @@ fn background_from_text(word_list:&mut Vec<Word>) -> Result<SceneBackGround,Stri
             Word::Word(text) => {
                 if text == "color"{
 
-                    return Ok(SceneBackGround::Color(num_in_word_list(word_list)?, num_in_word_list(word_list)?, num_in_word_list(word_list)?,1.0));
+                    return Ok(SceneBackGround::Color(num_in_word_list(word_list)?, num_in_word_list(word_list)?, num_in_word_list(word_list)?));
                 } 
                 if text == "image" || text == "img"{
                     loop{

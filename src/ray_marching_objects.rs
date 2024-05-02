@@ -93,6 +93,7 @@ pub struct SceneSttinges{
 
     pub color_senstivity:f32,
     pub color_offset:f32,
+    pub dis_from_zero:bool,
 
     pub colors_rgb:[(f32,f32,f32);4],
     pub background:SceneBackGround,
@@ -106,6 +107,7 @@ impl SceneSttinges {
 
         let u_color_senstivity = Uniform::new(shader.id(), "colorSenstivity").expect("size Uniform");
         let u_color_offset = Uniform::new(shader.id(), "colorOffset").expect("size Uniform");
+        let u_dis_zero = Uniform::new(shader.id(), "disFromZERO").expect("size Uniform");
 
         let u_color_a = Uniform::new(shader.id(), "colorA").expect("size Uniform");
         let u_color_b = Uniform::new(shader.id(), "colorB").expect("size Uniform");
@@ -120,6 +122,7 @@ impl SceneSttinges {
 
             gl::Uniform1f(u_color_senstivity.id,self.color_senstivity as f32);
             gl::Uniform1f(u_color_offset.id,self.color_offset as f32);
+            gl::Uniform1i(u_dis_zero.id,self.dis_from_zero as i32);
 
             gl::Uniform3f(u_color_a.id,self.colors_rgb[0].0,self.colors_rgb[0].1,self.colors_rgb[0].2);
             gl::Uniform3f(u_color_b.id,self.colors_rgb[1].0,self.colors_rgb[1].1,self.colors_rgb[1].2);
@@ -188,10 +191,10 @@ impl Scene{
             SceneBackGround::Image(image) => {
                 image.bind()
             },
-            SceneBackGround::Color(r, g,b,a) => {
+            SceneBackGround::Color(r, g,b) => {
                 let u_back_ground_color = Uniform::new(self.shader.id(), "backgroundcolor").expect("backgroundcolor Uniform");
                 unsafe {
-                    gl::Uniform4f(u_back_ground_color.id,*r,*g,*b,*a);
+                    gl::Uniform3f(u_back_ground_color.id,*r,*g,*b);
                 }
             },
             SceneBackGround::ContinuationOfRay(color_senstivity,color_offset) => {
@@ -233,7 +236,7 @@ impl Scene{
             SceneBackGround::Image(image) => {
                 image.unbind()
             },
-            SceneBackGround::Color(r, g,b,a) => {
+            SceneBackGround::Color(_,_,_) => {
             },
             SceneBackGround::ContinuationOfRay(color_senstivity,color_offset) => {},
             SceneBackGround::FrameBuffer(fra) => {
@@ -312,37 +315,8 @@ pub enum SceneBackGround {
     //SkyBox(Cubemap),
     FrameBuffer(FrameBuffer),
     Image(Texture),
-    Color(f32,f32,f32,f32),
+    Color(f32,f32,f32),
     ContinuationOfRay(f32,f32),
-}
-
-pub fn create_opengl_contest(width: usize, height: usize){
-    
-    unsafe {gl::Viewport(0, 0, width as i32, height as i32); 
-        gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
-        gl::Enable(gl::BLEND);
-        //gl::Enable(gl::TEXTURE_2D);
-    }
-        
-
-    let vertices: Vec<f32> = vec![
-        1.0, -1.0,1.0,0.0,
-       -1.0,  1.0,0.0,1.0,
-        1.0,  1.0,1.0,1.0,
-       -1.0, -1.0,0.0,0.0,
-   ];
-
-    let vbo = Vbo::gen();
-    vbo.set(&vertices); 
-    let vao = Vao::gen();
-    vao.set();  
-    let indices: Vec<u32> = vec![
-        2, 1, 0, // Top right triangle
-        0, 1, 3 // bottom left triangle
-    ];
-
-    let ibo = Ibo::gen();
-    ibo.set(&indices);
 }
 
 pub fn draw(){

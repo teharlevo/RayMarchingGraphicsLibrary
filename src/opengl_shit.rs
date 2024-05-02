@@ -11,6 +11,31 @@ use gl::TEXTURE_CUBE_MAP;
 use image::{EncodableLayout, ImageError};
 
 
+pub fn create_opengl_contest(width: usize, height: usize){
+    
+    unsafe {gl::Viewport(0, 0, width as i32, height as i32);}
+        
+
+    let vertices: Vec<f32> = vec![
+        1.0, -1.0,1.0,0.0,
+       -1.0,  1.0,0.0,1.0,
+        1.0,  1.0,1.0,1.0,
+       -1.0, -1.0,0.0,0.0,
+   ];
+
+    let vbo = Vbo::gen();
+    vbo.set(&vertices); 
+    let vao = Vao::gen();
+    vao.set();  
+    let indices: Vec<u32> = vec![
+        2, 1, 0, // Top right triangle
+        0, 1, 3 // bottom left triangle
+    ];
+
+    let ibo = Ibo::gen();
+    ibo.set(&indices);
+}
+
 /// An OpenGL Shader (of the graphics pipeline)
 pub struct Shader {
     id: GLuint,

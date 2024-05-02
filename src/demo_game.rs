@@ -7,7 +7,7 @@ const BACKGRUND_SLOOWNES:f32 = 5.0;
 const HEAND_POS:usize = 0;
 pub struct DemoGameLogik{
     //background_framebuffer:FrameBuffer,
-    //hund_secne:Scene,
+    hund_secne:Scene,
     background_secne:Scene,
     velosty_y:f32,
     cam_look_x:f32,
@@ -19,15 +19,16 @@ impl DemoGameLogik{
 
     pub fn empty() -> DemoGameLogik{
         DemoGameLogik{
-            //hund_secne: Scene::new(SceneSttinges{
-            //    max_rays:         0,
-            //    min_dis_ray:      0.0,
-            //    max_dis_ray:      0.0,
-            //    color_senstivity: 0.0,
-            //    color_offset:     0.0,
-            //    colors_rgb:       [(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0)],
-            //    background: SceneBackGround::Color(0.0, 0.0, 0.0, 0.0),
-            //}, Camare::new(0.0,0.0,0.0),0,0),
+            hund_secne: Scene::new(SceneSttinges{
+                max_rays:         0,
+                min_dis_ray:      0.0,
+                max_dis_ray:      0.0,
+                color_senstivity: 0.0,
+                color_offset:     0.0,
+                colors_rgb:       [(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0)],
+                background: SceneBackGround::Color(0.0, 0.0, 0.0),
+                dis_from_zero: false,
+            }, Camare::new(0.0,0.0,0.0),0,0),
             background_secne: Scene::new(SceneSttinges{
                 max_rays:         0,
                 min_dis_ray:      0.0,
@@ -35,7 +36,8 @@ impl DemoGameLogik{
                 color_senstivity: 0.0,
                 color_offset:     0.0,
                 colors_rgb:       [(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0)],
-                background: SceneBackGround::Color(0.0, 0.0, 0.0, 0.0),
+                background: SceneBackGround::Color(0.0, 0.0, 0.0),
+                dis_from_zero: false,
             }, Camare::new(0.0,0.0,0.0),0,0),
             velosty_y:0.0,
             cam_look_x:0.0,
@@ -44,15 +46,11 @@ impl DemoGameLogik{
     }
 
     pub fn new(s:&mut Scene,win:&Winsdl) -> DemoGameLogik{
-        //let mut hs = Scene::new(SceneSttinges{
-        //    max_rays:         60,
-        //    min_dis_ray:      0.001,
-        //    max_dis_ray:      100.0,
-        //    color_senstivity: 0.003,
-        //    color_offset:     0.0,
-        //    colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
-        //    background:SceneBackGround::Color(0.3, 0.1, 0.1,0.0),
-        //}, Camare::new(0.0,0.0,0.0),s.get_scene_width(),s.get_scene_height());
+        let mut hs_s = s.sttinges.clone();
+        hs_s.background = SceneBackGround::FrameBuffer(FrameBuffer::new(s.get_scene_width(),s.get_scene_height()));
+        let mut hs = Scene::new(hs_s, Camare::new(0.0,0.0,0.0),s.get_scene_width(),s.get_scene_height());
+        hs.add_folder_to_model("src/objects");
+        hs.update_shader();
 
         s.clear_objects();
 
@@ -62,7 +60,7 @@ impl DemoGameLogik{
         let mut bs = Scene::new(s.sttinges.clone(), s.cam.clone(), s.get_scene_width(),s.get_scene_height());
         bs.add_folder_to_model("src/objects");
         bs.update_shader();
-        bs.sttinges.background = SceneBackGround::Color(1.0, 1.0, 1.0,1.0);
+        bs.sttinges.background = SceneBackGround::Color(1.0, 1.0, 1.0);
         bs.sttinges.color_senstivity = 0.003;
         bs.sttinges.max_dis_ray = 1000.0;
         bs.sttinges.max_rays = 60;
@@ -87,7 +85,7 @@ impl DemoGameLogik{
         s.sttinges.background = SceneBackGround::FrameBuffer(fb);
         DemoGameLogik{
             //background_framebuffer:fb,
-            //hund_secne:hs, 
+            hund_secne:hs, 
             velosty_y:0.0,
             background_secne: bs,
             cam_look_x:0.0,
@@ -161,17 +159,26 @@ impl DemoGameLogik{
                 self.upade_backgrund(cam,fb)
             },
             SceneBackGround::Image(_) => {},
-            SceneBackGround::Color(_, _, _, _) => {},
+            SceneBackGround::Color(_, _, _) => {},
             SceneBackGround::ContinuationOfRay(_, _) => {},
         }
 
-        s.draw();
+        //self.hund_secne.sttinges.color_offset = ((cam.x * cam.x + cam.y * cam.y + cam.z * cam.z).sqrt())*s.sttinges.color_senstivity;
+        match &mut self.hund_secne.sttinges.background {
+            SceneBackGround::FrameBuffer(fb) => {
+                fb.bind();
+                s.draw();
+                fb.unbind();
+            },
+            SceneBackGround::Image(_) => {},
+            SceneBackGround::Color(_, _, _) => {},
+            SceneBackGround::ContinuationOfRay(_, _) => {},
+        }
+        self.hund_secne.draw();
     }
 
     fn upade_backgrund(&mut self,cam:&Camare,fb:&mut FrameBuffer){
         self.background_secne.cam = cam.clone();
-        self.background_secne.cam.dir = (-self.background_secne.cam.dir.0
-            ,-self.background_secne.cam.dir.1,-self.background_secne.cam.dir.2);
 
         self.background_secne.cam.x = self.background_secne.cam.x/BACKGRUND_SLOOWNES;
         self.background_secne.cam.y = self.background_secne.cam.y/BACKGRUND_SLOOWNES;

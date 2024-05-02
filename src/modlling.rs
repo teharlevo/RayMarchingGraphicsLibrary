@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
+use sdl2::hint::set;
 use sdl2::keyboard::Scancode;
 
 use crate::ray_marching_objects::*;
@@ -23,6 +24,8 @@ pub struct Modlling{
     exported_lest_frame:bool,
     free_cam_mode:bool,
     cam_mode_update_lest_frame:bool,
+    cam_look_x:f32,
+    cam_look_y:f32,
 }
 
 impl Modlling{
@@ -46,6 +49,8 @@ impl Modlling{
             exported_lest_frame: false,
             free_cam_mode: false,
             cam_mode_update_lest_frame: false,
+            cam_look_x:0.0,
+            cam_look_y:0.0,
         }
     }
 
@@ -55,7 +60,7 @@ impl Modlling{
         
         win.sdl.mouse().show_cursor(true);
         let cam = &mut s.cam;
-        cam.x = 0.0;cam.y = 0.0;cam.z = -10.0;
+        cam.x = 0.0;cam.y = 0.0;cam.z = 0.0;
         cam.dir = (0.0,0.0,1.0);
 
         let mut modlling = Modlling{
@@ -72,11 +77,13 @@ impl Modlling{
 
             line_x:0.0,
             line_y:0.0,
-            dis:10.0,
+            dis:-10.0,
             update_lest_frame:   false,
             exported_lest_frame: false,
             free_cam_mode: false,
             cam_mode_update_lest_frame: false,
+            cam_look_x:0.0,
+            cam_look_y:0.0,
         };
         modlling.reset(s);
         modlling
@@ -85,10 +92,33 @@ impl Modlling{
     pub fn update(&mut self,s:&mut Scene,win:&Winsdl){
         let speed = if is_pressed(&win.event_pump,Scancode::LShift) {5.0}else{1.0};
 
-        if self.free_cam_mode{
-
+        if is_pressed(&win.event_pump,Scancode::Space) && !self.update_lest_frame{
+            self.reset(s);
+            self.update_lest_frame = true;
         }
-        else{
+        else if !is_pressed(&win.event_pump,Scancode::Space) {
+            self.update_lest_frame = false;
+        }
+
+        let cam = &mut s.cam;
+
+        if !self.cam_mode_update_lest_frame && is_pressed(&win.event_pump,Scancode::CapsLock){
+            self.cam_mode_update_lest_frame = true;
+            
+            if self.free_cam_mode{
+                cam.x = 0.0;cam.y = 0.0;cam.z = 0.0;
+            }
+            cam.dir = (0.0,0.0,1.0);
+            self.cam_look_x = 3.14;self.cam_look_y = 0.0;
+
+            self.free_cam_mode = !self.free_cam_mode;
+            win.sdl.mouse().show_cursor(!self.free_cam_mode);
+        }
+        else if !is_pressed(&win.event_pump,Scancode::CapsLock) {
+            self.cam_mode_update_lest_frame = false;
+        }
+
+        if !self.free_cam_mode{
             if is_pressed(&win.event_pump,Scancode::W) {
                 self.line_x += 0.1 * speed;
             }
@@ -123,17 +153,46 @@ impl Modlling{
                 self.line_x = 0.0;
                 self.line_y = 0.0;
             }
+
+            cam.z = -self.dis;
+        }
+        else {
+            let mouse_cange = move_mouse_to_center(win);
+            self.cam_look_x -= mouse_cange.0 as f32/1000.0;
+            self.cam_look_y -= mouse_cange.1 as f32/1000.0;
+
+            if self.cam_look_y >= 3.14/2.0{
+                self.cam_look_y = 3.14/2.0;
+            }
+            else if self.cam_look_y <= -3.14/2.0{
+                self.cam_look_y = -3.14/2.0;
+            }
+            //println!("x:{} y:{}",self.cam_look_x,self.cam_look_y);
+            
+            cam.dir =(
+                (self.cam_look_x - 3.14/2.0).cos() * self.cam_look_y.cos(),
+                self.cam_look_y.sin(),
+                (self.cam_look_x - 3.14/2.0).sin() * self.cam_look_y.cos(),
+            );
+
+            let mut move_f = 0.0;
+    
+            if is_pressed(&win.event_pump,Scancode::W) {
+                move_f -= 0.1 * speed;
+            }
+            if is_pressed(&win.event_pump,Scancode::S) {
+                move_f += 0.1 * speed;
+            }
+    
+            let norlizer = (cam.dir.0 * cam.dir.0 + cam.dir.2 * cam.dir.2).sqrt();
+            cam.x += move_f * cam.dir.0/norlizer;
+            cam.y += move_f * cam.dir.1/norlizer;
+            cam.z += move_f * cam.dir.2/norlizer;
         }
 
-
-
-        if is_pressed(&win.event_pump,Scancode::Space) && !self.update_lest_frame{
-            self.reset(s);
-            self.update_lest_frame = true;
-        }
-        else if !is_pressed(&win.event_pump,Scancode::Space) {
-            self.update_lest_frame = false;
-        }
+        let obj = s.objects.first_mut().unwrap(); 
+        obj.angle_x = self.line_x; 
+        obj.angle_z = self.line_y;
 
         if is_pressed(&win.event_pump,Scancode::R) && is_pressed(&win.event_pump,Scancode::LCtrl)
         && !self.exported_lest_frame{
@@ -143,14 +202,8 @@ impl Modlling{
         else if !is_pressed(&win.event_pump,Scancode::R) || !is_pressed(&win.event_pump,Scancode::LCtrl) {
             self.exported_lest_frame = false;
         }
-
-        let cam = &mut s.cam;
-
-
-        let obj = s.objects.first_mut().unwrap();
-        obj.angle_x = self.line_x;  
-        obj.angle_z = self.line_y;
-        cam.z = -self.dis;
+        
+        s.draw();
     }
 
     fn object_text(&mut self) -> String{

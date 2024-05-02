@@ -30,14 +30,14 @@ fn main(){
 
     let set = SceneSttinges{
         max_rays: 1000,
-        min_dis_ray: 0.0001,
+        min_dis_ray: 0.01,
         max_dis_ray: 1500.0,
 
         color_senstivity:0.03,
         color_offset:0.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
         background:SceneBackGround::Color(0.3, 0.1, 0.1),
-        dis_from_zero: true,
+        dis_from_zero: false,
     };
 
     let mut game_mode = 0;

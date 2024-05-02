@@ -29,30 +29,6 @@ pub struct Modlling{
 }
 
 impl Modlling{
-    pub fn empty() -> Modlling{
-        Modlling{
-            model_name:String::from(""),
-            model_code:String::from(""),
-            model_object:ObjForModel{
-                type_: Box::new(ObjForModelType::Empty()),
-                displacemen:vec![],
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-                angle: (0.0,0.0,0.0),
-            },
-
-            line_x:0.0,
-            line_y:0.0,
-            dis:0.0,
-            update_lest_frame:   false,
-            exported_lest_frame: false,
-            free_cam_mode: false,
-            cam_mode_update_lest_frame: false,
-            cam_look_x:0.0,
-            cam_look_y:0.0,
-        }
-    }
 
 
     pub fn start(s:&mut Scene,win:&Winsdl) -> Modlling{
@@ -89,7 +65,7 @@ impl Modlling{
         modlling
     }
 
-    pub fn update(&mut self,s:&mut Scene,win:&Winsdl){
+    pub fn update(&mut self,s:&mut Scene,win:&Winsdl) -> bool{
         let speed = if is_pressed(&win.event_pump,Scancode::LShift) {5.0}else{1.0};
 
         if is_pressed(&win.event_pump,Scancode::Space) && !self.update_lest_frame{
@@ -204,6 +180,13 @@ impl Modlling{
         }
         
         s.draw();
+
+        if is_pressed(&win.event_pump,Scancode::Escape){
+            s.clear();
+            return true;
+        }
+
+        false
     }
 
     fn object_text(&mut self) -> String{

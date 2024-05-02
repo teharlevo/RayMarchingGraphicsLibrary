@@ -39,21 +39,13 @@ fn main(){
         background:SceneBackGround::Color(0.3, 0.1, 0.1),
         dis_from_zero: false,
     };
-
-    let mut game_mode = 0;
     
-    let mut se = Scene::new(set,cam,1000,500);
-    
-
-    se.add_folder_to_model("src/objects");
-    
-    se.update_shader();
+    let mut se = Scene::new(set.clone(),cam,1000,500);
     
     let mut time = Instant::now();
     let mut fps = 0;
 
-    let mut modlling:Modlling = Modlling::empty();
-    let mut game:DemoGameLogik = DemoGameLogik::empty();
+    let mut mode = menu_start(&mut se, &win, set.clone());
 
     'main: loop {
         for event in win.event_pump.poll_iter() {
@@ -64,15 +56,19 @@ fn main(){
             }
         }
 
-        (game_mode,game,modlling) = menu_update(game_mode,&mut se, &win,game,modlling);
-        if game_mode == 1{
-            modlling.update(&mut se, &win);
-        }
-        else if game_mode == 2 {
-            game.update(&mut se, &win);   
-        }
-        else {
-            se.draw();
+        match &mut mode {
+            Mode::Menu => {
+                mode = menu_update(&mut se, &win,mode);
+                se.draw();
+            },
+            Mode::DemoGame(dg) => {
+                dg.update(&mut se, &win);
+            },
+            Mode::Modling(m) => {
+                if m.update(&mut se, &win){
+                    mode = menu_start(&mut se,&win,set.clone());
+                }
+            },
         }
         
         if Instant::now().duration_since(time).as_secs_f32() > 1.0 {
@@ -86,21 +82,36 @@ fn main(){
     }
 }
 
-fn menu_update(gm:i32,s:&mut Scene,win:&Winsdl,mut game:DemoGameLogik,mut modling:Modlling) -> (i32,DemoGameLogik,Modlling){
-    let mut new_gm = gm;
-    if gm == 0{
-        let mp = mouse_pos(&win.event_pump);
-        if mouse_pressed_left(&win.event_pump) && mp.0 > 0 && mp.0 < 500
-        && mp.1 > 0 && mp.1 < 500{
-            game = DemoGameLogik::new(s,win);
-            new_gm = 2;
-        }else if mouse_pressed_left(&win.event_pump) && mp.0 > 500 && mp.0 < 1000
-        && mp.1 > 0 && mp.1 < 500 {
-            modling = Modlling::start(s, win);
-            new_gm = 1;
-        }else if mouse_pressed_left(&win.event_pump) {
-            println!("{:?}",mp);
-        }
+fn menu_update(s:&mut Scene,win:&Winsdl,mode:Mode) -> Mode{
+    match mode{
+        Mode::Menu => {
+            let mp = mouse_pos(&win.event_pump);
+            if mouse_pressed_left(&win.event_pump) && mp.0 > 0 && mp.0 < 500
+            && mp.1 > 0 && mp.1 < 500{
+                return Mode::DemoGame(DemoGameLogik::new(s,win));
+            }else if mouse_pressed_left(&win.event_pump) && mp.0 > 500 && mp.0 < 1000
+            && mp.1 > 0 && mp.1 < 500 {
+                return Mode::Modling(Modlling::start(s, win));
+            }
+        },
+        Mode::DemoGame(_) => {},
+        Mode::Modling(_) => {},
     }
-    (new_gm,game,modling)
+    return Mode::Menu;
+}
+
+fn menu_start(s:&mut Scene,win:&Winsdl,sttinges :SceneSttinges) -> Mode{
+    s.sttinges = sttinges;
+    win.sdl.mouse().show_cursor(true);
+    s.add_folder_to_model("src/objects");
+    
+    s.update_shader();
+    return Mode::Menu;
+}
+
+enum Mode {
+    Menu,
+    DemoGame(DemoGameLogik),
+    Modling(Modlling),
+
 }

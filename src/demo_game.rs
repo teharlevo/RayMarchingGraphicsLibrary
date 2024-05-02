@@ -17,40 +17,10 @@ pub struct DemoGameLogik{
 
 impl DemoGameLogik{
 
-    pub fn empty() -> DemoGameLogik{
-        DemoGameLogik{
-            hund_secne: Scene::new(SceneSttinges{
-                max_rays:         0,
-                min_dis_ray:      0.0,
-                max_dis_ray:      0.0,
-                color_senstivity: 0.0,
-                color_offset:     0.0,
-                colors_rgb:       [(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0)],
-                background: SceneBackGround::Color(0.0, 0.0, 0.0),
-                dis_from_zero: false,
-            }, Camare::new(0.0,0.0,0.0),0,0),
-            background_secne: Scene::new(SceneSttinges{
-                max_rays:         0,
-                min_dis_ray:      0.0,
-                max_dis_ray:      0.0,
-                color_senstivity: 0.0,
-                color_offset:     0.0,
-                colors_rgb:       [(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0)],
-                background: SceneBackGround::Color(0.0, 0.0, 0.0),
-                dis_from_zero: false,
-            }, Camare::new(0.0,0.0,0.0),0,0),
-            velosty_y:0.0,
-            cam_look_x:0.0,
-            cam_look_y:0.0,
-        }
-    }
-
     pub fn new(s:&mut Scene,win:&Winsdl) -> DemoGameLogik{
         let mut hs_s = s.sttinges.clone();
         hs_s.background = SceneBackGround::FrameBuffer(FrameBuffer::new(s.get_scene_width(),s.get_scene_height()));
         let mut hs = Scene::new(hs_s, Camare::new(0.0,0.0,0.0),s.get_scene_width(),s.get_scene_height());
-        hs.add_folder_to_model("src/objects");
-        hs.update_shader();
 
         s.clear_objects();
 

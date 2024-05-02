@@ -1,0 +1,153 @@
+demo_word
+        
+{
+    
+    vec3 q1 = p;
+    
+    q1 -= vec3(0,0,-18);
+    q1 = rotateVec3(q1,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q2 = q1;
+    
+    q2 -= vec3(0,0,0);
+    q2 = rotateVec3(q2,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q3 = q2;
+    
+    q3 -= vec3(-30,0,0);
+    q3 = rotateVec3(q3,vec3(0.0, 0.43631944, 0.0));
+    
+    vec3 q4 = q3;
+    
+    q4 -= vec3(2,0,0);
+    q4 = rotateVec3(q4,vec3(0.0, 0.0, 0.0));
+    
+    float s4 = sdEllipsoid(q4,vec3(2.5,4.5,1));
+    
+    vec3 q5 = q3;
+    
+    q5 -= vec3(0,0,0);
+    q5 = rotateVec3(q5,vec3(0.0, 0.0, 0.0));
+    
+    float s5 = sdBox(q5,vec3(1.0, 5.0, 1.0));
+    
+float s3 = opSmoothUnion(s4,s5,2);
+
+    vec3 q6 = q2;
+    
+    q6 -= vec3(-15,0,0);
+    q6 = rotateVec3(q6,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q7 = q6;
+    
+    q7 -= vec3(0,0,0);
+    q7 = rotateVec3(q7,vec3(0.0, 0.0, 0.0));
+    
+    float s7 = sdBox(q7,vec3(0.5, 5.0, 0.5));
+    
+    vec3 q8 = q6;
+    
+    q8 -= vec3(1,0,0);
+    q8 = rotateVec3(q8,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q9 = q8;
+    
+    q9 -= vec3(0,3,0);
+    q9 = rotateVec3(q9,vec3(0.0, 0.0, 0.785375));
+    
+    float s9 = sdBox(q9,vec3(0.5, 2.5, 0.5));
+    
+    vec3 q10 = q8;
+    
+    q10 -= vec3(0,0,0);
+    q10 = rotateVec3(q10,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q11 = q10;
+    
+    q11 -= vec3(3,3,0);
+    q11 = rotateVec3(q11,vec3(0.0, 0.0, -0.785375));
+    
+    float s11 = sdBox(q11,vec3(0.5, 2.5, 0.5));
+    
+    vec3 q12 = q10;
+    
+    q12 -= vec3(4,0,0);
+    q12 = rotateVec3(q12,vec3(0.0, 0.0, 0.0));
+    
+    float s12 = sdBox(q12,vec3(0.5, 5.0, 0.5));
+    
+float s10 = opUnion(s11,s12);
+
+float s8 = opUnion(s9,s10);
+
+float s6 = opUnion(s7,s8);
+
+float s2 = opUnion(s3,s6);
+
+    vec3 q13 = q1;
+    
+    q13 -= vec3(-21,0,0);
+    q13 = rotateVec3(q13,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q14 = q13;
+    
+    q14 -= vec3(0,0,0);
+    q14 = rotateVec3(q14,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q15 = q14;
+    
+    q15 -= vec3(0,0,0);
+    q15 = rotateVec3(q15,vec3(0.0, 0.0, 0.0));
+    
+    float s15 = sdBox(q15,vec3(0.5, 5.0, 0.5));
+    
+    vec3 q16 = q14;
+    
+    q16 -= vec3(17,0,0);
+    q16 = rotateVec3(q16,vec3(0.0, 0.0, 0.0));
+    
+    float s16 = sdSphere(q16,5);
+    
+float s14 = opUnion(s15,s16);
+
+    vec3 q17 = q13;
+    
+    q17 -= vec3(1,0,0);
+    q17 = rotateVec3(q17,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q18 = q17;
+    
+    q18 -= vec3(0,0,0);
+    q18 = rotateVec3(q18,vec3(0.0, 0.0, 0.0));
+    
+    float s18 = sdBox(q18,vec3(2.0, 0.5, 0.5));
+    
+    vec3 q19 = q17;
+    
+    q19 -= vec3(0,0,0);
+    q19 = rotateVec3(q19,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q20 = q19;
+    
+    q20 -= vec3(0,4,0);
+    q20 = rotateVec3(q20,vec3(0.0, 0.0, 0.0));
+    
+    float s20 = sdBox(q20,vec3(2.0, 0.5, 0.5));
+    
+    vec3 q21 = q19;
+    
+    q21 -= vec3(0,-4,0);
+    q21 = rotateVec3(q21,vec3(0.0, 0.0, 0.0));
+    
+    float s21 = sdBox(q21,vec3(2.0, 0.5, 0.5));
+    
+float s19 = opUnion(s20,s21);
+
+float s17 = opUnion(s18,s19);
+
+float s13 = opUnion(s14,s17);
+
+float s1 = opUnion(s2,s13);
+
+        return s1;
+}

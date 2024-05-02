@@ -1,5 +1,5 @@
 
-name:cool_shit
+name:G
 max_rays: 200,
 min_dis_ray:  0.01,
 max_dis_ray: 1000.0,
@@ -11,33 +11,73 @@ colors [(0.8, 0.5, 0.4),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),(0.0, 0.25, 0.25),],
 background: color(0.1,0.1,0.1)
 
 
-union
+sub
     union
-        sphere(5)
+        union
+            box(1.0,5.0,1.0)
+            Displasment_list
+            END
+            pos(-4,7,0)
+            rot(0,0,0)
+    
+            union
+                box(5.0,1.0,1.0)
+                Displasment_list
+                END
+                pos(0,13,0)
+                rot(0,0,0)
+
+                box(1.0,3.5,1.0)
+                Displasment_list
+                END
+                pos(4,3,0)
+                rot(0,0,0)
+    
+            0
+            Displasment_list
+            END
+            pos(0,0,0)
+            rot(0,0,0)
+    
+        0
         Displasment_list
         END
         pos(0,0,0)
         rot(0,0,0)
 
-        box(1.0,5.0,1.0)
+        union
+            box(5.0,1.0,1.0)
+            Displasment_list
+            END
+            pos(0,2,0)
+            rot(0,0,0)
+    
+            box(2.5,1.0,1.0)
+            Displasment_list
+            END
+            pos(3,7,0)
+            rot(0,0,0)
+    
+        0
         Displasment_list
         END
         pos(0,0,0)
         rot(0,0,0)
-    1
-    Displasment_list
-    END
-    pos(-13 ,0,0)
-    rot(0,0,0)
-
-    box(1.0,5.0,1.0)
+    
+    0
     Displasment_list
     END
     pos(0,0,0)
     rot(0,0,0)
 
-0
+    ellipsoid(10.0,10,0.5)
+    Displasment_list
+    END
+    pos(0,7,0)
+    rot(0,0,0)
+
+4
 Displasment_list
 END
-pos(1,0,-10.0)
-rot(0,0,0)
+pos(24,-17,-18.0)
+rot(0,0,-25)

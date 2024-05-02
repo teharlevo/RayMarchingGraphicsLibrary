@@ -1,0 +1,83 @@
+G
+        
+{
+    
+    vec3 q1 = p;
+    
+    q1 -= vec3(24,-17,-18);
+    q1 = rotateVec3(q1,vec3(0.0, 0.0, -0.43631944));
+    
+    vec3 q2 = q1;
+    
+    q2 -= vec3(0,0,0);
+    q2 = rotateVec3(q2,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q3 = q2;
+    
+    q3 -= vec3(0,0,0);
+    q3 = rotateVec3(q3,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q4 = q3;
+    
+    q4 -= vec3(-4,7,0);
+    q4 = rotateVec3(q4,vec3(0.0, 0.0, 0.0));
+    
+    float s4 = sdBox(q4,vec3(1.0, 5.0, 1.0));
+    
+    vec3 q5 = q3;
+    
+    q5 -= vec3(0,0,0);
+    q5 = rotateVec3(q5,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q6 = q5;
+    
+    q6 -= vec3(0,13,0);
+    q6 = rotateVec3(q6,vec3(0.0, 0.0, 0.0));
+    
+    float s6 = sdBox(q6,vec3(5.0, 1.0, 1.0));
+    
+    vec3 q7 = q5;
+    
+    q7 -= vec3(4,3,0);
+    q7 = rotateVec3(q7,vec3(0.0, 0.0, 0.0));
+    
+    float s7 = sdBox(q7,vec3(1.0, 3.5, 1.0));
+    
+float s5 = opUnion(s6,s7);
+
+float s3 = opUnion(s4,s5);
+
+    vec3 q8 = q2;
+    
+    q8 -= vec3(0,0,0);
+    q8 = rotateVec3(q8,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q9 = q8;
+    
+    q9 -= vec3(0,2,0);
+    q9 = rotateVec3(q9,vec3(0.0, 0.0, 0.0));
+    
+    float s9 = sdBox(q9,vec3(5.0, 1.0, 1.0));
+    
+    vec3 q10 = q8;
+    
+    q10 -= vec3(3,7,0);
+    q10 = rotateVec3(q10,vec3(0.0, 0.0, 0.0));
+    
+    float s10 = sdBox(q10,vec3(2.5, 1.0, 1.0));
+    
+float s8 = opUnion(s9,s10);
+
+float s2 = opUnion(s3,s8);
+
+    vec3 q11 = q1;
+    
+    q11 -= vec3(0,7,0);
+    q11 = rotateVec3(q11,vec3(0.0, 0.0, 0.0));
+    
+    float s11 = sdEllipsoid(q11,vec3(10,10,0.5));
+    
+float s1 = opSmoothSubtraction(s2,s11,4);
+
+        return s1;
+}

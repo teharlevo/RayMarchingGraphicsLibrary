@@ -1,7 +1,6 @@
 
 use std::time::Instant;
 use input::{mouse_pos, mouse_pressed_left};
-use opengl_shit::Texture;
 use sdl2::event::Event;
 
 mod  input;
@@ -24,9 +23,7 @@ fn main(){
     create_opengl_contest(1000,500);
     let mut win = win;
 
-    let cam = Camare::new(0.0, 0.0, -3.0);
-    let bchk_grund = Texture::new(0,0);
-    _ = bchk_grund.load("camera_pitch_yaw_roll.png");
+    let cam = Camare::new(0.0, 0.0, 0.0);
 
     let set = SceneSttinges{
         max_rays: 1000,
@@ -36,7 +33,7 @@ fn main(){
         color_senstivity:0.03,
         color_offset:0.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
-        background:SceneBackGround::Color(0.3, 0.1, 0.1),
+        background:SceneBackGround::ContinuationOfRay(0.00003, 0.0),
         dis_from_zero: false,
     };
     
@@ -62,7 +59,9 @@ fn main(){
                 se.draw();
             },
             Mode::DemoGame(dg) => {
-                dg.update(&mut se, &win);
+                if dg.update(&mut se, &win){
+                    mode = menu_start(&mut se,&win,set.clone());
+                }
             },
             Mode::Modling(m) => {
                 if m.update(&mut se, &win){
@@ -102,10 +101,21 @@ fn menu_update(s:&mut Scene,win:&Winsdl,mode:Mode) -> Mode{
 
 fn menu_start(s:&mut Scene,win:&Winsdl,sttinges :SceneSttinges) -> Mode{
     s.sttinges = sttinges;
+    s.cam = Camare::new(0.0,0.0,0.0);
     win.sdl.mouse().show_cursor(true);
     s.add_folder_to_model("src/objects");
     
     s.update_shader();
+    let g = s.add_object("demo_word");
+    g.z = -2.0;
+    let g = s.add_object("mode_word");
+    g.z = -2.0;
+    let g = s.add_object("lin_word");
+    g.z = -2.0;
+    g.x = 3.0;
+    let g = s.add_object("G");
+    //g.z = -2.0;
+    g.scale = 0.8;
     return Mode::Menu;
 }
 

@@ -63,7 +63,7 @@ impl DemoGameLogik{
         }
     }
 
-    pub fn update(&mut self,s:&mut Scene,win:&Winsdl){
+    pub fn update(&mut self,s:&mut Scene,win:&Winsdl) -> bool{
         let speed = if is_pressed(&win.event_pump,Scancode::LShift) {5.0}else{1.0};
 
         let cam = &mut s.cam;
@@ -145,6 +145,13 @@ impl DemoGameLogik{
             SceneBackGround::ContinuationOfRay(_, _) => {},
         }
         self.hund_secne.draw();
+
+        if is_pressed(&win.event_pump,Scancode::Escape){
+            s.clear();
+            return true;
+        }
+
+        false
     }
 
     fn upade_backgrund(&mut self,cam:&Camare,fb:&mut FrameBuffer){

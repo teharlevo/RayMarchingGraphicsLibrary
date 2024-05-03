@@ -26,7 +26,7 @@ fn main(){
     let cam = Camare::new(0.0, 0.0, 0.0);
 
     let set = SceneSttinges{
-        max_rays: 1000,
+        max_rays: 6000,
         min_dis_ray: 0.01,
         max_dis_ray: 1500.0,
 
@@ -40,7 +40,9 @@ fn main(){
     let mut se = Scene::new(set.clone(),cam,1000,500);
     
     let mut time = Instant::now();
+    let mut lest_frame = Instant::now();
     let mut fps = 0;
+    let mut dt = 0.0;
 
     let mut mode = menu_start(&mut se, &win, set.clone());
 
@@ -55,16 +57,16 @@ fn main(){
 
         match &mut mode {
             Mode::Menu => {
-                mode = menu_update(&mut se, &win,mode);
+                mode = menu_update(&mut se, &win,mode,dt);
                 se.draw();
             },
             Mode::DemoGame(dg) => {
-                if dg.update(&mut se, &win){
+                if dg.update(&mut se, &win,dt){
                     mode = menu_start(&mut se,&win,set.clone());
                 }
             },
             Mode::Modling(m) => {
-                if m.update(&mut se, &win){
+                if m.update(&mut se, &win,dt){
                     mode = menu_start(&mut se,&win,set.clone());
                 }
             },
@@ -76,12 +78,15 @@ fn main(){
             time = Instant::now();
         }
         fps = fps + 1;
+     
+        dt = Instant::now().duration_since(lest_frame).as_secs_f32();
+        lest_frame = Instant::now();
     
         win.window.gl_swap_window();
     }
 }
 
-fn menu_update(s:&mut Scene,win:&Winsdl,mode:Mode) -> Mode{
+fn menu_update(s:&mut Scene,win:&Winsdl,mode:Mode,dt:f32) -> Mode{
     match mode{
         Mode::Menu => {
             let mp = mouse_pos(&win.event_pump);
@@ -92,6 +97,7 @@ fn menu_update(s:&mut Scene,win:&Winsdl,mode:Mode) -> Mode{
             && mp.1 > 0 && mp.1 < 500 {
                 return Mode::Modling(Modlling::start(s, win));
             }
+            s.sttinges.max_dis_ray += 10.0 * dt * 60.0;
         },
         Mode::DemoGame(_) => {},
         Mode::Modling(_) => {},
@@ -116,6 +122,7 @@ fn menu_start(s:&mut Scene,win:&Winsdl,sttinges :SceneSttinges) -> Mode{
     let g = s.add_object("G");
     //g.z = -2.0;
     g.scale = 0.8;
+
     return Mode::Menu;
 }
 

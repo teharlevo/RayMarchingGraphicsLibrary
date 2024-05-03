@@ -302,11 +302,12 @@ vec3 getRayDir() {
 void main()
 {
     vec3 rayDir = getRayDir();
+    float dis;
     float totalDis = 0.0;vec3 p = vec3(0);
     for (int i = 0; i < maxRays; i++) {
         p = camarePos + rayDir * totalDis;
 
-        float dis = map(p);
+        dis = map(p);
 
         totalDis += dis;
 
@@ -314,7 +315,7 @@ void main()
         
     }
 
-    if(totalDis < maxDisRay ){
+    if(totalDis < maxDisRay  && dis > minDisRay){
             if(disFromZERO){totalDis = length(p);}
         Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
     }

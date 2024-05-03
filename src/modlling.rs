@@ -65,7 +65,7 @@ impl Modlling{
         modlling
     }
 
-    pub fn update(&mut self,s:&mut Scene,win:&Winsdl) -> bool{
+    pub fn update(&mut self,s:&mut Scene,win:&Winsdl,dt:f32) -> bool{
         let speed = if is_pressed(&win.event_pump,Scancode::LShift) {5.0}else{1.0};
 
         if is_pressed(&win.event_pump,Scancode::Space) && !self.update_lest_frame{
@@ -96,32 +96,28 @@ impl Modlling{
 
         if !self.free_cam_mode{
             if is_pressed(&win.event_pump,Scancode::W) {
-                self.line_x += 0.1 * speed;
+                self.line_x += 0.1 * speed * dt * 60.0;
             }
     
             if is_pressed(&win.event_pump,Scancode::S) {
-                self.line_x -= 0.1 * speed;
+                self.line_x -= 0.1 * speed * dt * 60.0;
             }
     
             if is_pressed(&win.event_pump,Scancode::D) {
-                self.line_y += 0.1 * speed;
+                self.line_y += 0.1 * speed * dt * 60.0;
             }
     
             if is_pressed(&win.event_pump,Scancode::A) {
-                self.line_y -= 0.1 * speed;
+                self.line_y -= 0.1 * speed * dt * 60.0;
             }
     
             if is_pressed(&win.event_pump,Scancode::E) {
-                self.dis += 0.3 * speed;
+                self.dis += 0.3 * speed * dt * 60.0;
             }
     
             if is_pressed(&win.event_pump,Scancode::Q) {
-                self.dis -= 0.3 * speed;
+                self.dis -= 0.3 * speed * dt * 60.0;
     
-            }
-    
-            if is_pressed(&win.event_pump,Scancode::Q) {
-                self.dis -= 0.3 * speed;
             }
     
             if is_pressed(&win.event_pump,Scancode::F) && is_pressed(&win.event_pump,Scancode::LCtrl) {
@@ -134,8 +130,8 @@ impl Modlling{
         }
         else {
             let mouse_cange = move_mouse_to_center(win);
-            self.cam_look_x -= mouse_cange.0 as f32/1000.0;
-            self.cam_look_y -= mouse_cange.1 as f32/1000.0;
+            self.cam_look_x -= (mouse_cange.0 as f32/1000.0) * dt * 60.0;
+            self.cam_look_y -= (mouse_cange.1 as f32/1000.0) * dt * 60.0;
 
             if self.cam_look_y >= 3.14/2.0{
                 self.cam_look_y = 3.14/2.0;
@@ -154,10 +150,10 @@ impl Modlling{
             let mut move_f = 0.0;
     
             if is_pressed(&win.event_pump,Scancode::W) {
-                move_f -= 0.1 * speed;
+                move_f -= 0.1 * speed * dt * 60.0;
             }
             if is_pressed(&win.event_pump,Scancode::S) {
-                move_f += 0.1 * speed;
+                move_f += 0.1 * speed * dt * 60.0;
             }
     
             let norlizer = (cam.dir.0 * cam.dir.0 + cam.dir.2 * cam.dir.2).sqrt();

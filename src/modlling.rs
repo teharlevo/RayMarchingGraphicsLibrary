@@ -4,7 +4,6 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
-use sdl2::hint::set;
 use sdl2::keyboard::Scancode;
 
 use crate::ray_marching_objects::*;
@@ -465,6 +464,7 @@ rot(0.0,0.0,0.0)
         max_rays: num_in_word_list(&mut word_list)? as i32,
         min_dis_ray: num_in_word_list(&mut word_list)?,
         max_dis_ray: num_in_word_list(&mut word_list)?,
+        show_above_min_dis_errors:bool_in_word_list(&mut word_list)?,
         color_senstivity: num_in_word_list(&mut word_list)?,
         color_offset: num_in_word_list(&mut word_list)?,
         dis_from_zero: bool_in_word_list(&mut word_list)?,

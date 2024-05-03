@@ -29,6 +29,7 @@ fn main(){
         max_rays: 6000,
         min_dis_ray: 0.01,
         max_dis_ray: 1500.0,
+        show_above_min_dis_errors:false,
 
         color_senstivity:0.03,
         color_offset:0.0,

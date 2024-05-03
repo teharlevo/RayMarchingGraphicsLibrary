@@ -3,6 +3,7 @@ name:G
 max_rays: 200,
 min_dis_ray:  0.01,
 max_dis_ray: 1000.0,
+show_above_min_dis_errors:F,
 color_senstivity: 0.01,
 color_offset:0.0,
 dis_from_zero:F

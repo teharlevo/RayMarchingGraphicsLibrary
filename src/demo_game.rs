@@ -30,6 +30,7 @@ impl DemoGameLogik{
         bs.sttinges.background = SceneBackGround::Color(1.0, 1.0, 1.0);
         bs.sttinges.color_senstivity = 0.003;
         bs.sttinges.max_dis_ray = 1000.0;
+        bs.sttinges.show_above_min_dis_errors = true;
         bs.sttinges.max_rays = 60;
 
         //let k = hs.add_object("hund");

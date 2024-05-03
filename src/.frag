@@ -13,6 +13,7 @@ uniform float height;
 uniform int maxRays;
 uniform float minDisRay;
 uniform float maxDisRay;
+uniform bool showAboveMinDisErrors;
 
 uniform float colorSenstivity;
 uniform float colorOffset;
@@ -315,7 +316,7 @@ void main()
         
     }
 
-    if(totalDis < maxDisRay  && dis > minDisRay){
+    if(totalDis < maxDisRay  && (dis < minDisRay || showAboveMinDisErrors)){
             if(disFromZERO){totalDis = length(p);}
         Color = vec4(palette(totalDis * colorSenstivity + colorOffset), 1.0);
     }

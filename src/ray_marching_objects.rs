@@ -152,9 +152,9 @@ impl Scene{
     pub fn new(sttinges:SceneSttinges,cam:Camare,scene_width:u32,scene_height:u32)-> Scene{
         let types:Vec<(String, String)> = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
-        ,("".to_string(),"Sphere".to_string())
-        ,("".to_string(),"Cone".to_string())
-        ,("".to_string(),"Cylinder".to_string())];
+        ,("".to_string(),"sphere".to_string())
+        ,("".to_string(),"cone".to_string())
+        ,("".to_string(),"cylinder".to_string())];
 
         let shader = Scene::shader_maker(&types);
 

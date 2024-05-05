@@ -26,8 +26,8 @@ fn main(){
     let cam = Camare::new(0.0, 0.0, 0.0);
 
     let set = SceneSttinges{
-        max_rays: 6000,
-        min_dis_ray: 0.01,
+        max_rays: 2000,
+        min_dis_ray: 0.1,
         max_dis_ray: 1500.0,
         show_above_min_dis_errors:false,
 
@@ -98,7 +98,7 @@ fn menu_update(s:&mut Scene,win:&Winsdl,mode:Mode,dt:f32) -> Mode{
             && mp.1 > 0 && mp.1 < 500 {
                 return Mode::Modling(Modlling::start(s, win));
             }
-            s.sttinges.max_dis_ray += 10.0 * dt * 60.0;
+            s.sttinges.max_dis_ray += 600.0 * dt;
         },
         Mode::DemoGame(_) => {},
         Mode::Modling(_) => {},

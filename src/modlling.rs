@@ -131,13 +131,6 @@ impl Modlling{
             let mouse_cange = move_mouse_to_center(win);
             self.cam_look_x -= (mouse_cange.0 as f32/1000.0) * dt * 60.0;
             self.cam_look_y -= (mouse_cange.1 as f32/1000.0) * dt * 60.0;
-
-            if self.cam_look_y >= 3.14/2.0{
-                self.cam_look_y = 3.14/2.0;
-            }
-            else if self.cam_look_y <= -3.14/2.0{
-                self.cam_look_y = -3.14/2.0;
-            }
             //println!("x:{} y:{}",self.cam_look_x,self.cam_look_y);
             
             cam.dir =(
@@ -149,13 +142,13 @@ impl Modlling{
             let mut move_f = 0.0;
     
             if is_pressed(&win.event_pump,Scancode::W) {
-                move_f -= 0.1 * speed * dt * 60.0;
+                move_f -= 0.5 * speed * dt * 60.0;
             }
             if is_pressed(&win.event_pump,Scancode::S) {
-                move_f += 0.1 * speed * dt * 60.0;
+                move_f += 0.5 * speed * dt * 60.0;
             }
     
-            let norlizer = (cam.dir.0 * cam.dir.0 + cam.dir.2 * cam.dir.2).sqrt();
+            let norlizer = (cam.dir.0 * cam.dir.0 + cam.dir.1 * cam.dir.1 + cam.dir.2 * cam.dir.2).sqrt();
             cam.x += move_f * cam.dir.0/norlizer;
             cam.y += move_f * cam.dir.1/norlizer;
             cam.z += move_f * cam.dir.2/norlizer;

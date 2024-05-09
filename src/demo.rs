@@ -1,13 +1,21 @@
 
 use std::time::Instant;
-use input::{mouse_pos, mouse_pressed_left};
 use sdl2::event::Event;
-
-mod  input;
 //use input::*;
-mod opengl_shit;
+
+pub mod graphic_engine{
+pub     mod opengl_shit;
+pub     mod ray_marching_objects;
+pub     mod shader_maker;
+}
+
+pub mod sdl2helper{
+pub    mod input;
+pub    mod sdl2objects;
+}
+
 use opengl_shit::*;
-mod shader_maker;
+
 //use shader_maker::*;
 mod ray_marching_objects;
 use ray_marching_objects::*;
@@ -110,7 +118,7 @@ fn menu_start(s:&mut Scene,win:&Winsdl,sttinges :SceneSttinges) -> Mode{
     s.sttinges = sttinges;
     s.cam = Camare::new(0.0,0.0,0.0);
     win.sdl.mouse().show_cursor(true);
-    s.add_folder_to_model("src/objects");
+    s.add_folder_to_model("objects");
     
     s.update_shader();
     let g = s.add_object("demo_word");

@@ -273,13 +273,13 @@ impl Scene{
     pub fn clear_objects_models(&mut self){
         self.objects_models = vec![("".to_string(),"box".to_string())
         ,("".to_string(),"trus".to_string())
-        ,("".to_string(),"Sphere".to_string())
+        ,("".to_string(),"sphere".to_string())
         ,("".to_string(),"Cone".to_string())
         ,("".to_string(),"Cylinder".to_string())];
     }
 
     pub fn clear_objects(&mut self){
-        self.objects = vec![];
+        self.objects.clear();
     }
 
     pub fn clear(&mut self){

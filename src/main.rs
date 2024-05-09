@@ -1,21 +1,12 @@
-
 use std::time::Instant;
+use input::{mouse_pos, mouse_pressed_left};
 use sdl2::event::Event;
+
+mod  input;
 //use input::*;
-
-pub mod graphic_engine{
-pub     mod opengl_shit;
-pub     mod ray_marching_objects;
-pub     mod shader_maker;
-}
-
-pub mod sdl2helper{
-pub    mod input;
-pub    mod sdl2objects;
-}
-
+mod opengl_shit;
 use opengl_shit::*;
-
+mod shader_maker;
 //use shader_maker::*;
 mod ray_marching_objects;
 use ray_marching_objects::*;
@@ -26,6 +17,7 @@ use demo_game::*;
 
 mod sdl2objects;
 use sdl2objects::*;
+
 fn main(){
     let win = Winsdl::new(1000,500,"🥳").unwrap();
     create_opengl_contest(1000,500);

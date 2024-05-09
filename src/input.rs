@@ -3,7 +3,8 @@
 //use sdl2::keyboard::Keycode;
 use sdl2::{keyboard::Scancode, EventPump};
 //use std::collections::HashSet;
-use crate::sdl2helper::sdl2objects::Winsdl;
+
+use crate::sdl2objects::Winsdl;
 
 pub fn is_pressed(e: &sdl2::EventPump,key:Scancode) -> bool {
     e.keyboard_state().is_scancode_pressed(key)

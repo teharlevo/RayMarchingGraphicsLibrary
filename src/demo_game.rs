@@ -1,6 +1,6 @@
 use sdl2::keyboard::Scancode;
 
-use {input::{is_pressed, mouse_pressed_left, move_mouse_to_center}, opengl_shit::FrameBuffer, Camare, Scene, SceneBackGround, Winsdl};
+use crate::{input::*, opengl_shit::FrameBuffer, Camare, Scene, SceneBackGround, Winsdl};
 
 const BACKGRUND_SLOOWNES:f32 = 5.0;
 const SENSTIVITY:f32 = 0.08;

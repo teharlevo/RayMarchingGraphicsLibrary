@@ -35,7 +35,7 @@ uniform float ContinuationOfRayColorOffset;
 uniform float ContinuationOfRayColorSenstivity;
 
 uniform int size;
-uniform transform tran[200];
+uniform transform tran[100];
 
 in vec2 fUV;
 

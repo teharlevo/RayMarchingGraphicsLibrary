@@ -160,7 +160,7 @@ impl Modlling{
 
         if is_pressed(&win.event_pump,Scancode::R) && is_pressed(&win.event_pump,Scancode::LCtrl)
         && !self.exported_lest_frame{
-            self.export();
+            _ = self.export();
             self.exported_lest_frame = true;
         }
         else if !is_pressed(&win.event_pump,Scancode::R) || !is_pressed(&win.event_pump,Scancode::LCtrl) {
@@ -349,6 +349,7 @@ float s{} = op{}(s{},s{}{});
     }
 
     fn export(&mut self) -> std::io::Result<()> {
+        self.update_model_code();
         let file_path = format!("{}.sdf",&self.model_name);
         let mut file = File::create(file_path)?;
         file.write_all(self.object_text().as_bytes())?;
@@ -443,7 +444,8 @@ rot(0.0,0.0,0.0)
                 }
             },
         }
-    }    let word = word_list.remove(0);
+    }  
+    let word = word_list.remove(0);
     match word {
         Word::Num(g) => {
             name = format!("{g}");

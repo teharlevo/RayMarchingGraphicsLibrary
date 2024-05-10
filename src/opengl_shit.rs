@@ -14,7 +14,10 @@ use image::{EncodableLayout, ImageError};
 pub fn create_opengl_contest(width: usize, height: usize){
     
     unsafe {gl::Viewport(0, 0, width as i32, height as i32);}
-        
+}
+
+pub fn crate_world_window(){
+            
 
     let vertices: Vec<f32> = vec![
         1.0, -1.0,1.0,0.0,

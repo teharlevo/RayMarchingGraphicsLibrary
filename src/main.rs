@@ -21,6 +21,7 @@ use sdl2objects::*;
 fn main(){
     let win = Winsdl::new(1000,500,"🥳").unwrap();
     create_opengl_contest(1000,500);
+    crate_world_window();
     let mut win = win;
 
     let cam = Camare::new(0.0, 0.0, 0.0);

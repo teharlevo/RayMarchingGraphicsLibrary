@@ -101,7 +101,8 @@ pub struct SceneSttinges{
 }
 
 impl SceneSttinges {
-    pub fn send_info(&self,shader:&Program){
+    /// sand informashn
+    fn send_info(&self,shader:&Program){
         let u_max_rays = Uniform::new(shader.id(), "maxRays").expect("size Uniform");
         let u_min_dis_rays = Uniform::new(shader.id(), "minDisRay").expect("size Uniform");
         let u_max_dis_rays = Uniform::new(shader.id(), "maxDisRay").expect("size Uniform");
@@ -241,7 +242,7 @@ impl Scene{
             },
             SceneBackGround::Color(_,_,_) => {
             },
-            SceneBackGround::ContinuationOfRay(color_senstivity,color_offset) => {},
+            SceneBackGround::ContinuationOfRay(_,_) => {},
             SceneBackGround::FrameBuffer(fra) => {
                 fra.get_texture().unbind();
                 let u_back_ground_color = Uniform::new(self.shader.id(), "backgroundcolor").expect("backgroundcolor Uniform");

@@ -9,6 +9,7 @@ dependencies = [
  "cgmath",
  "gl",
  "image",
+ "rand",
  "sdl2",
 ]
 

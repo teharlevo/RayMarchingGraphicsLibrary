@@ -1,0 +1,27 @@
+c
+        
+{
+    
+    vec3 q1 = p;
+    
+    q1 -= vec3(0,0,0);
+    q1 = rotateVec3(q1,vec3(0.0, 0.0, 0.0));
+    
+    vec3 q2 = q1;
+    
+    q2 -= vec3(0,-6,0);
+    q2 = rotateVec3(q2,vec3(0.0, 0.0, 0.0));
+    
+    float s2 = sdEllipsoid(q2,vec3(5,10,20));
+    
+    vec3 q3 = q1;
+    
+    q3 -= vec3(0,0,0);
+    q3 = rotateVec3(q3,vec3(0.0, 0.0, 0.0));
+    
+    float s3 = sdSphere(q3,10);
+    
+float s1 = opSubtraction(s2,s3);
+
+        return s1;
+}

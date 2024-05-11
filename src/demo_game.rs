@@ -37,6 +37,22 @@ impl DemoGameLogik{
         win.sdl.mouse().show_cursor(false);
         _ = move_mouse_to_center(win);
 
+        let (bs,ball) = DemoGameLogik::crate_game_world(s,win);
+        
+        DemoGameLogik{
+            //background_framebuffer:fb,
+            //hund_secne:hs, 
+            velosty_y:0.0,
+            background_secne: bs,
+            cam_look_x:0.0,
+            cam_look_y:0.0,
+            ball:ball,
+            shot:None,
+            game_mode: GameMode::Play,
+        }
+    }
+
+    fn crate_game_world(s:&mut Scene,win:&Winsdl) -> (Scene,Ball){
         let mut bs = Scene::new(s.sttinges.clone(), s.cam.clone(), s.get_scene_width(),s.get_scene_height());
         bs.add_folder_to_model("objects");
         bs.update_shader();
@@ -64,27 +80,16 @@ impl DemoGameLogik{
         let ob = s.add_object("sphere");
         ob.scale = RADIOS_OF_BALL;
 
+        s.cam.z = -19.5;
+
         let ball = Ball{
             velosty: (0.0,0.0,0.0),
             x: 0.0,
             y: 30.0,
-            z: 0.0,
+            z: -6.0,
             r:RADIOS_OF_BALL,
         };
-
-        s.cam.z = -19.5;
-        
-        DemoGameLogik{
-            //background_framebuffer:fb,
-            //hund_secne:hs, 
-            velosty_y:0.0,
-            background_secne: bs,
-            cam_look_x:0.0,
-            cam_look_y:0.0,
-            ball:ball,
-            shot:None,
-            game_mode: GameMode::Play,
-        }
+        (bs,ball)
     }
 
     pub fn update(&mut self,s:&mut Scene,win:&Winsdl,dt:f32) -> bool{
@@ -103,18 +108,78 @@ impl DemoGameLogik{
                 }
                 if self.ball_upadte(win,s, dt){
                     s.clear_objects();
-                    s.sttinges.background = SceneBackGround::ContinuationOfRay(0.0001,1.0);
-                    let ob = s.add_object("sleep");
-                    ob.y = -4.0;
-                    let ob = s.add_object("trus");
-                    ob.scale = 0.0;
-                    ob.z = 100.0;
+                    s.sttinges.background = SceneBackGround::ContinuationOfRay(0.00003,1.0);
+                    let ob = s.add_object("p");
+                    ob.x = 90.0;
+                    ob.scale = 2.0;
+                    ob.angle_z = 3.14;
+                    ob.angle_x = 3.14;
+                    ob.y = 50.0;
+
+                    let ob = s.add_object("r");
+                    ob.x = 50.0;
+                    ob.scale = 2.0;
+                    ob.angle_y = 3.14;
+                    ob.y = 50.0;
+
+                    let ob = s.add_object("e");
+                    ob.scale = 1.3;
+                    ob.angle_y = 3.14;
+                    ob.x = 20.0;
+                    ob.y = 40.0;
+
+                    let ob = s.add_object("s");
+                    ob.x = -15.0;
+                    ob.y = 40.0;
+                    ob.scale = 1.5;
+                    ob.angle_y = 3.14;
+
+                    let ob = s.add_object("s");
+                    ob.angle_y = 3.14;
+                    ob.x = 5.0;
+                    ob.scale = 1.5;
+                    ob.x = -40.0;
+                    ob.y = 40.0;
+
+                    let ob = s.add_object("s");
+                    ob.angle_y = 3.14;
+                    ob.x = 90.0;
+                    ob.scale = 1.5;
+
+                    let ob = s.add_object("p");
+                    ob.x = 60.0;
+                    ob.scale = 2.0;
+                    ob.angle_z = 3.14;
+                    ob.angle_x = 3.14;
+
+                    let ob = s.add_object("a");
+                    ob.x = 30.0;
+                    ob.y = 20.0;
+                    ob.scale = 2.0;
+                    ob.angle_z = 3.14;
+                    ob.angle_x = 3.14;
+
+                    let ob = s.add_object("c");
+                    ob.x = 0.0;
+                    ob.scale = 2.0;
+                    ob.angle_z = -3.14/2.0;
+                    ob.angle_x = 3.14;
+
+                    let ob = s.add_object("e");
+                    ob.scale = 1.3;
+                    ob.angle_y = 3.14;
+                    ob.x = -20.0;
+
+                    s.sttinges.color_offset = 0.0;
+                    s.sttinges.color_senstivity = s.sttinges.color_senstivity * 0.25;
                     self.game_mode = GameMode::Lose;
                 }
                 
             },
             GameMode::Lose => {
-                self.update_loss(s);
+                if self.update_loss(win,s){
+                    self.game_mode = GameMode::Play;  
+                }
             },
         }
 
@@ -272,14 +337,17 @@ impl DemoGameLogik{
         fb.unbind();
     }
 
-    fn update_loss(&mut self,s:&mut Scene){
-        let dis = (s.cam.x * s.cam.x + s.cam.z * s.cam.z).sqrt();
-        if dis < 20.0{
-            s.objects.get_mut(1).unwrap().scale = 1.0;
+    fn update_loss(&mut self,win:&Winsdl,s:&mut Scene)-> bool{
+        if is_pressed(&win.event_pump,Scancode::Space){
+            s.clear_objects();
+            let (bs,ball) = DemoGameLogik::crate_game_world(s,win);
+            self.ball = ball;
+            self.background_secne = bs;
+            s.sttinges.color_offset = 0.0;
+            s.sttinges.color_senstivity = s.sttinges.color_senstivity * 4.0;
+            return true;
         }
-        else{
-            s.objects.get_mut(1).unwrap().scale = 0.0;
-        }
+        false
     }
 }
 

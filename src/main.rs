@@ -35,7 +35,7 @@ fn main(){
         color_senstivity:0.03,
         color_offset:0.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
-        background:SceneBackGround::ContinuationOfRay(0.00003, 0.0),
+        background:SceneBackGround::ContinuationOfRay(0.000015, 0.0),
         dis_from_zero: false,
     };
     

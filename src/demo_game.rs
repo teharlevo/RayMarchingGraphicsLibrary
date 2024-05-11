@@ -108,6 +108,7 @@ impl DemoGameLogik{
                 }
                 if self.ball_upadte(win,s, dt){
                     s.clear_objects();
+                    self.shot = None;
                     s.sttinges.background = SceneBackGround::ContinuationOfRay(0.00003,1.0);
                     let ob = s.add_object("p");
                     ob.x = 90.0;

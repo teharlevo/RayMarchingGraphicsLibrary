@@ -37,7 +37,7 @@ impl DemoGameLogik{
         win.sdl.mouse().show_cursor(false);
         _ = move_mouse_to_center(win);
 
-        let (bs,ball) = DemoGameLogik::crate_game_world(s,win);
+        let (bs,ball) = DemoGameLogik::crate_game_world(s);
         
         DemoGameLogik{
             //background_framebuffer:fb,
@@ -52,7 +52,7 @@ impl DemoGameLogik{
         }
     }
 
-    fn crate_game_world(s:&mut Scene,win:&Winsdl) -> (Scene,Ball){
+    fn crate_game_world(s:&mut Scene) -> (Scene,Ball){
         let mut bs = Scene::new(s.sttinges.clone(), s.cam.clone(), s.get_scene_width(),s.get_scene_height());
         bs.add_folder_to_model("objects");
         bs.update_shader();
@@ -86,7 +86,7 @@ impl DemoGameLogik{
             velosty: (0.0,0.0,0.0),
             x: 0.0,
             y: 30.0,
-            z: -6.0,
+            z: 0.0,
             r:RADIOS_OF_BALL,
         };
         (bs,ball)
@@ -340,7 +340,7 @@ impl DemoGameLogik{
     fn update_loss(&mut self,win:&Winsdl,s:&mut Scene)-> bool{
         if is_pressed(&win.event_pump,Scancode::Space){
             s.clear_objects();
-            let (bs,ball) = DemoGameLogik::crate_game_world(s,win);
+            let (bs,ball) = DemoGameLogik::crate_game_world(s);
             self.ball = ball;
             self.background_secne = bs;
             s.sttinges.color_offset = 0.0;

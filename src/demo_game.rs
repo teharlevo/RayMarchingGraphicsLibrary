@@ -81,6 +81,8 @@ impl DemoGameLogik{
         ob.scale = RADIOS_OF_BALL;
 
         s.cam.z = -19.5;
+        s.cam.x = 0.0;
+        s.cam.y = -0.01;
 
         let ball = Ball{
             velosty: (0.0,0.0,0.0),

@@ -11,3 +11,4 @@ I am not a lawyer and will be very happy and surprised if someone do any thing w
 https://github.com/teharlevo/RayMarchingGraphicsLibrary - git hub
 https://sovietgamingyt.itch.io/rmgl-demo1 - demo
 https://crates.io/crates/rmgl - crate.io 
+https://github.com/teharlevo/RayMarchingGraphicsLibrary?tab=readme-ov-file#modeling - how to model

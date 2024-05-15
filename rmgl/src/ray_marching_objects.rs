@@ -191,8 +191,8 @@ impl Scene{
         s
     }
 
-    /// make new object in scene ob_type is string put the name of the object you need
-    /// the object you have without import are
+    /// make new object in scene ob_type is string put the name of the object you need.
+    ///btw the object you have without import are
     /// "box","trus","sphere","cone","cylinder"
     pub fn add_object(&mut self,ob_type:&str) -> &mut Object{
         let mut i = 0;

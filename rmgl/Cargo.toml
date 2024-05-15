@@ -1,6 +1,6 @@
 [package]
 name = "rmgl"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 authors = ["Omer Tehar Lev teharlevo@gmail.com"]
 description = "A small and kinda working ray marching graphics lib"

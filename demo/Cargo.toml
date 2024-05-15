@@ -8,6 +8,6 @@ edition = "2021"
 
 [dependencies]
 rmgl = { path = "../rmgl" }
-gl = "*"
-sdl2 = "*"
+gl = "0.14"
+sdl2 = "0.36"
 rand = "0.8"

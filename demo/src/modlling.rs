@@ -27,8 +27,6 @@ pub struct Modlling{
 }
 
 impl Modlling{
-
-
     pub fn start(s:&mut Scene,win:&Winsdl) -> Modlling{
         s.clear();
         

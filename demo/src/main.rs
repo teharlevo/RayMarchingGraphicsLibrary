@@ -19,10 +19,9 @@ use demo_game::*;
 use sdl2objects::*;
 
 fn main(){
-    let win = Winsdl::new(1000,500,"🥳").unwrap();
-    create_opengl_contest(1000,500);
-    crate_world_window();
-    let mut win = win;
+    let mut win = Winsdl::new(1000,500,"rmgl demo&modling").unwrap();//crate window
+    create_opengl_context(1000,500);//crate opengl context
+    crate_world_window();//make the two tringles that make that world 
 
     let cam = Camare::new(0.0, 0.0, 0.0);
 
@@ -30,16 +29,17 @@ fn main(){
         max_rays: 2000,
         min_dis_ray: 0.1,
         max_dis_ray: 1500.0,
-        show_above_min_dis_errors:false,
+        show_above_min_dis_errors:false,//will show background if the ray stop in middle becase dont have enough rays
+        //here there are 2000 so it almost meaningless
 
         color_senstivity:0.03,
         color_offset:0.0,
         colors_rgb: [(0.8, 0.5, 0.4	),(0.2, 0.4, 0.2),(2.0, 1.0, 1.0),	(0.00, 0.25, 0.25),],
-        background:SceneBackGround::ContinuationOfRay(0.000015, 0.0),
-        dis_from_zero: false,
+        background:SceneBackGround::ContinuationOfRay(0.000015, 0.0),//
+        dis_from_zero: false,//the color will
     };
     
-    let mut se = Scene::new(set.clone(),cam,1000,500);
+    let mut se = Scene::new(set.clone(),cam,1000,500);//make scene
     
     let mut time = Instant::now();
     let mut lest_frame = Instant::now();
@@ -99,7 +99,7 @@ fn menu_update(s:&mut Scene,win:&Winsdl,mode:Mode,dt:f32) -> Mode{
             && mp.1 > 0 && mp.1 < 500 {
                 return Mode::Modling(Modlling::start(s, win));
             }
-            s.sttinges.max_dis_ray += 600.0 * dt;
+            s.sttinges.max_dis_ray += 600.0 * dt;//make the cool moving effct becase we use 
         },
         Mode::DemoGame(_) => {},
         Mode::Modling(_) => {},
@@ -111,9 +111,11 @@ fn menu_start(s:&mut Scene,win:&Winsdl,sttinges :SceneSttinges) -> Mode{
     s.sttinges = sttinges;
     s.cam = Camare::new(0.0,0.0,0.0);
     win.sdl.mouse().show_cursor(true);
-    s.add_folder_to_model("demo/objects");
+    s.add_folder_to_model("demo/objects");//importing objects
     
-    s.update_shader();
+    s.update_shader();//update the shader after importing objects
+
+    //make objects for menu
     let g = s.add_object("demo_word");
     g.z = -2.0;
     let g = s.add_object("mode_word");
@@ -132,5 +134,4 @@ enum Mode {
     Menu,
     DemoGame(DemoGameLogik),
     Modling(Modlling),
-
 }

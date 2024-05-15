@@ -1,5 +1,7 @@
 use sdl2::{ video::{GLContext, SwapInterval, Window}, EventPump, Sdl};
 
+// just sdl2 helper shit dosnt have to do nething with the 
+
 pub struct Winsdl {
     pub sdl: Sdl,
     pub window: Window,

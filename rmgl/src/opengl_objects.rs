@@ -6,19 +6,19 @@ use gl::{
     types::{GLchar, GLenum, GLint, GLuint},
     UseProgram,
 };
-use gl::TEXTURE_CUBE_MAP;
+//use gl::TEXTURE_CUBE_MAP;
 
 use image::{EncodableLayout, ImageError};
 
-
-pub fn create_opengl_contest(width: usize, height: usize){
+/// crate opengl context
+pub fn create_opengl_context(width: usize, height: usize){
     
     unsafe {gl::Viewport(0, 0, width as i32, height as i32);}
 }
 
+/// crate opengl context
 pub fn crate_world_window(){
-            
-
+    
     let vertices: Vec<f32> = vec![
         1.0, -1.0,1.0,0.0,
        -1.0,  1.0,0.0,1.0,
@@ -45,6 +45,7 @@ pub struct Shader {
 }
 
 impl Shader {
+    /// make new shader from text (in form of &CStr)
     pub fn from_source(source: &CStr, kind: GLenum) -> Result<Self, String> {
         let id = unsafe { gl::CreateShader(kind) };
         unsafe {
@@ -97,6 +98,7 @@ pub struct Program {
 }
 
 impl Program {
+    /// make new program from shaders (in form of &CStr)
     fn from_shaders(shaders: &[Shader]) -> Result<Self, String> {
         let id = unsafe { gl::CreateProgram() };
 
@@ -172,6 +174,7 @@ fn create_whitespace_cstring_with_len(len: usize) -> CString {
     unsafe { CString::from_vec_unchecked(buffer) }
 }
 
+///crate program from text (in the shape of &CString) one for the vertex shader and one for fragmet shader
 pub fn create_program(vert_string:&CString,frag_string:&CString) -> Result<Program, &'static str> {
     let vert_shader = Shader::from_source(
         vert_string,
@@ -232,11 +235,11 @@ impl Vbo {
         }
     }
 
-    fn unbind(&self) {
-        unsafe {
-            gl::BindBuffer(gl::ARRAY_BUFFER, 0);
-        }
-    }
+    //fn unbind(&self) {
+    //    unsafe {
+    //        gl::BindBuffer(gl::ARRAY_BUFFER, 0);
+    //    }
+    //}
 }
 
 /// OpenGL Index Buffer Object
@@ -282,17 +285,17 @@ impl Ibo {
         }
     }
 
-    fn unbind(&self) {
-        unsafe {
-            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0);
-        }
-    }
-
-    fn delete(&self) {
-        unsafe {
-            gl::DeleteBuffers(1, &self.id);
-        }
-    }
+    //fn unbind(&self) {
+    //    unsafe {
+    //        gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0);
+    //    }
+    //}
+//
+    //fn delete(&self) {
+    //    unsafe {
+    //        gl::DeleteBuffers(1, &self.id);
+    //    }
+    //}
 }
 
 /// OpenGL Vertex Array Object
@@ -350,17 +353,17 @@ impl Vao {
         }
     }
 
-    fn unbind(&self) {
-        unsafe {
-            gl::BindVertexArray(0);
-        }
-    }
+    //fn unbind(&self) {
+    //    unsafe {
+    //        gl::BindVertexArray(0);
+    //    }
+    //}
 
-    fn delete(&self) {
-        unsafe {
-            gl::DeleteVertexArrays(1, &self.id);
-        }
-    }
+    //fn delete(&self) {
+    //    unsafe {
+    //        gl::DeleteVertexArrays(1, &self.id);
+    //    }
+    //}
 }
 
 pub struct Uniform {
@@ -385,6 +388,7 @@ pub struct Texture {
 
 impl Texture {
 
+    ///make new texture
     pub fn new(width:u32,height:u32) -> Texture {
         let mut id:u32 = 0;
         unsafe {
@@ -411,18 +415,69 @@ impl Texture {
         }
     }
 
+    ///load texture from memory
+    pub fn new_load(&self, path: &str) -> Result<Texture, ImageError> {
+        let mut id:u32 = 0;
+        let img = image::open(path)?.into_rgba8();
+
+        unsafe {
+            gl::GenTextures(1, &mut id);  
+            gl::BindTexture(gl::TEXTURE_2D, id) ;  
+            gl::TexImage2D(
+                gl::TEXTURE_2D,
+                0,
+                gl::RGBA as i32,
+                img.width() as i32,
+                img.height() as i32,
+                0,
+                gl::RGBA,
+                gl::UNSIGNED_BYTE,
+                std::ptr::null(),
+            );   
+            gl::GenerateMipmap(gl::TEXTURE_2D);
+            gl::BindTexture(gl::TEXTURE_2D, 0) ;  
+
+        }
+        let tex =         
+        Texture{
+            id
+        };
+        tex.bind();
+
+        unsafe {
+            gl::TexImage2D(
+                gl::TEXTURE_2D,
+                0,
+                gl::RGBA as i32,
+                img.width() as i32,
+                img.height() as i32,
+                0,
+                gl::RGBA,
+                gl::UNSIGNED_BYTE,
+                img.as_bytes().as_ptr() as *const _,
+            );
+            gl::GenerateMipmap(gl::TEXTURE_2D);
+        }
+        tex.unbind();
+        Ok(tex)
+    }
+
+
+    /// bind texture
     pub fn bind(&self) {
         unsafe {
             gl::BindTexture(gl::TEXTURE_2D, self.id) ;  
         }
     }
 
+    /// unbind texture
     pub fn unbind(&self) {
         unsafe {
             gl::BindTexture(gl::TEXTURE_2D, 0);
         }
     }
 
+    ///load texture from memory to texture
     pub fn load(&self, path: &str) -> Result<(), ImageError> {
         self.bind();
 
@@ -553,6 +608,10 @@ impl Drop for Texture {
 //    }
 //}
 
+
+/// frame buffer is a collection of buffers that store rendering outputs
+/// here the frame buffer only store what been render to the screen
+/// bind make 
 #[derive(Clone)]
 pub struct FrameBuffer{
     id:u32,
@@ -561,6 +620,7 @@ pub struct FrameBuffer{
 
 impl FrameBuffer {
 
+    ///make new frame buffer
     pub fn new(width:u32,height:u32) ->FrameBuffer{
 
         unsafe {
@@ -585,6 +645,7 @@ impl FrameBuffer {
         }
     }
     
+    ///bind frame buffer
     pub fn bind(&self){
         unsafe {
              gl::BindFramebuffer(gl::FRAMEBUFFER,self.id);
@@ -593,6 +654,7 @@ impl FrameBuffer {
 
     }
 
+    ///unbind frame buffer so you can see stuff (or whatever reason idk)
     pub fn unbind(&self){
         unsafe { gl::BindFramebuffer(gl::FRAMEBUFFER,0);}; 
     }

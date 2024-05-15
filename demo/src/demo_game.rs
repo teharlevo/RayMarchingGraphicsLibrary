@@ -43,7 +43,7 @@ impl DemoGameLogik{
         let (bs,ball) = DemoGameLogik::crate_game_world(s);
         
         DemoGameLogik{
-            //background_framebuffer:fb,
+            //background_background:fb,
             //hund_secne:hs, 
             velosty_y:0.0,
             background_secne: bs,
@@ -57,6 +57,7 @@ impl DemoGameLogik{
 
     fn crate_game_world(s:&mut Scene) -> (Scene,Ball){
         let mut bs = Scene::new(s.sttinges.clone(), s.cam.clone(), s.get_scene_width(),s.get_scene_height());
+        //there is background scene that render to frame buffer and the frame buffer use as 
         bs.add_folder_to_model("demo/objects");
         bs.update_shader();
         bs.sttinges.background = SceneBackGround::Color(1.0, 1.0, 1.0);
@@ -105,13 +106,14 @@ impl DemoGameLogik{
                 self.cam_cal(s);
                 match &mut s.sttinges.background {
                     SceneBackGround::FrameBuffer(fb) => {
-                        self.upade_backgrund(&s.cam,fb)
+                        self.upade_backgrund(&s.cam,fb)// update buckgrund scene
                     },
                     SceneBackGround::Image(_) => {},
                     SceneBackGround::Color(_, _, _) => {},
                     SceneBackGround::ContinuationOfRay(_, _) => {},
                 }
                 if self.ball_upadte(win,s, dt){
+                    //put objects of loss
                     s.clear_objects();
                     self.shot = None;
                     s.sttinges.background = SceneBackGround::ContinuationOfRay(0.00003,1.0);
@@ -333,6 +335,7 @@ impl DemoGameLogik{
 
     fn upade_backgrund(&mut self,cam:&Camare,fb:&mut FrameBuffer){
         self.background_secne.cam = cam.clone();
+        //move buckgrund scene camera sloower
 
         self.background_secne.cam.x = self.background_secne.cam.x/BACKGRUND_SLOOWNES;
         self.background_secne.cam.y = self.background_secne.cam.y/BACKGRUND_SLOOWNES;
@@ -340,6 +343,7 @@ impl DemoGameLogik{
 
         fb.bind();
         self.background_secne.draw();
+        //draw background secne to frame buffer
         fb.unbind();
     }
 
@@ -434,6 +438,6 @@ impl Shot {
         ,self.ball_efected.1 * t + self.ball_start_vel.1 * t_left,
         self.ball_efected.2 * t + self.ball_start_vel.2 * t_left);
             
-        s.sttinges.color_offset = self.start_color_offset-(((t*8.0-1.0).cbrt() + 1.0)/3.0);
+        s.sttinges.color_offset = self.start_color_offset-(((t*8.0-1.0).cbrt() + 1.0)/3.0);//change the color offset when u shoot look cool 
     }
 }

@@ -639,15 +639,22 @@ fn background_from_text(word_list:&mut Vec<Word>) -> Result<SceneBackGround,Stri
                 if text == "image" || text == "img"{
                     loop{
                         let word = word_list.remove(0);
-                        let image = Texture::new(0,0);
                         if word_list.len() == 0{
                             return Err(String::from("sertch for background_text not that not exsit fix!"));
                         }
                         match word {
                             Word::Num(_) => {},
                             Word::Word(text) => {
-                                _ = image.load(&text);
-                                return Ok(SceneBackGround::Image(image));
+                                let img = Texture::new_load(&text);
+                                match img {
+                                    Ok(image) => {
+                                        return Ok(SceneBackGround::Image(image));                 
+                                    },
+                                    Err(err) => {
+                                        println!("not work image lol:{}",err);
+                                        return Ok(SceneBackGround::Color(0.0,0.0,0.0));
+                                    },
+                                }
                             },
                         }
                     }

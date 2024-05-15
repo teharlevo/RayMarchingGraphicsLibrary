@@ -416,7 +416,7 @@ impl Texture {
     }
 
     ///load texture from memory
-    pub fn new_load(&self, path: &str) -> Result<Texture, ImageError> {
+    pub fn new_load(path: &str) -> Result<Texture, ImageError> {
         let mut id:u32 = 0;
         let img = image::open(path)?.into_rgba8();
 

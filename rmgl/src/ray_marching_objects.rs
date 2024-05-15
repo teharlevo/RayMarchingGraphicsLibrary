@@ -280,7 +280,6 @@ impl Scene{
     }
 
     ///add folder of objects to scene object models
-    /// "box","trus","sphere","cone","cylinder"
     pub fn add_folder_to_model(&mut self,folder_path: &str){
     let objects =  get_dis_funcans_folder(folder_path);
         match objects {

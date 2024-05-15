@@ -1,5 +1,5 @@
 
-name:c
+name:exmple
 max_rays: 500,
 min_dis_ray:  0.01,
 max_dis_ray: 1000.0,

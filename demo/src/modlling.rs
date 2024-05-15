@@ -406,6 +406,7 @@ min_dis_ray: 0.1,
 max_dis_ray: 500.0,
 color_senstivity: 0.1,
 color_offset:0.0,
+background: color(0.1,0.1,0.1)
 
 colors[(0.5, 0.5, 0.5),(0.5, 0.5, 0.5),(1.0, 1.0, 1.0),(0.00, 0.33, 0.67)]            
 empty

@@ -51,3 +51,162 @@ colors: palate - 4 colors  in this format
   2:image in this format image:(image_path)- example: background: image:(path_to_image.png)
   3: continuation of ray
   will act like there is no background and the ray hit something the first float is the color senstivity and the secand the color offset if color sensitivity is 0 and color offset is not zero so it have the same color senstivity and offset of the scene - in this format of cor(color sensitivity ,color offset ) -example cor(0.1,0.0)
+
+after that write an object
+the modeling scene is one object
+all objects follows this format
+object(objects specifics)
+ Displasment_list
+ displasment here
+ END
+  pos(x,y,z)
+   rot(angle_x,angle_y,angle_z)
+
+**objects**
+empty (objects specific) 
+- example
+empty
+ displasment here
+ END
+  pos(0,0,0)
+   rot(0,0,0)
+   
+box(width ,height ,deep) 
+- example
+box(1.0,1.0,1.0)
+ displasment here
+ END
+  pos(0,0,0)
+   rot(0,0,0)
+   
+sphere(radios) 
+- example
+sphere(1.0) 
+ displasment here
+ END
+  pos(0,0,0)
+   rot(0,0,0)
+   
+cylinder(hight,radios) 
+- example
+cylinder(1.0,90) 
+ displasment here
+ END
+  pos(0,0,0)
+   rot(0,0,0)
+   
+ellipsoid(width ,height ,deep) 
+- example
+ellipsoid(1.0,1.0,1.0)
+ displasment here
+ END
+  pos(0,0,0)
+   rot(0,0,0)
+   
+torus(inner cercal radios, outer cercal radios ) 
+- example
+torus(2.0,0.5 ) 
+ displasment here
+ END
+  pos(0,0,0)
+   rot(0,0,0)
+   
+cone(angle ,hight)
+- example
+cone(3.14,0.5 ) 
+ displasment here
+ END
+  pos(0,0,0)
+   rot(0,0,0)
+   
+union(union of object1 and object2)
+union(object1,object2,smoothness)
+- example
+union
+
+    box(5,10,20)
+    Displasment_list
+    END
+    pos(0,-12,0)
+    rot(0,0,0)
+
+
+    sphere(10.0)
+    Displasment_list
+    END
+    pos(0,0,0)
+    rot(0,0,0)
+3
+Displasment_list
+END
+pos(0,0,0)
+rot(0,0,0)
+
+sub(subtraction of object1 from object2)
+sub(object1,object2,smoothness)
+- example
+sub
+
+    box(5,10,20)
+    Displasment_list
+    END
+    pos(0,-12,0)
+    rot(0,0,0)
+
+
+    sphere(10.0)
+    Displasment_list
+    END
+    pos(0,0,0)
+    rot(0,0,0)
+3
+Displasment_list
+END
+pos(0,0,0)
+rot(0,0,0)
+
+that is all the objects 
+**displasments**
+displasments of object are write after the Displasment_list declaration in object and before the END declaration
+the order of the displasments is imported
+all displasments follows this format
+displacement(displacement specifics) boolean(if displacement effect by object angle and position )
+
+the displacements are 
+
+Twist - Twist(twist value)
+-  example
+box(1.0,1.0,1.0)
+ displasment here
+  Twist(0.1)F
+ END
+  pos(0,0,0)
+   rot(0,0,0)
+   
+  Bend - Bend(bend value)
+-  example
+box(1.0,1.0,1.0)
+ displasment here
+ Bend(0.1)F
+ END
+  pos(0,0,0)
+   rot(0,0,0)
+Infinite Repetition - rep(distance on x axis, distance on y axis, distance on z axis)
+(boolean if move on x axis, boolean if move on y axis, boolean if move on z axis)
+-  example
+box(1.0,1.0,1.0)
+ displasment here
+rep(1.0,1.0,1.0)(T,T,T)F
+ END
+  pos(0,0,0)
+   rot(0,0,0)
+Limited Repetition - rep(distance on x axis, distance on y axis, distance on z axis)
+(repetition on x axis, repetition on y axis, repetition on z axis)
+(boolean if move on x axis, boolean if move on y axis, boolean if move on z axis)
+-  example
+box(1.0,1.0,1.0)
+ displasment here
+limreprep(1.0,1.0,1.0)(1.0,1.0,1.0)(T,T,T)F
+ END
+  pos(0,0,0)
+   rot(0,0,0)

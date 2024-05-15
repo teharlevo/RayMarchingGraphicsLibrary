@@ -1,6 +1,6 @@
 [package]
 name = "rmgl"
-version = "1.0.0"
+version = "1.0.2"
 edition = "2021"
 authors = ["Omer Tehar Lev teharlevo@gmail.com"]
 description = "A small and kinda working ray marching graphics lib"
@@ -8,6 +8,12 @@ license = "MIT"
 repository = "https://github.com/teharlevo/RayMarchingGraphicsLibrary"
 homepage = "https://github.com/teharlevo/RayMarchingGraphicsLibrary"
 documentation = "https://docs.rs/rmgl"
+
+[package.metadata.docs.rs-links]
+# Optional: Links for documentation on docs.rs
+
+# Specify the path to your README file
+readme = "README.md"
 
 [lib]
 name = "rmgl"

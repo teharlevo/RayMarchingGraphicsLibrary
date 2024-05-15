@@ -5,8 +5,8 @@ edition = "2021"
 authors = ["Omer Tehar Lev teharlevo@gmail.com"]
 description = "A small and kinda working ray marching graphics lib"
 license = "MIT"
-repository = "https://github.com/yourusername/your-repo"
-homepage = "https://github.com/yourusername/your-repo"
+repository = "https://github.com/teharlevo/RayMarchingGraphicsLibrary"
+homepage = "https://github.com/teharlevo/RayMarchingGraphicsLibrary"
 documentation = "https://docs.rs/rmgl"
 
 [lib]

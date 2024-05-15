@@ -19,8 +19,8 @@ pub struct DemoGameLogik{
     //hund_secne:Scene,
     background_secne:Scene,
     velosty_y:f32,
-    cam_look_x:f32,
-    cam_look_y:f32,
+    cam_look_x:f32,//for cam dir
+    cam_look_y:f32,//for cam dir
     ball:Ball,
     shot:Option<Shot>,
     game_mode:GameMode,
@@ -257,7 +257,7 @@ impl DemoGameLogik{
             (self.cam_look_x - 3.14/2.0).cos() * self.cam_look_y.cos(),
             self.cam_look_y.sin(),
             (self.cam_look_x - 3.14/2.0).sin() * self.cam_look_y.cos(),
-        );
+        );//make the cam angle x and y to 3d vector of cam dir
 
     }
 

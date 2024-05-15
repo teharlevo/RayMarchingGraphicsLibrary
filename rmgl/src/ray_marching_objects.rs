@@ -1,7 +1,10 @@
 use std:: ffi::CString;
 
-use crate::opengl_shit::*;
-use crate::shader_maker::*;
+use opengl_objects::*;
+use shader_maker::*;
+
+use super::opengl_objects;
+use super::shader_maker;
 
 
 #[derive(Clone)]
@@ -256,14 +259,16 @@ impl Scene{
     }
 
     pub fn add_folder_to_model(&mut self,folder_path: &str){
-        let objects =  get_dis_funcans_folder(folder_path);
-        if Some(&objects).is_some(){
-            let objects= objects.unwrap();
-            for object in objects{
-                self.objects_models.push(object);
-            }
-
+    let objects =  get_dis_funcans_folder(folder_path);
+        match objects {
+            Some(objects) =>{
+                for object in objects{
+                    self.objects_models.push(object);
+                }
+            },
+            None => {println!("no objects in {}",folder_path)},
         }
+        
     }
     
     pub fn add_model(&mut self,model_texts: &str){

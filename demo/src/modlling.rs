@@ -6,11 +6,10 @@ use std::path::Path;
 
 use sdl2::keyboard::Scancode;
 
-use crate::ray_marching_objects::*;
 use crate::input::*;
-use crate::opengl_shit::Texture;
-
-use crate::sdl2objects::*;
+use crate::sdl2objects::Winsdl;
+use rmgl::ray_marching_objects::*;
+use rmgl::opengl_objects::*;
 
 pub struct Modlling{
     model_name:String,

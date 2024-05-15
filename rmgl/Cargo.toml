@@ -1,0 +1,21 @@
+[package]
+name = "rmgl"
+version = "1.0.0"
+edition = "2021"
+authors = ["Omer Tehar Lev teharlevo@gmail.com"]
+description = "A small and kinda working ray marching graphics lib"
+license = "MIT"
+repository = "https://github.com/yourusername/your-repo"
+homepage = "https://github.com/yourusername/your-repo"
+documentation = "https://docs.rs/rmgl"
+
+[lib]
+name = "rmgl"
+path = "src/lib.rs"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+gl = "*"
+image = "*"

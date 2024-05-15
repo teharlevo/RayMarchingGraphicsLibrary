@@ -1,7 +1,10 @@
 use sdl2::keyboard::Scancode;
-use rand::{Rng, RngCore};
+use rand::Rng;
 
-use crate::{input::*, opengl_shit::FrameBuffer, Camare, Scene, SceneBackGround, Winsdl};
+use crate::input::*;
+use crate::sdl2objects::Winsdl;
+use rmgl::opengl_objects::FrameBuffer;
+use rmgl::ray_marching_objects::*;
 
 const BACKGRUND_SLOOWNES:f32 = 5.0;
 const SENSTIVITY:f32 = 0.08;
@@ -54,7 +57,7 @@ impl DemoGameLogik{
 
     fn crate_game_world(s:&mut Scene) -> (Scene,Ball){
         let mut bs = Scene::new(s.sttinges.clone(), s.cam.clone(), s.get_scene_width(),s.get_scene_height());
-        bs.add_folder_to_model("objects");
+        bs.add_folder_to_model("demo/objects");
         bs.update_shader();
         bs.sttinges.background = SceneBackGround::Color(1.0, 1.0, 1.0);
         bs.sttinges.color_senstivity = 0.003;

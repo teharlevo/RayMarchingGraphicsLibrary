@@ -1,7 +1,7 @@
 # what is rmgl
 rmgl is for **ray marching graphics library**
 it is a graphics library for ray marching using opengl and rust  
-demo and modeling at //link here
+demo and modeling at [//link](https://sovietgamingyt.itch.io/rmgl-demo1) here
 almost every thing write with the help of https://iquilezles.org/articles/ so check him out 
 ## License
 it is free and open source under the MIT License (http://opensource.org/licenses/MIT)
@@ -29,7 +29,7 @@ cutrl+r - save as sdf file
 space - update to screen from object_maker.sdfMaker to screen
 escape - return to main menu
 
-to actually change object you need to go the object_maker.sdfMaker file on the demo //again link here
+to actually change object you need to go the object_maker.sdfMaker file on the demo again [//link](https://sovietgamingyt.itch.io/rmgl-demo1)
 (one day will be shit with UI I promise)
 
 ### object_maker.sdfMaker
